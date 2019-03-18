@@ -21,6 +21,7 @@ limitations under the License. */
 #include <vector>
 #include "common/types.h"
 #include "common/util.h"
+#include "executor_base.h"
 #include "framework/lod_tensor.h"
 #include "framework/operator.h"
 #include "framework/program/program.h"
@@ -30,11 +31,12 @@ namespace paddle_mobile {
 namespace framework {
 
 template <typename Device, typename T = float>
-class Executor {
+class ExecutorSpecificDevice : ExecutorBase<T> {
  public:
-  Executor(const Program<Device> &program,
-           paddle_mobile::PaddleMobileConfigInternal config, int batch_size = 1,
-           const bool use_optimize = true, const bool lod_mode = false);
+  ExecutorSpecificDevice(const Program<T> &program,
+                         paddle_mobile::PaddleMobileConfigInternal config,
+                         int batch_size = 1, const bool use_optimize = true,
+                         const bool lod_mode = false);
 
   void SetThreadNum(int threads);
 
@@ -67,7 +69,7 @@ class Executor {
 #endif
 
  protected:
-  Executor() = default;
+  ExecutorSpecificDevice() = default;
 
   bool varInputMemory(const std::shared_ptr<VarDesc> &var_desc,
                       Variable *var) const;
@@ -85,7 +87,7 @@ class Executor {
   bool use_optimize_;
   bool lod_mode_;
   PaddleMobileConfigInternal config_;
-  Program<Device> program_;
+  Program<float> program_;
   std::shared_ptr<ProgramDesc> program_desc_;
   std::vector<std::shared_ptr<OperatorBase<Device>>> ops_of_block0_;
   std::unordered_map<std::string, int> feed_indices_;

@@ -38,13 +38,15 @@ PMStatus PaddleMobile<Device, T>::Load(const std::string &dirname,
                                        bool optimize, bool quantification,
                                        int batch_size, bool lod_mode) {
   if (loader_.get() == nullptr) {
-    loader_ = std::make_shared<framework::Loader<Device, T>>();
+    loader_ = std::make_shared<framework::Loader<T>>();
+    // todo . consider reflect gpus types
+    loader_->is_cl_gpu_ = std::is_same<DeviceType<kGPU_CL>, Device>::value;
   } else {
     LOG(kLOG_INFO) << "loader inited";
   }
 
   if (executor_.get() == nullptr) {
-    executor_ = std::make_shared<framework::Executor<Device, T>>(
+    executor_ = std::make_shared<framework::ExecutorSpecificDevice<Device, T>>(
         loader_->Load(dirname, optimize, quantification), config_, batch_size,
         optimize, lod_mode);
   } else {
@@ -60,13 +62,15 @@ PMStatus PaddleMobile<Device, T>::Load(const std::string &model_path,
                                        bool optimize, bool quantification,
                                        int batch_size, bool lod_mode) {
   if (loader_.get() == nullptr) {
-    loader_ = std::make_shared<framework::Loader<Device, T>>();
+    loader_ = std::make_shared<framework::Loader<T>>();
+    // todo . consider reflect gpus types
+    loader_->is_cl_gpu_ = std::is_same<DeviceType<kGPU_CL>, Device>::value;
   } else {
     LOG(kLOG_INFO) << "loader inited";
   }
 
   if (executor_.get() == nullptr) {
-    executor_ = std::make_shared<framework::Executor<Device, T>>(
+    executor_ = std::make_shared<framework::ExecutorSpecificDevice<Device, T>>(
         loader_->Load(model_path, para_path, optimize, quantification), config_,
         batch_size, optimize, lod_mode);
   } else {
@@ -97,12 +101,12 @@ bool PaddleMobile<Device, T>::LoadCombinedMemory(
     uint8_t *combined_params_buf, bool optimize, bool quantification,
     int batch_size, bool lod_mode) {
   if (loader_.get() == nullptr) {
-    loader_ = std::make_shared<framework::Loader<Device, T>>();
+    loader_ = std::make_shared<framework::Loader<T>>();
   } else {
     LOG(kLOG_INFO) << "loader inited";
   }
   if (executor_.get() == nullptr) {
-    executor_ = std::make_shared<framework::Executor<Device, T>>(
+    executor_ = std::make_shared<framework::ExecutorSpecificDevice<Device, T>>(
         loader_->LoadCombinedMemory(model_len, model_buf, combined_params_len,
                                     combined_params_buf, optimize,
                                     quantification),
@@ -511,7 +515,6 @@ int PaddleMobile<Device, T>::readText(
 
 template class PaddleMobile<CPU, float>;
 template class PaddleMobile<FPGA, float>;
-template class PaddleMobile<GPU_MALI, float>;
 template class PaddleMobile<GPU_CL, float>;
 
 }  // namespace paddle_mobile

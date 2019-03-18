@@ -23,115 +23,67 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename Device, typename T>
-void Loader<Device, T>::InitMemoryFromProgram(
+template <typename T>
+void Loader<T>::InitMemoryFromProgram(
     const std::shared_ptr<ProgramDesc> &originProgramDesc,
     const std::shared_ptr<Scope> &scope) {
-  for (const auto &block : originProgramDesc.get()->Blocks()) {
-    for (const auto &var_desc : block->Vars()) {
-      auto var = scope.get()->Var(var_desc->Name());
-      if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
-        if (var_desc->Persistable()) {
-          auto dim = var_desc->Tensor_desc().Dims();
-          auto tensor = var->GetMutable<LoDTensor>();
-          tensor->Resize(make_ddim(dim));
-        } else {
-          auto dim = var_desc->Tensor_desc().Dims();
-          if (dim.size() == 0) {
-            auto tensor = var->GetMutable<LoDTensor>();
-            framework::DDim dDim = {0};
-            tensor->Resize(dDim);
+#ifdef PADDLE_MOBILE_CL
+  if (is_cl_gpu_) {
+    for (const auto &block : originProgramDesc.get()->Blocks()) {
+      for (const auto &var_desc : block->Vars()) {
+        auto var = scope.get()->Var(var_desc->Name());
+        if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
+          if (var_desc->Persistable()) {
+            auto dim = var_desc->Tensor_desc().Dims();
+            auto cl_image = var->GetMutable<framework::CLImage>();
+            cl_image->Resize(make_ddim(dim));
           } else {
-            for (auto &d : dim) {
-              if (d < 0) {
-                d *= -1;
-              }
-            }
+            auto dim = var_desc->Tensor_desc().Dims();
+            PADDLE_MOBILE_ENFORCE(dim.size() > 0, "dim size is 0");
+            dim[0] = 1;
+            auto cl_image = var->GetMutable<framework::CLImage>();
+            cl_image->Resize(make_ddim(dim));
+          }
+        } else {
+          // TODO(codeWorm)
+        }
+      }
+    }
+  } else {
+#endif
+    for (const auto &block : originProgramDesc.get()->Blocks()) {
+      for (const auto &var_desc : block->Vars()) {
+        auto var = scope.get()->Var(var_desc->Name());
+        if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
+          if (var_desc->Persistable()) {
+            auto dim = var_desc->Tensor_desc().Dims();
             auto tensor = var->GetMutable<LoDTensor>();
             tensor->Resize(make_ddim(dim));
+          } else {
+            auto dim = var_desc->Tensor_desc().Dims();
+            if (dim.size() == 0) {
+              auto tensor = var->GetMutable<LoDTensor>();
+              framework::DDim dDim = {0};
+              tensor->Resize(dDim);
+            } else {
+              for (auto &d : dim) {
+                if (d < 0) {
+                  d *= -1;
+                }
+              }
+              auto tensor = var->GetMutable<LoDTensor>();
+              tensor->Resize(make_ddim(dim));
+            }
           }
-        }
-      } else {
-        // TODO(codeWorm)
-      }
-    }
-  }
-}
-
-#ifdef PADDLE_MOBILE_CL
-template <>
-void Loader<GPU_CL, float>::InitMemoryFromProgram(
-    const std::shared_ptr<ProgramDesc> &originProgramDesc,
-    const std::shared_ptr<Scope> &scope) {
-  for (const auto &block : originProgramDesc.get()->Blocks()) {
-    for (const auto &var_desc : block->Vars()) {
-      auto var = scope.get()->Var(var_desc->Name());
-      if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
-        if (var_desc->Persistable()) {
-          auto dim = var_desc->Tensor_desc().Dims();
-          auto cl_image = var->GetMutable<framework::CLImage>();
-          cl_image->Resize(make_ddim(dim));
         } else {
-          auto dim = var_desc->Tensor_desc().Dims();
-          PADDLE_MOBILE_ENFORCE(dim.size() > 0, "dim size is 0");
-          dim[0] = 1;
-          auto cl_image = var->GetMutable<framework::CLImage>();
-          cl_image->Resize(make_ddim(dim));
+          // TODO(codeWorm)
         }
-      } else {
-        // TODO(codeWorm)
       }
     }
+#ifdef PADDLE_MOBILE_CL
   }
-}
-template <>
-const Program<GPU_CL, float> Loader<GPU_CL, float>::LoadCombinedMemory(
-    size_t read_size, const uint8_t *buf, size_t combined_params_len,
-    uint8_t *combined_params_buf, bool optimize, bool quantification) {
-  bool can_add_split = false;
-
-  PaddleMobile__Framework__Proto__ProgramDesc *c_program;
-  PADDLE_MOBILE_ENFORCE(buf != nullptr, "read from __model__ is null");
-
-  c_program = paddle_mobile__framework__proto__program_desc__unpack(
-      nullptr, read_size, buf);
-  //
-  PADDLE_MOBILE_ENFORCE(c_program != nullptr, "program is null");
-  //
-  DLOG << "n_ops: " << (*c_program->blocks)->n_ops;
-  //
-
-  auto originProgramDesc = std::make_shared<ProgramDesc>(c_program);
-
-  Program<GPU_CL, float> program;
-  program.combined = true;
-  program.originProgram = originProgramDesc;
-  program.quantification = quantification;
-  program.combined_params_len = combined_params_len;
-  program.combined_params_buf = combined_params_buf;
-
-  auto scope = std::make_shared<Scope>();
-  program.scope = scope;
-  InitMemoryFromProgram(originProgramDesc, scope);
-  if (optimize) {
-    ProgramOptimize program_optimize;
-    program.optimizeProgram =
-        program_optimize.FusionOptimize(originProgramDesc, can_add_split);
-    if (!program.optimizeProgram) {
-      program.optimizeProgram = originProgramDesc;
-    }
-  }
-  if (optimize) {
-    program.optimizeProgram->Description("optimize: ");
-  } else {
-    originProgramDesc->Description("program: ");
-  }
-  paddle_mobile__framework__proto__program_desc__free_unpacked(c_program,
-                                                               nullptr);
-  return program;
-}
-
 #endif
+}
 
 /**
  * fusion and print someinfos
@@ -142,9 +94,9 @@ const Program<GPU_CL, float> Loader<GPU_CL, float>::LoadCombinedMemory(
  * @param program
  * @param originProgramDesc
  */
-template <typename Device, typename T>
+template <typename T>
 void FusionAndPrintInfos(
-    bool optimize, bool can_add_split, Program<Device, T> *program,
+    bool optimize, bool can_add_split, Program<T> *program,
     const std::shared_ptr<ProgramDesc> &originProgramDesc) {
   if (optimize) {
     ProgramOptimize program_optimize;
@@ -183,22 +135,19 @@ static size_t ReadBuffer(const char *file_name, uint8_t **out) {
   return cur_len;
 }
 
-template <typename Device, typename T>
-const Program<Device, T> Loader<Device, T>::Load(const std::string &dirname,
-                                                 bool optimize,
-                                                 bool quantification,
-                                                 bool can_add_split) {
+template <typename T>
+const Program<T> Loader<T>::Load(const std::string &dirname, bool optimize,
+                                 bool quantification, bool can_add_split) {
   auto program = this->LoadProgram(dirname + "/__model__", optimize,
                                    quantification, can_add_split);
   program.model_path = dirname;
   return program;
 }
 
-template <typename Device, typename T>
-const Program<Device, T> Loader<Device, T>::Load(const std::string &model_path,
-                                                 const std::string &para_path,
-                                                 bool optimize,
-                                                 bool quantification) {
+template <typename T>
+const Program<T> Loader<T>::Load(const std::string &model_path,
+                                 const std::string &para_path, bool optimize,
+                                 bool quantification) {
   auto program = this->LoadProgram(model_path, optimize, quantification);
 
   program.para_path = para_path;
@@ -207,10 +156,10 @@ const Program<Device, T> Loader<Device, T>::Load(const std::string &model_path,
   return program;
 }
 
-template <typename Device, typename T>
-const Program<Device, T> Loader<Device, T>::LoadProgram(
-    const std::string &model_path, bool optimize, bool quantification,
-    bool can_add_split) {
+template <typename T>
+const Program<T> Loader<T>::LoadProgram(const std::string &model_path,
+                                        bool optimize, bool quantification,
+                                        bool can_add_split) {
   std::string model_filename = model_path;
   PaddleMobile__Framework__Proto__ProgramDesc *c_program;
   uint8_t *buf = NULL;
@@ -227,7 +176,7 @@ const Program<Device, T> Loader<Device, T>::LoadProgram(
   //
   auto originProgramDesc = std::make_shared<ProgramDesc>(c_program);
 
-  Program<Device, T> program;
+  Program<T> program;
   program.originProgram = originProgramDesc;
   program.quantification = quantification;
   program.combined_params_len = 0;
@@ -245,8 +194,8 @@ const Program<Device, T> Loader<Device, T>::LoadProgram(
   return program;
 }
 
-template <typename Device, typename T>
-const Program<Device, T> Loader<Device, T>::LoadCombinedMemory(
+template <typename T>
+const Program<T> Loader<T>::LoadCombinedMemory(
     size_t read_size, const uint8_t *buf, size_t combined_params_len,
     uint8_t *combined_params_buf, bool optimize, bool quantification) {
   bool can_add_split = false;
@@ -264,7 +213,7 @@ const Program<Device, T> Loader<Device, T>::LoadCombinedMemory(
 
   auto originProgramDesc = std::make_shared<ProgramDesc>(c_program);
 
-  Program<Device, T> program;
+  Program<T> program;
   program.combined = true;
   program.originProgram = originProgramDesc;
   program.quantification = quantification;
@@ -279,14 +228,7 @@ const Program<Device, T> Loader<Device, T>::LoadCombinedMemory(
                                                                nullptr);
   return program;
 }
-
-template class Loader<CPU, float>;
-
-template class Loader<FPGA, float>;
-
-template class Loader<GPU_MALI, float>;
-
-template class Loader<GPU_CL, float>;
+template class Loader<float>;
 
 }  // namespace framework
 }  // namespace paddle_mobile

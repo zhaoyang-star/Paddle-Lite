@@ -22,7 +22,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename Device, typename T = float>
+template <typename T = float>
 class Program {
  public:
   std::shared_ptr<ProgramDesc> originProgram;

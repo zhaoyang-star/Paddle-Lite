@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-#include "framework/executor.h"
+#include "framework/executor_specific_device.h"
 #include <algorithm>
 #include <utility>
 #include <vector>
@@ -39,15 +39,14 @@ namespace framework {
 #pragma mark - executor
 
 template <typename Device, typename T>
-void Executor<Device, T>::SetThreadNum(int threads) {
+void ExecutorSpecificDevice<Device, T>::SetThreadNum(int threads) {
   set_global_num_threads(threads);
 }
 
 template <typename Device, typename T>
-Executor<Device, T>::Executor(const Program<Device> &program,
-                              paddle_mobile::PaddleMobileConfigInternal config,
-                              int batch_size, const bool use_optimize,
-                              const bool lod_mode)
+ExecutorSpecificDevice<Device, T>::ExecutorSpecificDevice(
+    const Program<T> &program, paddle_mobile::PaddleMobileConfigInternal config,
+    int batch_size, const bool use_optimize, const bool lod_mode)
     : program_(program),
       batch_size_(batch_size),
       use_optimize_(use_optimize),
@@ -102,7 +101,7 @@ Executor<Device, T>::Executor(const Program<Device> &program,
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::InitFeedFetchList() {
+void ExecutorSpecificDevice<Device, T>::InitFeedFetchList() {
   std::unordered_map<std::string, int> feed_indices, fetch_indices;
   for (const auto &block : program_desc_->Blocks()) {
     for (const auto &op_desc : block->Ops()) {
@@ -154,9 +153,8 @@ static void LoadMemInternal(void **data, LoDTensor *tensor,
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::LoadMemory(void **data,
-                                     const std::shared_ptr<VarDesc> var_desc,
-                                     LoDTensor *tensor) {
+void ExecutorSpecificDevice<Device, T>::LoadMemory(
+    void **data, const std::shared_ptr<VarDesc> var_desc, LoDTensor *tensor) {
   char **data_buf = reinterpret_cast<char **>(data);
   // version
   uint32_t version = *(reinterpret_cast<uint32_t *>(*data_buf));
@@ -206,7 +204,7 @@ void Executor<Device, T>::LoadMemory(void **data,
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::InitMemory() {
+void ExecutorSpecificDevice<Device, T>::InitMemory() {
   for (const auto &block : program_desc_->Blocks()) {
     for (const auto &var_desc : block->Vars()) {
       auto var = program_.scope->Var(var_desc->Name());
@@ -230,7 +228,7 @@ void Executor<Device, T>::InitMemory() {
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::InitCombineMemory() {
+void ExecutorSpecificDevice<Device, T>::InitCombineMemory() {
   char *origin_data = nullptr;
   bool self_alloc = false;
   if (program_.combined_params_buf && program_.combined_params_len) {
@@ -267,7 +265,8 @@ void Executor<Device, T>::InitCombineMemory() {
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::InitNoPersistableMemory(const Tensor &input_tensor) {
+void ExecutorSpecificDevice<Device, T>::InitNoPersistableMemory(
+    const Tensor &input_tensor) {
   for (const auto &block : program_desc_->Blocks()) {
     for (const auto &var_desc : block->Vars()) {
       auto var = program_.scope->Var(var_desc->Name());
@@ -299,7 +298,7 @@ void Executor<Device, T>::InitNoPersistableMemory(const Tensor &input_tensor) {
 }
 
 template <typename Device, typename T>
-bool Executor<Device, T>::varInputMemory(
+bool ExecutorSpecificDevice<Device, T>::varInputMemory(
     const std::shared_ptr<VarDesc> &var_desc, Variable *var) const {
 #ifdef PADDLE_MOBILE_FPGA
   framework::LoDTensor *tensor = var->template GetMutable<LoDTensor>();
@@ -341,7 +340,7 @@ bool Executor<Device, T>::varInputMemory(
 }
 
 template <typename Device, typename T>
-PMStatus Executor<Device, T>::Predict(
+PMStatus ExecutorSpecificDevice<Device, T>::Predict(
     const std::vector<std::pair<std::string, Tensor>> &inputs) {
   for (const auto &input : inputs) {
     SetInput(input.second, input.first);
@@ -350,7 +349,7 @@ PMStatus Executor<Device, T>::Predict(
 }
 
 template <typename Device, typename T>
-PMStatus Executor<Device, T>::Predict(
+PMStatus ExecutorSpecificDevice<Device, T>::Predict(
     const std::vector<std::pair<std::string, LoDTensor>> &inputs) {
   for (const auto &input : inputs) {
     SetInput(input.second, input.first);
@@ -359,8 +358,8 @@ PMStatus Executor<Device, T>::Predict(
 }
 
 template <typename Device, typename T>
-std::vector<T> Executor<Device, T>::Predict(const std::vector<T> &input,
-                                            const std::vector<int64_t> &dims) {
+std::vector<T> ExecutorSpecificDevice<Device, T>::Predict(
+    const std::vector<T> &input, const std::vector<int64_t> &dims) {
   PADDLE_MOBILE_ENFORCE(feed_indices_.size() != 0,
                         "We don't know which tensor should be assign, since no "
                         "feed op found in this model");
@@ -382,8 +381,8 @@ std::vector<T> Executor<Device, T>::Predict(const std::vector<T> &input,
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::SetInput(const Tensor &input,
-                                   const std::string &var_name) {
+void ExecutorSpecificDevice<Device, T>::SetInput(const Tensor &input,
+                                                 const std::string &var_name) {
   int index = 0;
   if (feed_indices_.find(var_name) != feed_indices_.end()) {
     index = feed_indices_.find(var_name)->second;
@@ -404,8 +403,8 @@ void Executor<Device, T>::SetInput(const Tensor &input,
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::SetInput(const LoDTensor &input,
-                                   const std::string &var_name) {
+void ExecutorSpecificDevice<Device, T>::SetInput(const LoDTensor &input,
+                                                 const std::string &var_name) {
   int index = 0;
   if (feed_indices_.find(var_name) != feed_indices_.end()) {
     index = feed_indices_.find(var_name)->second;
@@ -427,7 +426,7 @@ void Executor<Device, T>::SetInput(const LoDTensor &input,
 }
 
 template <typename Device, typename T>
-std::shared_ptr<LoDTensor> Executor<Device, T>::GetOutput(
+std::shared_ptr<LoDTensor> ExecutorSpecificDevice<Device, T>::GetOutput(
     const std::string &var_name) {
   const auto &iter = fetch_indices_.find(var_name);
   if (var_name == "fetch" || iter != fetch_indices_.end()) {
@@ -449,7 +448,7 @@ std::shared_ptr<LoDTensor> Executor<Device, T>::GetOutput(
 }
 
 template <typename Device, typename T>
-PMStatus Executor<Device, T>::Predict() {
+PMStatus ExecutorSpecificDevice<Device, T>::Predict() {
 #if _OPENMP
   omp_set_num_threads(get_global_num_threads());
 #endif
@@ -514,8 +513,8 @@ PMStatus Executor<Device, T>::Predict() {
 
 #ifdef PADDLE_MOBILE_FPGA
 template <typename Device, typename T>
-void Executor<Device, T>::InjectVariable(const Tensor &t,
-                                         std::string var_name) {
+void ExecutorSpecificDevice<Device, T>::InjectVariable(const Tensor &t,
+                                                       std::string var_name) {
   Variable *g_feed_value = program_.scope->Var(var_name);
   Tensor *feed_tensor = g_feed_value->template GetMutable<LoDTensor>();
   feed_tensor->Resize(t.dims());
@@ -523,12 +522,12 @@ void Executor<Device, T>::InjectVariable(const Tensor &t,
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::FeedData(const Tensor &t) {
+void ExecutorSpecificDevice<Device, T>::FeedData(const Tensor &t) {
   InjectVariable(t, "feed0");
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::FeedData(const std::vector<void *> &v) {
+void ExecutorSpecificDevice<Device, T>::FeedData(const std::vector<void *> &v) {
   auto input_size = v.size();
   int index = 0;
   auto vars = program_.scope->VarContain("feed", &index);
@@ -542,7 +541,7 @@ void Executor<Device, T>::FeedData(const std::vector<void *> &v) {
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::GetResults(std::vector<void *> *v) {
+void ExecutorSpecificDevice<Device, T>::GetResults(std::vector<void *> *v) {
   auto output_size = v->size();
   PADDLE_MOBILE_ENFORCE(output_size > 0, "Empty output");
   int index = 0;
@@ -558,7 +557,7 @@ void Executor<Device, T>::GetResults(std::vector<void *> *v) {
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::GetTensorResults(
+void ExecutorSpecificDevice<Device, T>::GetTensorResults(
     std::vector<framework::Tensor *> *v) {
   int index = 0;
   auto vars = program_.scope->VarContain("fetch", &index);
@@ -571,14 +570,14 @@ void Executor<Device, T>::GetTensorResults(
 }
 
 template <typename Device, typename T>
-framework::Tensor *Executor<Device, T>::GetTensorByName(
+framework::Tensor *ExecutorSpecificDevice<Device, T>::GetTensorByName(
     const std::string &name) {
   auto var = program_.scope->Var(name);
   return var->template GetMutable<LoDTensor>();
 }
 
 template <typename Device, typename T>
-std::shared_ptr<Tensor> Executor<Device, T>::FetchResult(int id) {
+std::shared_ptr<Tensor> ExecutorSpecificDevice<Device, T>::FetchResult(int id) {
   auto &ops = ops_of_block0_;
 
   PADDLE_MOBILE_ENFORCE(id < (int)ops.size(), "Index out of range");
@@ -592,7 +591,7 @@ std::shared_ptr<Tensor> Executor<Device, T>::FetchResult(int id) {
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::Predict_From_To(int start, int end) {
+void ExecutorSpecificDevice<Device, T>::Predict_From_To(int start, int end) {
   auto &ops = ops_of_block0_;
   end = end < 0 ? static_cast<int>(ops.size()) : end;
   PADDLE_MOBILE_ENFORCE(start >= 0 && start < end && end <= ops.size(),
@@ -618,19 +617,19 @@ void Executor<Device, T>::Predict_From_To(int start, int end) {
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::Predict_From(int start) {
+void ExecutorSpecificDevice<Device, T>::Predict_From(int start) {
   Predict_From_To(start);
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::Predict_To(int end) {
+void ExecutorSpecificDevice<Device, T>::Predict_To(int end) {
   Predict_From_To(0, end);
 }
 #endif
 
 #ifdef PADDLE_MOBILE_CL
 template <>
-void Executor<GPU_CL, float>::InitNoPersistableMemory(
+void ExecutorSpecificDevice<GPU_CL, float>::InitNoPersistableMemory(
     const Tensor &input_tensor) {
   DLOG << "CL InitNoPersistableMemory ";
   for (const auto &block : program_desc_->Blocks()) {
@@ -665,8 +664,8 @@ void Executor<GPU_CL, float>::InitNoPersistableMemory(
 }
 
 template <>
-void Executor<GPU_CL, float>::SetInput(const Tensor &input,
-                                       const std::string &var_name) {
+void ExecutorSpecificDevice<GPU_CL, float>::SetInput(
+    const Tensor &input, const std::string &var_name) {
   int index = 0;
   if (feed_indices_.find(var_name) != feed_indices_.end()) {
     index = feed_indices_.find(var_name)->second;
@@ -698,12 +697,14 @@ void Executor<GPU_CL, float>::SetInput(const Tensor &input,
 }
 
 template <typename Device, typename T>
-void Executor<Device, T>::LoadMemory(const VarDesc var_desc, float *tensorInput,
-                                     char **data) {}
+void ExecutorSpecificDevice<Device, T>::LoadMemory(const VarDesc var_desc,
+                                                   float *tensorInput,
+                                                   char **data) {}
 
 template <>
-void Executor<GPU_CL, float>::LoadMemory(const VarDesc var_desc,
-                                         float *tensorInput, char **data) {
+void ExecutorSpecificDevice<GPU_CL, float>::LoadMemory(const VarDesc var_desc,
+                                                       float *tensorInput,
+                                                       char **data) {
   // 1. version
   uint32_t version = *reinterpret_cast<uint32_t *>(*data);
 
@@ -778,7 +779,7 @@ void Executor<GPU_CL, float>::LoadMemory(const VarDesc var_desc,
 }
 
 template <>
-void Executor<GPU_CL, float>::InitMemory() {
+void ExecutorSpecificDevice<GPU_CL, float>::InitMemory() {
   for (const auto &block : program_desc_->Blocks()) {
     for (const auto &var_desc : block->Vars()) {
       auto var = program_.scope->Var(var_desc->Name());
@@ -831,7 +832,7 @@ void Executor<GPU_CL, float>::InitMemory() {
 }
 
 template <>
-void Executor<GPU_CL, float>::InitCombineMemory() {
+void ExecutorSpecificDevice<GPU_CL, float>::InitCombineMemory() {
   DLOG << "CL InitCombineMemory---- "
        << "config_.load_when_predict: " << config_.load_when_predict;
   char *origin_data = nullptr;
@@ -896,13 +897,11 @@ void Executor<GPU_CL, float>::InitCombineMemory() {
 
 #endif
 
-template class Executor<CPU, float>;
+template class ExecutorSpecificDevice<CPU, float>;
 
-template class Executor<FPGA, float>;
+template class ExecutorSpecificDevice<FPGA, float>;
 
-template class Executor<GPU_CL, float>;
-
-template class Executor<GPU_MALI, float>;
+template class ExecutorSpecificDevice<GPU_CL, float>;
 
 }  // namespace framework
 }  // namespace paddle_mobile

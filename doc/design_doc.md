@@ -6,7 +6,7 @@
 ![执行流程图](http://mms-graph.bj.bcebos.com/paddle-mobile/git_images/flow_chart.png)
 
 
-#### 主要分为: Loader 模块、 Program 模块、 Executor 模块、 op 模块、 kernel 模块、scope variable Tensor 模块
+#### 主要分为: Loader 模块、 Program 模块、 ExecutorSpecificDevice 模块、 op 模块、 kernel 模块、scope variable Tensor 模块
 
 #### 下面展开说一下各个模块的作用以及设计思路
 
@@ -80,7 +80,7 @@ program 为 loader 模块的结果, 包含了优化前的模型结构对象, 以
 * ops 为一系列 op 的描述, 描述着每个 op 的类型, 输入输出, 所需参数
 * vars 里包含的为所有 op 运算所需的参数描述
 
-### 三. Executor
+### 三. ExecutorSpecificDevice
 
 executor 主要是用于 op 运算的上层调度操作, 主要有两个操作,  executor 实例化 和 暴露给上层的 predict 方法
 

@@ -18,7 +18,7 @@ limitations under the License. */
 #include <vector>
 
 #include "common/log.h"
-#include "framework/executor.h"
+#include "framework/executor_specific_device.h"
 #include "framework/op_registry.h"
 #include "operators/activation_op.h"
 #include "operators/conv_op.h"
@@ -30,7 +30,7 @@ limitations under the License. */
 
 using paddle_mobile::framework::BlockDesc;
 using paddle_mobile::framework::DDim;
-using paddle_mobile::framework::Executor;
+using paddle_mobile::framework::ExecutorSpecificDevice;
 using paddle_mobile::framework::LoDTensor;
 using paddle_mobile::framework::OpDesc;
 using paddle_mobile::framework::Program;
@@ -40,11 +40,11 @@ using std::string;
 using std::vector;
 
 template <typename DeviceType, typename OpType>
-class Executor4Test : public Executor<DeviceType> {
+class Executor4Test : public ExecutorSpecificDevice<DeviceType> {
  public:
   Executor4Test(Program<DeviceType> p, string op_type,
                 bool use_optimize = false)
-      : Executor<DeviceType>() {
+      : ExecutorSpecificDevice<DeviceType>() {
     this->use_optimize_ = use_optimize;
     this->program_ = p;
     if (this->use_optimize_) {

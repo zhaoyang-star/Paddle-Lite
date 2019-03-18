@@ -19,7 +19,7 @@ limitations under the License. */
 #include <utility>
 #include <vector>
 #include "common/types.h"
-#include "framework/executor.h"
+#include "framework/executor_specific_device.h"
 #include "framework/load_ops.h"
 #include "framework/loader.h"
 #include "framework/tensor.h"
@@ -110,8 +110,8 @@ class PaddleMobile {
 #endif
 
  private:
-  std::shared_ptr<framework::Loader<Device, T>> loader_;
-  std::shared_ptr<framework::Executor<Device, T>> executor_;
+  std::shared_ptr<framework::Loader<T>> loader_;
+  std::shared_ptr<framework::ExecutorSpecificDevice<Device, T>> executor_;
   PaddleMobileConfigInternal config_;
 };
 
