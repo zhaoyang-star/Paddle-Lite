@@ -44,11 +44,12 @@ OperatorBase<Dtype>::OperatorBase(const std::string &type,
                                   const VariableNameMap &outputs,
                                   const AttributeMap &attrs,
                                   framework::Scope *scope)
-    : type_(type),
+    : /*type_(type),*/
       inputs_(inputs),
       outputs_(outputs),
       attrs_(attrs),
       scope_(scope) {
+        type_ = type;
   CheckAllInputOutputSet();
 #ifdef PADDLE_MOBILE_FPGA
   InsertTensors();

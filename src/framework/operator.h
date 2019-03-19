@@ -52,17 +52,50 @@ static T *GetVarValue(const std::string &key, const VariableNameMap &var_map,
   }
 }
 
+class OperatorBaseBase {
+ public:
+  //  OperatorBaseBase();
+  //  virtual ~OperatorBaseBase() {}
+  //
+  virtual void Init() = 0;
+  virtual void InferShape() const = 0;
+  virtual void Run();
+  const std::string &Type() const { return type_; }
+
+//  virtual void RunImpl() = 0;
+  //  std::vector<std::string> GetOutKeys() const;
+  //  std::vector<std::string> GetInputKeys() const;
+
+  //  const VariableNameMap &Inputs() const { return inputs_; }
+  //  const VariableNameMap &Outputs() const { return outputs_; }
+  //  const std::string &Type() const { return type_; }
+  //  const AttributeMap &Attrs() const { return attrs_; }
+
+  //#ifdef PADDLE_MOBILE_FPGA
+  //  void InsertTensors();
+  //#endif
+  std::string type_;
+
+ protected:
+  //  framework::Scope *scope_;
+  //  std::string type_;
+  //  VariableNameMap inputs_;
+  //  VariableNameMap outputs_;
+  //  AttributeMap attrs_;
+
+};
+
 template <typename Dtype>
-class OperatorBase {
+class OperatorBase : OperatorBaseBase {
  public:
   OperatorBase(const std::string &type, const VariableNameMap &inputs,
                const VariableNameMap &outputs, const AttributeMap &attrs,
                framework::Scope *scope);
   virtual ~OperatorBase() {}
 
-  virtual void Init() = 0;
-  virtual void InferShape() const = 0;
-  virtual void Run();
+  void Init(){};
+  void InferShape() const {};
+  void Run();
   virtual void RunImpl() = 0;
 
   std::vector<std::string> GetOutKeys() const;
@@ -70,7 +103,6 @@ class OperatorBase {
 
   const VariableNameMap &Inputs() const { return inputs_; }
   const VariableNameMap &Outputs() const { return outputs_; }
-  const std::string &Type() const { return type_; }
   const AttributeMap &Attrs() const { return attrs_; }
 
   void ClearVariables(const std::vector<std::string> &var_names) const {
@@ -84,7 +116,7 @@ class OperatorBase {
 
  protected:
   framework::Scope *scope_;
-  std::string type_;
+//  std::string type_;
   VariableNameMap inputs_;
   VariableNameMap outputs_;
   AttributeMap attrs_;

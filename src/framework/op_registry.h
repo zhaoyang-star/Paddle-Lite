@@ -14,6 +14,7 @@ limitations under the License. */
 
 #pragma once
 
+#include <framework/program/op_desc.h>
 #include <memory>
 #include <string>
 #include <tuple>

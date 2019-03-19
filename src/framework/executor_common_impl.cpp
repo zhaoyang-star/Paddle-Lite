@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-#include "framework/executor_specific_device.h"
+#include "framework/executor_common_impl.h"
 #include <algorithm>
 #include <utility>
 #include <vector>
@@ -80,6 +80,32 @@ ExecutorSpecificDevice<Device, T>::ExecutorSpecificDevice(
     if (!lod_mode) {
       op_handler->InferShape();
     }
+
+    AttributeMap &opAttrMap = op_desc->GetAttrMap();
+
+    for (AttributeMap::iterator iter = opAttrMap.begin();
+         iter != opAttrMap.end(); iter++) {
+      DLOG << "attr:  " <<iter->first << "\t" << iter->second;
+    }
+
+    VariableNameMap &inputs = op_desc->GetInputs();
+    for (VariableNameMap::iterator input_iter = inputs.begin();
+         input_iter != inputs.end(); input_iter++) {
+      DLOG << "inputs:  " <<input_iter->first << "\t" << input_iter->second;
+    }
+
+
+    VariableNameMap &outputs = op_desc->GetOutputs();
+    for (VariableNameMap::iterator output_iter = outputs.begin();
+         output_iter != outputs.end(); output_iter++) {
+      DLOG << "outputs:  " <<output_iter->first << "\t" << output_iter->second;
+    }
+
+
+
+
+
+
     ops_of_block0_.push_back(op_handler);
   }
   if (program_.combined) {

@@ -30,10 +30,10 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename typename T = float>
+template <typename T = float>
 class ExecutorMultiKernel : ExecutorBase<T> {
  public:
-  ExecutorMultiKernel(const Program<Device> &program,
+  ExecutorMultiKernel(const Program<T> &program,
                       paddle_mobile::PaddleMobileConfigInternal config,
                       int batch_size = 1, const bool use_optimize = true,
                       const bool lod_mode = false);
@@ -88,9 +88,9 @@ class ExecutorMultiKernel : ExecutorBase<T> {
   bool use_optimize_;
   bool lod_mode_;
   PaddleMobileConfigInternal config_;
-  Program<Device> program_;
+  Program<T> program_;
   std::shared_ptr<ProgramDesc> program_desc_;
-  std::vector<std::shared_ptr<OperatorBase<Device>>> ops_of_block0_;
+  std::vector<OperatorBaseBase *> ops_of_block0_;
   std::unordered_map<std::string, int> feed_indices_;
   std::unordered_map<std::string, int> fetch_indices_;
 

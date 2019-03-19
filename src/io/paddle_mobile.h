@@ -19,7 +19,7 @@ limitations under the License. */
 #include <utility>
 #include <vector>
 #include "common/types.h"
-#include "framework/executor_specific_device.h"
+#include "framework/executor_common_impl.h"
 #include "framework/load_ops.h"
 #include "framework/loader.h"
 #include "framework/tensor.h"

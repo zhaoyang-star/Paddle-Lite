@@ -26,6 +26,8 @@ namespace framework {
 
 class OpDesc {
  public:
+  enum OpComputType { UnSpecified = 1, ComputeCPU = 0, ComputeGPU = 1 };
+
   friend class ProgramOptimize;
   friend class FusionOpMatcher;
   friend class Node;
@@ -63,8 +65,12 @@ class OpDesc {
 
   void SetAttrMap(AttributeMap attrs) { attrs_ = attrs; }
 
+  void SetComputeType(OpComputType compute_type){
+    compute_type_ = compute_type;
+  }
  private:
   std::string type_;
+  OpComputType compute_type_;
   VariableNameMap inputs_;
   VariableNameMap outputs_;
   AttributeMap attrs_;
