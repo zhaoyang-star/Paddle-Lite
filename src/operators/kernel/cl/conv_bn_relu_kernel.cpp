@@ -55,8 +55,8 @@ bool ConvBNReluKernel<GPU_CL, float>::Init(
 
   auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
   auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
-  auto *new_scale = new_scale_w->GetMutable<framework::CLImage>();
-  auto *new_bias = new_bias_w->GetMutable<framework::CLImage>();
+  auto *new_scale = new_scale_w->MuteClImage();
+  auto *new_bias = new_bias_w->MuteClImage();
   //  for (int j = 0; j < C; ++j) {
   //    DLOG << " new scale - " << j << new_scale_ptr[j];
   //  }

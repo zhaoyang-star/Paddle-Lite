@@ -50,8 +50,8 @@ bool ConvAddBNReluKernel<CPU, float>::Init(
   
   auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
   auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
-  LoDTensor *new_scale = new_scale_w->GetMutable<LoDTensor>();
-  LoDTensor *new_bias = new_bias_w->GetMutable<LoDTensor>();
+  LoDTensor *new_scale = new_scale_w->MuteLodTensor();
+  LoDTensor *new_bias = new_bias_w->MuteLodTensor();
   
   
   auto new_scale_ptr = new_scale->mutable_data<float>({C});

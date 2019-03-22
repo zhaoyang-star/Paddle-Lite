@@ -14,7 +14,6 @@ limitations under the License. */
 
 #pragma once
 
-#include <framework/tensor_wrapper.h>
 #include <string>
 #include <vector>
 #include "common/log.h"
@@ -23,6 +22,7 @@ limitations under the License. */
 #include "framework/lod_tensor.h"
 #include "framework/scope.h"
 #include "framework/tensor.h"
+#include "framework/tensor_wrapper.h"
 #include "framework/variable.h"
 
 #ifdef PADDLE_MOBILE_FPGA_V1
@@ -470,13 +470,15 @@ class ConvParam : public OpParam {
     groups = OpParam::GetAttr<int>("groups", attrs);
   }
 
-  const RType *Input() const { return input_->template getInner<RType>(); }
+  const RType *Input() const {
+    return input_->template getInner<RType, Dtype>();
+  }
 
-  RType *Filter() const { return filter_->template getInner<RType>(); }
+  RType *Filter() const { return filter_->template getInner<RType, Dtype>(); }
 
-  RType *Output() const { return output_->template getInner<RType>(); }
+  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
   RType *TransformedFilter() const {
-    return transformed_filter_->template getInner<RType>();
+    return transformed_filter_->template getInner<RType, Dtype>();
   }
 
   const vector<int> &Strides() const { return strides_; }
@@ -561,11 +563,15 @@ class ElementwiseAddParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
 
-  const RType *InputY() const { return input_y_->template getInner<RType>(); }
+  const RType *InputY() const {
+    return input_y_->template getInner<RType, Dtype>();
+  }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   const int &Axis() const { return axis_; }
 
@@ -606,11 +612,15 @@ class ElementwiseMulParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
 
-  const RType *InputY() const { return input_y_->template getInner<RType>(); }
+  const RType *InputY() const {
+    return input_y_->template getInner<RType, Dtype>();
+  }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   const int &Axis() const { return axis_; }
 
@@ -650,11 +660,15 @@ class ElementwiseSubParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
 
-  const RType *InputY() const { return input_y_->template getInner<RType>(); }
+  const RType *InputY() const {
+    return input_y_->template getInner<RType, Dtype>();
+  }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   const int &Axis() const { return axis_; }
 
@@ -683,11 +697,15 @@ class MulParam : public OpParam {
     y_num_col_dims_ = GetAttr<int>("y_num_col_dims", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
 
-  const RType *InputY() const { return input_y_->template getInner<RType>(); }
+  const RType *InputY() const {
+    return input_y_->template getInner<RType, Dtype>();
+  }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   const int &XNumColDims() const { return x_num_col_dims_; }
 
@@ -719,7 +737,7 @@ class ConcatParam : public OpParam {
 
   vector<GType *> Inputs() const { return inputs_; }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   const int &Axis() const { return axis_; }
 
@@ -761,7 +779,7 @@ class SumParam : public OpParam {
 
   vector<GType *> Inputs() const { return inputs_; }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
  private:
   vector<Variable *> inputs_vars_;
@@ -791,9 +809,11 @@ class LrnParam : public OpParam {
     data_format_ = GetStringAttr("data_format", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   GType *MidOut() const { return mid_out_; }
 
@@ -836,9 +856,11 @@ class NormParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   GType *OutputNorm() const { return output_norm_; }
 
@@ -876,24 +898,28 @@ class BatchNormParam : public OpParam {
     //    is_test_ = GetAttr<bool>("is_test", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
 
-  RType *OutputY() const { return output_y_->template getInner<RType>(); }
+  RType *OutputY() const {
+    return output_y_->template getInner<RType, Dtype>();
+  }
 
   const RType *InputBias() const {
-    return input_bias_->template getInner<RType>();
+    return input_bias_->template getInner<RType, Dtype>();
   }
 
   const RType *InputMean() const {
-    return input_mean_->template getInner<RType>();
+    return input_mean_->template getInner<RType, Dtype>();
   }
 
   const RType *InputScale() const {
-    return input_scale_->template getInner<RType>();
+    return input_scale_->template getInner<RType, Dtype>();
   }
 
   const RType *InputVariance() const {
-    return input_variance_->template getInner<RType>();
+    return input_variance_->template getInner<RType, Dtype>();
   }
 
   const float &Epsilon() const { return epsilon_; }
@@ -909,10 +935,12 @@ class BatchNormParam : public OpParam {
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
   const RType *NewScale() const {
-    return new_scale_->template getInner<RType>();
+    return new_scale_->template getInner<RType, Dtype>();
   }
 
-  const RType *NewBias() const { return new_bias_->template getInner<RType>(); }
+  const RType *NewBias() const {
+    return new_bias_->template getInner<RType, Dtype>();
+  }
 
  private:
   GType *input_x_;
@@ -951,9 +979,11 @@ class PoolParam : public OpParam {
     global_pooling_ = GetAttr<bool>("global_pooling", attrs);
   }
 
-  const RType *Input() const { return input_->template getInner<RType>(); }
+  const RType *Input() const {
+    return input_->template getInner<RType, Dtype>();
+  }
 
-  RType *Output() const { return output_->template getInner<RType>(); }
+  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
 
   const string &PoolingType() const { return pooling_type_; }
 
@@ -1019,7 +1049,9 @@ class PriorBoxParam : public OpParam {
     step_h_ = GetAttr<float>("step_h", attrs);
     offset_ = GetAttr<float>("offset", attrs);
   }
-  const RType *Input() const { return input_->template getInner<RType>(); }
+  const RType *Input() const {
+    return input_->template getInner<RType, Dtype>();
+  }
 
   const RType *InputImage() const { return input_image_; }
 
@@ -1115,8 +1147,10 @@ class SoftmaxParam : public OpParam {
     input_x_ = InputXFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
-  RType *Out() const { return out_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
  private:
   GType *input_x_;
@@ -1152,8 +1186,10 @@ class SigmoidParam : public OpParam {
     input_x_ = InputXFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
-  RType *Out() const { return out_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
  private:
   GType *input_x_;
@@ -1196,7 +1232,7 @@ class MultiClassNMSParam : public OpParam {
 
   GType *InputScores() const { return input_scores_; }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   const int &BackGroundLabel() const { return background_label_; }
 
@@ -1237,8 +1273,10 @@ class PolygonBoxTransformParam : public OpParam {
     input_ = InputFrom<GType>(inputs, *scope);
     output_ = OutputFrom<GType>(outputs, *scope);
   }
-  const RType *Input() const { return input_->template getInner<RType>(); }
-  RType *Output() const { return output_->template getInner<RType>(); }
+  const RType *Input() const {
+    return input_->template getInner<RType, Dtype>();
+  }
+  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
 
  private:
   GType *input_;
@@ -1262,7 +1300,7 @@ class FeedParam : public OpParam {
     batch_size = var->GetValue<int>();
   }
   const std::vector<LoDTensor> *InputX() const { return input_x_; }
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
   const int Col() const { return col_; }
   const int BatchSize() const { return batch_size; }
 
@@ -1287,7 +1325,9 @@ class FetchParam : public OpParam {
     col_ = GetAttr<int>("col", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
   std::vector<LoDTensor> *Out() const { return out_; }
   const int Col() const { return col_; }
 
@@ -1322,7 +1362,7 @@ class FillConstantParam : public OpParam {
 
   Variable *OutVar() const { return out_var_; }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   const int &DataDtype() const { return dtype_; }
 
@@ -1354,9 +1394,11 @@ class TransposeParam : public OpParam {
     axis_ = GetAttr<vector<int>>("axis", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   const vector<int> &Axis() const { return axis_; }
 
@@ -1383,9 +1425,11 @@ class Transpose2Param : public OpParam {
     axis_ = GetAttr<vector<int>>("axis", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   GType *OutputXShape() const { return output_xshape_; }
 
@@ -1417,7 +1461,7 @@ class LookupParam : public OpParam {
 
   const RType *InputW() const { return input_w_; }
   const RType *InputIds() const { return input_ids_; }
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
   int64_t PaddingIdx() const { return padding_idx_; }
 
  private:
@@ -1452,7 +1496,7 @@ class CrfParam : public OpParam {
   const RType *InputLabel() const { return input_label_; }
   GType *outputVBP() const { return output_viterbipath_; }
   //  const RType *InputIds() const { return input_ids_; }
-  //  RType *Out() const { return out_->template getInner<RType>(); }
+  //  RType *Out() const { return out_->template getInner<RType,Dtype>(); }
   //  int64_t PaddingIdx() const { return padding_idx_; }
 
  private:
@@ -1490,13 +1534,15 @@ class ReshapeParam : public OpParam {
     }
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
-
-  const RType *InputShape() const {
-    return input_shape_->template getInner<RType>();
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
   }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  const RType *InputShape() const {
+    return input_shape_->template getInner<RType, Dtype>();
+  }
+
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   const vector<int> &Shape() const { return shape_; }
 
@@ -1533,13 +1579,15 @@ class Reshape2Param : public OpParam {
     }
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
-
-  const RType *InputShape() const {
-    return input_shape_->template getInner<RType>();
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
   }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  const RType *InputShape() const {
+    return input_shape_->template getInner<RType, Dtype>();
+  }
+
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   GType *OutputXShape() const { return output_xshape_; }
 
@@ -1573,13 +1621,15 @@ class ScaleParam : public OpParam {
     bias_ = GetAttr<float>("bias", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   const float Scale() const { return scale_; }
 
-  const float Bias() const { return bias_->template getInner<RType>(); }
+  const float Bias() const { return bias_; }
 
  private:
   GType *input_x_;
@@ -1636,13 +1686,15 @@ class ResizeParam : public OpParam {
     out_width_scale_ = GetAttr<float>("out_width_scale", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
-
-  const RType *InputShape() const {
-    return input_shape_->template getInner<RType>();
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
   }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  const RType *InputShape() const {
+    return input_shape_->template getInner<RType, Dtype>();
+  }
+
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   const bool &IsPyramidTest() const { return is_pyramid_test_; }
 
@@ -1683,9 +1735,11 @@ class ReluParamBase : public OpParam {
     out_ = OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
  private:
   GType *input_x_;
@@ -1725,8 +1779,10 @@ class TanhParam : public OpParam {
     input_x_ = InputXFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
-  RType *Out() const { return out_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
  private:
   GType *input_x_;
@@ -1766,9 +1822,11 @@ class PReluParam : public OpParam {
     mode_ = GetStringAttr("mode", attrs);
     DLOG << "PReluParam mode after" << mode_;
   }
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
   const RType *InputAlpha() const { return alpha_; }
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
   const std::string &Mode() const { return mode_; }
 
  private:
@@ -1796,13 +1854,13 @@ class FusionFcParam : public OpParam {
     y_num_col_dims_ = GetAttr<int>("y_num_col_dims", attrs);
     axis_ = GetAttr<int>("axis", attrs);
   }
-  GType *InputX() const { return input_x_->template getInner<RType>(); }
+  GType *InputX() const { return input_x_->template getInner<RType, Dtype>(); }
 
-  GType *InputY() const { return input_y_->template getInner<RType>(); }
+  GType *InputY() const { return input_y_->template getInner<RType, Dtype>(); }
 
   GType *InputZ() const { return input_z_; }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   const int &XNumColDims() const { return x_num_col_dims_; }
 
@@ -1848,7 +1906,7 @@ class FusionConvAddParam : public ConvParam<Dtype> {
     axis_ = OpParam::GetAttr<int>("axis", attrs);
     this->output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
-  RType *Bias() const { return bias_->template getInner<RType>(); }
+  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
 
   const int &Axis() const { return axis_; }
 
@@ -1891,7 +1949,7 @@ class FusionConvAddPReluParam : public ConvParam<Dtype> {
   }
   const RType *InputAlpha() const { return alpha_; }
   const std::string &Mode() const { return mode_; }
-  RType *Bias() const { return bias_->template getInner<RType>(); }
+  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
   const int &Axis() const { return axis_; }
 
  protected:
@@ -1933,7 +1991,7 @@ class FusionConvAddAddPReluParam : public ConvParam<Dtype> {
   const std::string &Mode() const { return mode_; }
   const RType *Bias1() const { return bias1_; }
 
-  RType *Bias() const { return bias_->template getInner<RType>(); }
+  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
 
   const int &Axis() const { return axis_; }
 
@@ -1970,24 +2028,24 @@ class FusionConvAddBNReluParam : public ConvParam<Dtype> {
     momentum_ = OpParam::GetAttr<float>("momentum", attrs);
     this->output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
-  RType *Bias() const { return bias_->template getInner<RType>(); }
+  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
 
   const int &Axis() const { return axis_; }
 
   const RType *InputBias() const {
-    return input_bias_->template getInner<RType>();
+    return input_bias_->template getInner<RType, Dtype>();
   }
 
   const RType *InputMean() const {
-    return input_mean_->template getInner<RType>();
+    return input_mean_->template getInner<RType, Dtype>();
   }
 
   const RType *InputScale() const {
-    return input_scale_->template getInner<RType>();
+    return input_scale_->template getInner<RType, Dtype>();
   }
 
   const RType *InputVariance() const {
-    return input_variance_->template getInner<RType>();
+    return input_variance_->template getInner<RType, Dtype>();
   }
 
   const float &Epsilon() const { return epsilon_; }
@@ -1998,10 +2056,12 @@ class FusionConvAddBNReluParam : public ConvParam<Dtype> {
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
   const RType *NewScale() const {
-    return new_scale_->template getInner<RType>();
+    return new_scale_->template getInner<RType, Dtype>();
   }
 
-  const RType *NewBias() const { return new_bias_->template getInner<RType>(); }
+  const RType *NewBias() const {
+    return new_bias_->template getInner<RType, Dtype>();
+  }
 
  protected:
   GType *bias_;
@@ -2046,24 +2106,24 @@ class FusionConvBNAddReluParam : public ConvParam<Dtype> {
     }
     this->output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
-  RType *Bias() const { return bias_->template getInner<RType>(); }
+  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
 
   const int &Axis() const { return axis_; }
 
   const RType *InputBias() const {
-    return input_bias_->template getInner<RType>();
+    return input_bias_->template getInner<RType, Dtype>();
   }
 
   const RType *InputMean() const {
-    return input_mean_->template getInner<RType>();
+    return input_mean_->template getInner<RType, Dtype>();
   }
 
   const RType *InputScale() const {
-    return input_scale_->template getInner<RType>();
+    return input_scale_->template getInner<RType, Dtype>();
   }
 
   const RType *InputVariance() const {
-    return input_variance_->template getInner<RType>();
+    return input_variance_->template getInner<RType, Dtype>();
   }
 
   const float &Epsilon() const { return epsilon_; }
@@ -2075,10 +2135,12 @@ class FusionConvBNAddReluParam : public ConvParam<Dtype> {
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
   const RType *NewScale() const {
-    return new_scale_->template getInner<RType>();
+    return new_scale_->template getInner<RType, Dtype>();
   }
 
-  const RType *NewBias() const { return new_bias_->template getInner<RType>(); }
+  const RType *NewBias() const {
+    return new_bias_->template getInner<RType, Dtype>();
+  }
 
  protected:
   GType *bias_;
@@ -2118,19 +2180,19 @@ class FusionConvBNParam : public ConvParam<Dtype> {
   }
 
   const RType *InputBias() const {
-    return input_bias_->template getInner<RType>();
+    return input_bias_->template getInner<RType, Dtype>();
   }
 
   const RType *InputMean() const {
-    return input_mean_->template getInner<RType>();
+    return input_mean_->template getInner<RType, Dtype>();
   }
 
   const RType *InputScale() const {
-    return input_scale_->template getInner<RType>();
+    return input_scale_->template getInner<RType, Dtype>();
   }
 
   const RType *InputVariance() const {
-    return input_variance_->template getInner<RType>();
+    return input_variance_->template getInner<RType, Dtype>();
   }
 
   const float &Epsilon() const { return epsilon_; }
@@ -2142,10 +2204,12 @@ class FusionConvBNParam : public ConvParam<Dtype> {
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
   const RType *NewScale() const {
-    return new_scale_->template getInner<RType>();
+    return new_scale_->template getInner<RType, Dtype>();
   }
 
-  const RType *NewBias() const { return new_bias_->template getInner<RType>(); }
+  const RType *NewBias() const {
+    return new_bias_->template getInner<RType, Dtype>();
+  }
 
  protected:
   GType *input_bias_;
@@ -2180,24 +2244,24 @@ class FusionConvAddBNParam : public ConvParam<Dtype> {
     momentum_ = OpParam::GetAttr<float>("momentum", attrs);
     this->output_ = OpParam::OutputYFrom<GType>(outputs, *scope);
   }
-  RType *Bias() const { return bias_->template getInner<RType>(); }
+  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
 
   const int &Axis() const { return axis_; }
 
   const RType *InputBias() const {
-    return input_bias_->template getInner<RType>();
+    return input_bias_->template getInner<RType, Dtype>();
   }
 
   const RType *InputMean() const {
-    return input_mean_->template getInner<RType>();
+    return input_mean_->template getInner<RType, Dtype>();
   }
 
   const RType *InputScale() const {
-    return input_scale_->template getInner<RType>();
+    return input_scale_->template getInner<RType, Dtype>();
   }
 
   const RType *InputVariance() const {
-    return input_variance_->template getInner<RType>();
+    return input_variance_->template getInner<RType, Dtype>();
   }
 
   const float &Epsilon() const { return epsilon_; }
@@ -2209,10 +2273,12 @@ class FusionConvAddBNParam : public ConvParam<Dtype> {
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
   const RType *NewScale() const {
-    return new_scale_->template getInner<RType>();
+    return new_scale_->template getInner<RType, Dtype>();
   }
 
-  const RType *NewBias() const { return new_bias_->template getInner<RType>(); }
+  const RType *NewBias() const {
+    return new_bias_->template getInner<RType, Dtype>();
+  }
 
  protected:
   GType *bias_;
@@ -2249,19 +2315,19 @@ class FusionDWConvBNReluParam : public ConvParam<Dtype> {
   }
 
   const RType *InputBias() const {
-    return input_bias_->template getInner<RType>();
+    return input_bias_->template getInner<RType, Dtype>();
   }
 
   const RType *InputMean() const {
-    return input_mean_->template getInner<RType>();
+    return input_mean_->template getInner<RType, Dtype>();
   }
 
   const RType *InputScale() const {
-    return input_scale_->template getInner<RType>();
+    return input_scale_->template getInner<RType, Dtype>();
   }
 
   const RType *InputVariance() const {
-    return input_variance_->template getInner<RType>();
+    return input_variance_->template getInner<RType, Dtype>();
   }
 
   const float &Epsilon() const { return epsilon_; }
@@ -2273,10 +2339,12 @@ class FusionDWConvBNReluParam : public ConvParam<Dtype> {
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
   const RType *NewScale() const {
-    return new_scale_->template getInner<RType>();
+    return new_scale_->template getInner<RType, Dtype>();
   }
 
-  const RType *NewBias() const { return new_bias_->template getInner<RType>(); }
+  const RType *NewBias() const {
+    return new_bias_->template getInner<RType, Dtype>();
+  }
 
  protected:
   GType *input_bias_;
@@ -2312,19 +2380,19 @@ class FusionConvBNReluParam : public ConvParam<Dtype> {
   }
 
   const RType *InputBias() const {
-    return input_bias_->template getInner<RType>();
+    return input_bias_->template getInner<RType, Dtype>();
   }
 
   const RType *InputMean() const {
-    return input_mean_->template getInner<RType>();
+    return input_mean_->template getInner<RType, Dtype>();
   }
 
   const RType *InputScale() const {
-    return input_scale_->template getInner<RType>();
+    return input_scale_->template getInner<RType, Dtype>();
   }
 
   const RType *InputVariance() const {
-    return input_variance_->template getInner<RType>();
+    return input_variance_->template getInner<RType, Dtype>();
   }
 
   const float &Epsilon() const { return epsilon_; }
@@ -2336,10 +2404,12 @@ class FusionConvBNReluParam : public ConvParam<Dtype> {
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
   const RType *NewScale() const {
-    return new_scale_->template getInner<RType>();
+    return new_scale_->template getInner<RType, Dtype>();
   }
 
-  const RType *NewBias() const { return new_bias_->template getInner<RType>(); }
+  const RType *NewBias() const {
+    return new_bias_->template getInner<RType, Dtype>();
+  }
 
  protected:
   GType *input_bias_;
@@ -2371,9 +2441,11 @@ class Im2SequenceParam : public OpParam {
     paddings_ = GetAttr<vector<int>>("paddings", attrs);
   }
 
-  const RType *Input() const { return input_x_->template getInner<RType>(); }
+  const RType *Input() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
 
-  RType *Output() const { return out_->template getInner<RType>(); }
+  RType *Output() const { return out_->template getInner<RType, Dtype>(); }
 
   const vector<int> &Kernels() const { return kernels_; }
 
@@ -2406,9 +2478,11 @@ class DropoutParam : public OpParam {
     dropout_prob_ = GetAttr<float>("dropout_prob", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
 
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
   float DropoutProb() const { return dropout_prob_; }
 
@@ -2441,11 +2515,13 @@ class ConvTransposeParam : public OpParam {
     groups = GetAttr<int>("groups", attrs);
   }
 
-  const RType *Input() const { return input_->template getInner<RType>(); }
+  const RType *Input() const {
+    return input_->template getInner<RType, Dtype>();
+  }
 
   const RType *Filter() const { return filter_; }
 
-  RType *Output() const { return output_->template getInner<RType>(); }
+  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
 
   const vector<int> &Strides() const { return strides_; }
 
@@ -2507,11 +2583,11 @@ class FusionDeconvAddParam : public ConvTransposeParam<Dtype> {
     axis_ = OpParam::GetAttr<int>("axis", attrs);
     output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
-  RType *Bias() const { return bias_->template getInner<RType>(); }
+  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
 
   const int &Axis() const { return axis_; }
 
-  RType *Output() const { return output_->template getInner<RType>(); }
+  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
 
  protected:
   GType *bias_;
@@ -2544,22 +2620,22 @@ class FusionDeconvAddBNParam : public ConvTransposeParam<Dtype> {
     momentum_ = OpParam::GetAttr<float>("momentum", attrs);
     //    is_test_ = OpParam::GetAttr<bool>("is_test", attrs);
   }
-  RType *Output() const { return output_->template getInner<RType>(); }
+  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
 
   const RType *InputBias() const {
-    return input_bias_->template getInner<RType>();
+    return input_bias_->template getInner<RType, Dtype>();
   }
 
   const RType *InputMean() const {
-    return input_mean_->template getInner<RType>();
+    return input_mean_->template getInner<RType, Dtype>();
   }
 
   const RType *InputScale() const {
-    return input_scale_->template getInner<RType>();
+    return input_scale_->template getInner<RType, Dtype>();
   }
 
   const RType *InputVariance() const {
-    return input_variance_->template getInner<RType>();
+    return input_variance_->template getInner<RType, Dtype>();
   }
 
   const float &Epsilon() const { return epsilon_; }
@@ -2573,10 +2649,12 @@ class FusionDeconvAddBNParam : public ConvTransposeParam<Dtype> {
   void SetNewBias(RType *new_bias) { new_bias_ = new_bias; }
 
   const RType *NewScale() const {
-    return new_scale_->template getInner<RType>();
+    return new_scale_->template getInner<RType, Dtype>();
   }
 
-  const RType *NewBias() const { return new_bias_->template getInner<RType>(); }
+  const RType *NewBias() const {
+    return new_bias_->template getInner<RType, Dtype>();
+  }
 
  protected:
   RType *output_;
@@ -2610,22 +2688,22 @@ class FusionDeconvBNReluParam : public ConvTransposeParam<Dtype> {
     epsilon_ = OpParam::GetAttr<float>("epsilon", attrs);
     momentum_ = OpParam::GetAttr<float>("momentum", attrs);
   }
-  RType *Output() const { return output_->template getInner<RType>(); }
+  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
 
   const RType *InputBias() const {
-    return input_bias_->template getInner<RType>();
+    return input_bias_->template getInner<RType, Dtype>();
   }
 
   const RType *InputMean() const {
-    return input_mean_->template getInner<RType>();
+    return input_mean_->template getInner<RType, Dtype>();
   }
 
   const RType *InputScale() const {
-    return input_scale_->template getInner<RType>();
+    return input_scale_->template getInner<RType, Dtype>();
   }
 
   const RType *InputVariance() const {
-    return input_variance_->template getInner<RType>();
+    return input_variance_->template getInner<RType, Dtype>();
   }
 
   const float &Epsilon() const { return epsilon_; }
@@ -2639,10 +2717,12 @@ class FusionDeconvBNReluParam : public ConvTransposeParam<Dtype> {
   void SetNewBias(RType *new_bias) { new_bias_ = new_bias; }
 
   const RType *NewScale() const {
-    return new_scale_->template getInner<RType>();
+    return new_scale_->template getInner<RType, Dtype>();
   }
 
-  const RType *NewBias() const { return new_bias_->template getInner<RType>(); }
+  const RType *NewBias() const {
+    return new_bias_->template getInner<RType, Dtype>();
+  }
 
  protected:
   RType *output_;
@@ -2677,22 +2757,22 @@ class FusionDeconvAddBNReluParam : public ConvTransposeParam<Dtype> {
     momentum_ = OpParam::GetAttr<float>("momentum", attrs);
     //    is_test_ = OpParam::GetAttr<bool>("is_test", attrs);
   }
-  RType *Output() const { return output_->template getInner<RType>(); }
+  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
 
   const RType *InputBias() const {
-    return input_bias_->template getInner<RType>();
+    return input_bias_->template getInner<RType, Dtype>();
   }
 
   const RType *InputMean() const {
-    return input_mean_->template getInner<RType>();
+    return input_mean_->template getInner<RType, Dtype>();
   }
 
   const RType *InputScale() const {
-    return input_scale_->template getInner<RType>();
+    return input_scale_->template getInner<RType, Dtype>();
   }
 
   const RType *InputVariance() const {
-    return input_variance_->template getInner<RType>();
+    return input_variance_->template getInner<RType, Dtype>();
   }
 
   const float &Epsilon() const { return epsilon_; }
@@ -2706,10 +2786,12 @@ class FusionDeconvAddBNReluParam : public ConvTransposeParam<Dtype> {
   void SetNewBias(RType *new_bias) { new_bias_ = new_bias; }
 
   const RType *NewScale() const {
-    return new_scale_->template getInner<RType>();
+    return new_scale_->template getInner<RType, Dtype>();
   }
 
-  const RType *NewBias() const { return new_bias_->template getInner<RType>(); }
+  const RType *NewBias() const {
+    return new_bias_->template getInner<RType, Dtype>();
+  }
 
  protected:
   RType *output_;
@@ -2765,7 +2847,7 @@ class GruParam : public OpParam {
   const RType *InputWeight() const { return input_weight_; }
   const RType *InputH0() const { return input_h0_; }
   const RType *InputBias() const {
-    return input_bias_->template getInner<RType>();
+    return input_bias_->template getInner<RType, Dtype>();
   }
   const std::string &Activation() const { return activation_; }
   const std::string &GateActivation() const { return gate_activation_; }
@@ -2820,7 +2902,7 @@ class GruUnitParam : public OpParam {
   const RType *InputWeight() const { return input_weight_; }
   const RType *InputHiddenPrev() const { return input_hidden_prev_; }
   const RType *InputBias() const {
-    return input_bias_->template getInner<RType>();
+    return input_bias_->template getInner<RType, Dtype>();
   }
   const int &Activation() const { return activation_; }
   const int &GateActivation() const { return gate_activation_; }
@@ -2857,8 +2939,10 @@ class FlattenParam : public OpParam {
     out_ = OutFrom<GType>(outputs, *scope);
     axis = GetAttr<int>("axis", attrs);
   }
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
-  RType *Out() const { return out_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
   const int &Axis() const { return axis; }
 
  private:
@@ -2888,7 +2972,9 @@ class SplitParam : public OpParam {
     //      out_ts_.push_back(*scope.FindVar(outs_[i])->GetMutable());
     //    }
   }
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
   std::vector<GType *> Outs() const { return outs_; }
   int Axis() const { return axis; }
   int Num() const { return num; }
@@ -2931,9 +3017,11 @@ class BilinearInterpParam : public OpParam {
     out_h_ = GetAttr<int>("out_h", attrs);
     out_w_ = GetAttr<int>("out_w", attrs);
   }
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
   const RType *InputOutPutSize() const { return input_outsize_; }
-  RType *Out() const { return out_->template getInner<RType>(); }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
   int OutH() const { return out_h_; }
   int OutW() const { return out_w_; }
 
@@ -2959,8 +3047,10 @@ class ShapeParam : public OpParam {
     input_ = InputFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *Input() const { return input_->template getInner<RType>(); }
-  RType *Out() const { return out_->template getInner<RType>(); }
+  const RType *Input() const {
+    return input_->template getInner<RType, Dtype>();
+  }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
  private:
   GType *input_;
@@ -3306,9 +3396,13 @@ class LogicalBinaryParam : public OpParam {
     output_ = OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
-  const RType *InputY() const { return input_y_->template getInner<RType>(); }
-  RType *Out() const { return output_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
+  const RType *InputY() const {
+    return input_y_->template getInner<RType, Dtype>();
+  }
+  RType *Out() const { return output_->template getInner<RType, Dtype>(); }
 
  public:
   GType *input_x_;
@@ -3332,8 +3426,10 @@ class LogicalUnaryParam : public OpParam {
     output_ = OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
-  RType *Out() const { return output_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
+  RType *Out() const { return output_->template getInner<RType, Dtype>(); }
 
  public:
   GType *input_x_;
@@ -3401,8 +3497,10 @@ class IsEmptyParam : public OpParam {
     output_ = OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
-  RType *Out() const { return output_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
+  RType *Out() const { return output_->template getInner<RType, Dtype>(); }
 
  public:
   GType *input_x_;
@@ -3425,8 +3523,10 @@ class IncrementParam : public OpParam {
     step_ = OpParam::GetAttr<float>("step", attrs);
   }
 
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
-  RType *Out() const { return output_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
+  RType *Out() const { return output_->template getInner<RType, Dtype>(); }
   float Step() const { return step_; }
 
  public:
@@ -3448,8 +3548,10 @@ class Pad2dParam : public OpParam {
     input_x_ = InputXFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputX() const { return input_x_->template getInner<RType>(); }
-  RType *Out() const { return out_->template getInner<RType>(); }
+  const RType *InputX() const {
+    return input_x_->template getInner<RType, Dtype>();
+  }
+  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
  private:
   RType *input_x_;
