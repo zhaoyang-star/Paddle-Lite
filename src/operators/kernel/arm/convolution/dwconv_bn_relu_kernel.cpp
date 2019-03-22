@@ -42,16 +42,22 @@ bool DWConvBNReluKernel<CPU, float>::Init(FusionDWConvBNReluParam<CPU> *param) {
     inv_std_ptr[i] =
         1 / static_cast<float>(pow((variance_ptr[i] + epsilon), 0.5));
   }
-  LoDTensor *new_scale = new LoDTensor();
-  LoDTensor *new_bias = new LoDTensor();
+//  LoDTensor *new_scale = new LoDTensor();
+//  LoDTensor *new_bias = new LoDTensor();
+
+  auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
+  auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
+  LoDTensor *new_scale = new_scale_w->GetMutable<LoDTensor>();
+  LoDTensor *new_bias = new_bias_w->GetMutable<LoDTensor>();
+
   auto new_scale_ptr = new_scale->mutable_data<float>({C});
   auto new_bias_ptr = new_bias->mutable_data<float>({C});
   for (int i = 0; i < C; i++) {
     new_scale_ptr[i] = inv_std_ptr[i] * scale_ptr[i];
     new_bias_ptr[i] = bias_ptr[i] - mean_ptr[i] * inv_std_ptr[i] * scale_ptr[i];
   }
-  param->SetNewScale(new_scale);
-  param->SetNewBias(new_bias);
+  param->SetNewScale(new_scale_w);
+  param->SetNewBias(new_bias_w);
 
   InitBaseConvKernel(param);
   return true;

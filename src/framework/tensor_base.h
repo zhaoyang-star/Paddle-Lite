@@ -66,7 +66,7 @@ static inline size_t SizeOfType(std::type_index type) {
   return size;
 }
 
-class TensorBase {
+class TensorBase /*: public TensorCore*/ {
  public:
   virtual inline TensorBase &Resize(const DDim &dims) = 0;
 

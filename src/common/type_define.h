@@ -26,7 +26,6 @@ namespace paddle_mobile {
 namespace framework {
 template <typename Dtype>
 class OperatorBase;
-class OperatorBaseBase;
 class OpDesc;
 class BlockDesc;
 class InferShapeContext;

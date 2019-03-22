@@ -81,6 +81,7 @@ ExecutorSpecificDevice<Device, T>::ExecutorSpecificDevice(
       op_handler->InferShape();
     }
 
+/*
     AttributeMap &opAttrMap = op_desc->GetAttrMap();
 
     for (AttributeMap::iterator iter = opAttrMap.begin();
@@ -101,6 +102,7 @@ ExecutorSpecificDevice<Device, T>::ExecutorSpecificDevice(
       DLOG << "outputs:  " <<output_iter->first << "\t" << output_iter->second;
     }
 
+*/
 
 
 
@@ -121,7 +123,7 @@ ExecutorSpecificDevice<Device, T>::ExecutorSpecificDevice(
 
   int count = 0;
   for (auto &op_handler : ops_of_block0_) {
-    DLOG << "Initialize op[" << count++ << "]: " << op_handler->Type();
+    DLOG << "Initialize op[" << count++ << "]: ";
     op_handler->Init();
   }
 }
@@ -834,7 +836,9 @@ void ExecutorSpecificDevice<GPU_CL, float>::InitMemory() {
 
         DDim ddim = make_ddim(desc.Dims());
 
+
         // has not init
+        // 内存直接放到clImage
         cl_image->SetTensorData(tensorInput, ddim);
 
         delete origin_data;

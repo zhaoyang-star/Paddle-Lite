@@ -41,8 +41,11 @@ bool ConvAddBNReluKernel<FPGA, float>::Init(
   const int channel = out->dims()[1];
   auto bs_ptr =
       (float *)fpga::fpga_malloc(2 * channel * sizeof(float));  // NOLINT
-  auto new_scale = new Tensor();
-  auto new_bias = new Tensor();
+  auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
+  auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
+  LoDTensor *new_scale = new_scale_w->GetMutable<LoDTensor>();
+  LoDTensor *new_bias = new_bias_w->GetMutable<LoDTensor>();
+
   auto new_scale_ptr = new_scale->mutable_data<float>({channel});
   auto new_bias_ptr = new_bias->mutable_data<float>({channel});
 
@@ -54,8 +57,8 @@ bool ConvAddBNReluKernel<FPGA, float>::Init(
     bs_ptr[i + 2] = new_scale_ptr[i];
     bs_ptr[i] = new_bias_ptr[i];
   }
-  param->SetNewScale(new_scale);
-  param->SetNewBias(new_bias);
+  param->SetNewScale(new_scale_w);
+  param->SetNewBias(new_bias_w);
 
   fpga::format_conv_data(filter, out, &bs_ptr, param->Groups());
 

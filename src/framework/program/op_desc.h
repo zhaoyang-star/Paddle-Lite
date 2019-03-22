@@ -16,6 +16,7 @@ limitations under the License. */
 
 #include <string>
 #include <vector>
+#include <common/types.h>
 
 #include "common/log.h"
 #include "common/type_define.h"
@@ -26,7 +27,6 @@ namespace framework {
 
 class OpDesc {
  public:
-  enum OpComputType { UnSpecified = 1, ComputeCPU = 0, ComputeGPU = 1 };
 
   friend class ProgramOptimize;
   friend class FusionOpMatcher;
@@ -57,6 +57,10 @@ class OpDesc {
 
   AttributeMap &GetAttrMap();
 
+  ComputeType &GetComputeType(){
+    return compute_type_;
+  }
+
   const std::string &Type() { return type_; }
 
   void SetInputs(VariableNameMap inputs) { inputs_ = inputs; }
@@ -65,12 +69,12 @@ class OpDesc {
 
   void SetAttrMap(AttributeMap attrs) { attrs_ = attrs; }
 
-  void SetComputeType(OpComputType compute_type){
+  void SetComputeType(ComputeType compute_type){
     compute_type_ = compute_type;
   }
  private:
   std::string type_;
-  OpComputType compute_type_;
+  ComputeType compute_type_;
   VariableNameMap inputs_;
   VariableNameMap outputs_;
   AttributeMap attrs_;

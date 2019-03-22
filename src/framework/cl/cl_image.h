@@ -29,7 +29,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-class CLImage {
+class CLImage /*:public TensorCore*/ {
  public:
   CLImage() = default;
 

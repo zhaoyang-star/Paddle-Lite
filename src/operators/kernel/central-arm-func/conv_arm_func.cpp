@@ -138,7 +138,7 @@ void GemmConv(const ConvParam<CPU> &param) {
 template <int tile, int kernel>
 void WinogradConv3x3(const ConvParam<CPU> &param) {
   const Tensor *input = param.Input();
-  const Tensor *filter = param.transformed_filter_;
+  const Tensor *filter = param.TransformedFilter();
   Tensor *output = param.Output();
   output->mutable_data<float>();
   int batch_size = input->dims()[0];
