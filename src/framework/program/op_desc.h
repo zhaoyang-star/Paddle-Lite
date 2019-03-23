@@ -14,9 +14,9 @@ limitations under the License. */
 
 #pragma once
 
+#include <common/types.h>
 #include <string>
 #include <vector>
-#include <common/types.h>
 
 #include "common/log.h"
 #include "common/type_define.h"
@@ -27,7 +27,6 @@ namespace framework {
 
 class OpDesc {
  public:
-
   friend class ProgramOptimize;
   friend class FusionOpMatcher;
   friend class Node;
@@ -57,9 +56,7 @@ class OpDesc {
 
   AttributeMap &GetAttrMap();
 
-  ComputeType &GetComputeType(){
-    return compute_type_;
-  }
+  ComputeType &GetComputeType() { return compute_type_; }
 
   const std::string &Type() { return type_; }
 
@@ -69,9 +66,10 @@ class OpDesc {
 
   void SetAttrMap(AttributeMap attrs) { attrs_ = attrs; }
 
-  void SetComputeType(ComputeType compute_type){
+  void SetComputeType(ComputeType compute_type) {
     compute_type_ = compute_type;
   }
+
  private:
   std::string type_;
   ComputeType compute_type_;

@@ -65,10 +65,9 @@ void InitBaseConvKernel(ConvParam<CPU> *param) {
       param->ExecMode() = ConvParam<CPU>::EXEC_WINOGRAD3X3_FLOAT;
       // transform weight
       framework::TensorWrapper *tensorWrapper = new framework::TensorWrapper;
-      param->transformed_filter_  = tensorWrapper;
+      param->transformed_filter_ = tensorWrapper;
 
-
-//      param->transformed_filter_ = new framework::LoDTensor;
+      //      param->transformed_filter_ = new framework::LoDTensor;
       operators::math::winograd_transform_weight<8, 3>(
           *param->Filter(), param->TransformedFilter());
     } else {

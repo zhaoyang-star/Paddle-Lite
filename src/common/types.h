@@ -48,9 +48,8 @@ typedef DeviceType<kCPU> CPU;
 typedef DeviceType<kFPGA> FPGA;
 typedef DeviceType<kGPU_CL> GPU_CL;
 
-
 enum ComputeType { UnSpecified = 1, ComputeCPU = 0, ComputeGPU = 1 };
-typedef ComputeType MemType ;
+typedef ComputeType MemType;
 
 //! data type
 enum DataType {

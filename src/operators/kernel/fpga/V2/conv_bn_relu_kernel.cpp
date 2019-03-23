@@ -37,8 +37,8 @@ bool ConvBNReluKernel<FPGA, float>::Init(FusionConvBNReluParam<FPGA> *param) {
   const int channel = out->dims()[1];
   auto bs_ptr =
       (float *)fpga::fpga_malloc(2 * channel * sizeof(float));  // NOLINT
-//  auto new_scale = new Tensor();
-//  auto new_bias = new Tensor();
+  //  auto new_scale = new Tensor();
+  //  auto new_bias = new Tensor();
 
   auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
   auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();

@@ -73,7 +73,7 @@ bool ConvBNReluKernel<GPU_CL, float>::Init(
   //
   //  DLOG << " climage - new scale: " << *new_scale;
 
-//  framework::CLImage *new_bias = new framework::CLImage();
+  //  framework::CLImage *new_bias = new framework::CLImage();
 
   new_bias->SetTensorData(new_bias_ptr, variance->dims());
   new_bias->InitCLImage(this->cl_helper_.CLContext(),
@@ -85,7 +85,6 @@ bool ConvBNReluKernel<GPU_CL, float>::Init(
 
   param->SetNewScale(new_scale_w);
   param->SetNewBias(new_bias_w);
-
 
   delete[](new_scale_ptr);
   delete[](new_bias_ptr);

@@ -46,12 +46,10 @@ bool DWConvBNReluKernel<GPU_CL, float>::Init(
         1 / static_cast<float>(pow((variance_ptr[i] + epsilon), 0.5));
   }
 
-
   auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
   auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
   auto *new_scale = new_scale_w->MuteClImage();
   auto *new_bias = new_bias_w->MuteClImage();
-
 
   float *new_scale_ptr = new float[C];
   float *new_bias_ptr = new float[C];
@@ -61,13 +59,13 @@ bool DWConvBNReluKernel<GPU_CL, float>::Init(
     new_bias_ptr[i] = bias_ptr[i] - mean_ptr[i] * inv_std_ptr[i] * scale_ptr[i];
   }
 
-//  framework::CLImage *new_scale = new framework::CLImage();
+  //  framework::CLImage *new_scale = new framework::CLImage();
 
   new_scale->SetTensorData(new_scale_ptr, variance->dims());
   new_scale->InitCLImage(this->cl_helper_.CLContext(),
                          cl_helper_.CLCommandQueue());
 
-//  framework::CLImage *new_bias = new framework::CLImage();
+  //  framework::CLImage *new_bias = new framework::CLImage();
 
   new_bias->SetTensorData(new_bias_ptr, variance->dims());
   new_bias->InitCLImage(this->cl_helper_.CLContext(),
@@ -75,7 +73,6 @@ bool DWConvBNReluKernel<GPU_CL, float>::Init(
 
   param->SetNewScale(new_scale_w);
   param->SetNewBias(new_bias_w);
-
 
   delete[](new_scale_ptr);
   delete[](new_bias_ptr);

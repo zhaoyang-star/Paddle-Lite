@@ -52,12 +52,12 @@ bool BatchNormKernel<GPU_CL, float>::Init(BatchNormParam<GPU_CL> *param) {
   auto *new_scale = new_scale_w->MuteClImage();
   auto *new_bias = new_bias_w->MuteClImage();
 
-//  framework::CLImage *new_scale = new framework::CLImage();
+  //  framework::CLImage *new_scale = new framework::CLImage();
   new_scale->SetTensorData(new_scale_ptr, variance->dims());
   new_scale->InitCLImage(this->cl_helper_.CLContext(),
                          this->cl_helper_.CLCommandQueue());
 
-//  framework::CLImage *new_bias = new framework::CLImage();
+  //  framework::CLImage *new_bias = new framework::CLImage();
   new_bias->SetTensorData(new_bias_ptr, variance->dims());
   new_bias->InitCLImage(this->cl_helper_.CLContext(),
                         this->cl_helper_.CLCommandQueue());

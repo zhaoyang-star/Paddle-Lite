@@ -49,7 +49,7 @@ OperatorBase<Dtype>::OperatorBase(const std::string &type,
       outputs_(outputs),
       attrs_(attrs),
       scope_(scope) {
-        type_ = type;
+  type_ = type;
   CheckAllInputOutputSet();
 #ifdef PADDLE_MOBILE_FPGA
   InsertTensors();

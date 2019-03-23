@@ -87,7 +87,7 @@ bool ConvAddBNReluKernel<GPU_CL, float>::Init(
   auto *new_scale = new_scale_w->MuteClImage();
   auto *new_bias = new_bias_w->MuteClImage();
 
-//  framework::CLImage *new_scale = new framework::CLImage();
+  //  framework::CLImage *new_scale = new framework::CLImage();
 
   //  for (int j = 0; j < C; ++j) {
   //    DLOG << " new scale - " << j << new_scale_ptr[j];
@@ -105,7 +105,7 @@ bool ConvAddBNReluKernel<GPU_CL, float>::Init(
   //
   //  DLOG << " climage - new scale: " << *new_scale;
 
-//  framework::CLImage *new_bias = new framework::CLImage();
+  //  framework::CLImage *new_bias = new framework::CLImage();
 
   new_bias->SetTensorData(new_bias_ptr, variance->dims());
   new_bias->InitCLImage(this->cl_helper_.CLContext(),

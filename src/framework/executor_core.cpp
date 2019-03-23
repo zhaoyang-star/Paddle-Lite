@@ -14,6 +14,7 @@ limitations under the License. */
 
 #pragma once
 
+#include "framework/executor_core.h"
 #include <map>
 #include <memory>
 #include <string>
@@ -25,12 +26,12 @@ limitations under the License. */
 #include "framework/operator.h"
 #include "framework/program/program.h"
 #include "framework/tensor.h"
-#include "framework/executor_core.h"
 
 namespace paddle_mobile {
 namespace framework {
-template<typename Device, typename T>
-void ExecutorCore<Device, T>::LoadMemInternal(void **data, LoDTensor *tensor, bool quant_uint8) {
+template <typename Device, typename T>
+void ExecutorCore<Device, T>::LoadMemInternal(void **data, LoDTensor *tensor,
+                                              bool quant_uint8) {
   char **data_buf = reinterpret_cast<char **>(data);
   int64_t size = tensor->numel();
   T *tensor_data = tensor->mutable_data<T>();
@@ -52,7 +53,6 @@ void ExecutorCore<Device, T>::LoadMemInternal(void **data, LoDTensor *tensor, bo
     *data_buf += size * sizeof(T);
   }
 }
-
 
 template <typename Device, typename T>
 void ExecutorCore<Device, T>::LoadMemory(
@@ -90,18 +90,18 @@ void ExecutorCore<Device, T>::LoadMemory(
   tensor->Resize(make_ddim(tensor_desc.Dims()));
   // parse tensor from stream
   switch (tensor_desc.DataType()) {
-  case VARTYPE_TYPE_FP32:
-    LoadMemInternal(reinterpret_cast<void **>(data_buf), tensor,
-                          program_.quantification);
-    break;
-  case VARTYPE_TYPE_INT8:
-    LoadMemInternal(reinterpret_cast<void **>(data_buf), tensor);
-    break;
-  case VARTYPE_TYPE_INT32:
-    LoadMemInternal(reinterpret_cast<void **>(data_buf), tensor);
-    break;
-  default:
-    LOG(kLOG_ERROR) << "data type is not supported";
+    case VARTYPE_TYPE_FP32:
+      LoadMemInternal(reinterpret_cast<void **>(data_buf), tensor,
+                      program_.quantification);
+      break;
+    case VARTYPE_TYPE_INT8:
+      LoadMemInternal(reinterpret_cast<void **>(data_buf), tensor);
+      break;
+    case VARTYPE_TYPE_INT32:
+      LoadMemInternal(reinterpret_cast<void **>(data_buf), tensor);
+      break;
+    default:
+      LOG(kLOG_ERROR) << "data type is not supported";
   }
 }
 /*template class ExecutorCore<CPU, float>;

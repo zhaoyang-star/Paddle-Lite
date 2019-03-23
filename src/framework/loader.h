@@ -59,9 +59,7 @@ class Loader {
   void InitMemoryFromProgram(
       const std::shared_ptr<ProgramDesc> &originProgramDesc,
       const std::shared_ptr<Scope> &scope);
-
 };
-
 
 }  // namespace framework
 }  // namespace paddle_mobile

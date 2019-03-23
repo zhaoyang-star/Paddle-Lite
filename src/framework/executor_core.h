@@ -32,10 +32,11 @@ namespace framework {
 template <typename Device, typename T = float>
 class ExecutorCore {
  public:
-  void LoadMemInternal(void **data, LoDTensor *tensor,bool quant_uint8 = false);
+  void LoadMemInternal(void **data, LoDTensor *tensor,
+                       bool quant_uint8 = false);
 
-  void LoadMemory(
-      void **data, const std::shared_ptr<VarDesc> var_desc, LoDTensor *tensor) ;
+  void LoadMemory(void **data, const std::shared_ptr<VarDesc> var_desc,
+                  LoDTensor *tensor);
   int batch_size_;
   bool use_optimize_;
   bool lod_mode_;
@@ -44,7 +45,6 @@ class ExecutorCore {
   std::shared_ptr<ProgramDesc> program_desc_;
   std::unordered_map<std::string, int> feed_indices_;
   std::unordered_map<std::string, int> fetch_indices_;
-
 
   // for super resoltion
   DDim input_dim_last_;
