@@ -1055,9 +1055,13 @@ class PriorBoxParam : public OpParam {
 
   const RType *InputImage() const { return input_image_; }
 
-  RType *OutputBoxes() const { return output_boxes_->template getInner<RType, Dtype>(); }
+  RType *OutputBoxes() const {
+    return output_boxes_->template getInner<RType, Dtype>();
+  }
 
-  RType *OutputVariances() const { return output_variances_->template getInner<RType, Dtype>(); }
+  RType *OutputVariances() const {
+    return output_variances_->template getInner<RType, Dtype>();
+  }
 
   const vector<float> &MinSizes() const { return min_sizes_; }
 

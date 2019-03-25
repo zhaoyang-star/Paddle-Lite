@@ -65,12 +65,12 @@ struct ActivationCompute<float, Act> {
 
 #ifdef RELU_OP
 template <>
-bool ReluKernel<CPU, float>::Init(ReluParam<CPU> *param) {
+bool ReluKernelCpu<float>::Init(ReluParam<CPU> *param) {
   return true;
 }
 
 template <>
-void ReluKernel<CPU, float>::Compute(const ReluParam<CPU> &param) {
+void ReluKernelCpu<float>::Compute(const ReluParam<CPU> &param) {
   const LoDTensor *input = param.InputX();
   LoDTensor *output = param.Out();
   ActivationCompute<float, RELU>()(input, output);
@@ -78,12 +78,12 @@ void ReluKernel<CPU, float>::Compute(const ReluParam<CPU> &param) {
 }
 
 template <>
-bool Relu6Kernel<CPU, float>::Init(ReluParam<CPU> *param) {
+bool Relu6KernelCpu<float>::Init(ReluParam<CPU> *param) {
   return true;
 }
 
 template <>
-void Relu6Kernel<CPU, float>::Compute(const ReluParam<CPU> &param) {
+void Relu6KernelCpu<float>::Compute(const ReluParam<CPU> &param) {
   const LoDTensor *input = param.InputX();
   LoDTensor *output = param.Out();
   ActivationCompute<float, RELU6>()(input, output);
@@ -93,12 +93,12 @@ void Relu6Kernel<CPU, float>::Compute(const ReluParam<CPU> &param) {
 
 #ifdef SIGMOID_OP
 template <>
-bool SigmoidKernel<CPU, float>::Init(SigmoidParam<CPU> *param) {
+bool SigmoidKernelCpu<float>::Init(SigmoidParam<CPU> *param) {
   return true;
 }
 
 template <>
-void SigmoidKernel<CPU, float>::Compute(const SigmoidParam<CPU> &param) {
+void SigmoidKernelCpu<float>::Compute(const SigmoidParam<CPU> &param) {
   const LoDTensor *input = param.InputX();
   LoDTensor *output = param.Out();
   ActivationCompute<float, SIGMOID>()(input, output);
@@ -108,12 +108,12 @@ void SigmoidKernel<CPU, float>::Compute(const SigmoidParam<CPU> &param) {
 
 #ifdef TANH_OP
 template <>
-bool TanhKernel<CPU, float>::Init(TanhParam<CPU> *param) {
+bool TanhKernelCpu<float>::Init(TanhParam<CPU> *param) {
   return true;
 }
 
 template <>
-void TanhKernel<CPU, float>::Compute(const TanhParam<CPU> &param) {
+void TanhKernelCpu<float>::Compute(const TanhParam<CPU> &param) {
   const LoDTensor *input = param.InputX();
   LoDTensor *output = param.Out();
   ActivationCompute<float, TANH>()(input, output);
@@ -123,12 +123,12 @@ void TanhKernel<CPU, float>::Compute(const TanhParam<CPU> &param) {
 
 #ifdef LOG_OP
 template <>
-bool LogKernel<CPU, float>::Init(ReluParam<CPU> *param) {
+bool LogKernelCpu<float>::Init(ReluParam<CPU> *param) {
   return true;
 }
 
 template <>
-void LogKernel<CPU, float>::Compute(const ReluParam<CPU> &param) {
+void LogKernelCpu<float>::Compute(const ReluParam<CPU> &param) {
   const LoDTensor *input = param.InputX();
   LoDTensor *output = param.Out();
   ActivationCompute<float, LOG>()(input, output);

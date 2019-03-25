@@ -39,7 +39,6 @@ class ConvAddReluKernel
 };*/
 DECLARE_KERNEL_ALL_WITH_PARAMS(ConvAddRelu, FusionConvAddReluParam);
 
-
 }  // namespace operators
 }  // namespace paddle_mobile
 

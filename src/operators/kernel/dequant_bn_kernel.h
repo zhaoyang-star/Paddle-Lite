@@ -37,11 +37,13 @@ DECLARE_KERNEL_ALL_WITH_PARAMS(FusionDequantAddBNRelu, FusionDequantAddBNParam);
 #endif
 
 #ifdef FUSION_DEQUANT_ADD_BN_QUANT_OP
-DECLARE_KERNEL_ALL_WITH_PARAMS(FusionDequantAddBNQuant, FusionDequantAddBNQuantParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(FusionDequantAddBNQuant,
+                               FusionDequantAddBNQuantParam);
 #endif
 
 #ifdef FUSION_DEQUANT_ADD_BN_RELU_QUANT_OP
-DECLARE_KERNEL_ALL_WITH_PARAMS(FusionDequantAddBNReluQuant, FusionDequantAddBNQuantParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(FusionDequantAddBNReluQuant,
+                               FusionDequantAddBNQuantParam);
 #endif
 
 }  // namespace operators

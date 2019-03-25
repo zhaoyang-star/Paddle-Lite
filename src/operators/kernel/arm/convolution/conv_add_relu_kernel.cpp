@@ -23,13 +23,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ConvAddReluKernel<CPU, float>::Init(FusionConvAddReluParam<CPU> *param) {
+bool ConvAddReluKernelCpu<float>::Init(FusionConvAddReluParam<CPU> *param) {
   InitBaseConvKernel(param);
   return true;
 }
 
 template <>
-void ConvAddReluKernel<CPU, float>::Compute(
+void ConvAddReluKernelCpu<float>::Compute(
     const FusionConvAddReluParam<CPU> &param) {
   switch (param.ExecMode()) {
     case ConvParam<CPU>::EXEC_DEPTHWISE3x3S1_FLOAT:
@@ -52,7 +52,7 @@ void ConvAddReluKernel<CPU, float>::Compute(
   math::AddChannelWise<RELU>(param.Output(), param.Bias(), param.Output());
 }
 
-template class ConvAddReluKernel<CPU, float>;
+template class ConvAddReluKernelCpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

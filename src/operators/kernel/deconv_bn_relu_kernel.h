@@ -35,7 +35,6 @@ class DeconvBNReluKernel
 
 DECLARE_KERNEL_ALL_WITH_PARAMS(DeconvBNRelu, FusionDeconvBNReluParam);
 
-
 }  // namespace operators
 }  // namespace paddle_mobile
 

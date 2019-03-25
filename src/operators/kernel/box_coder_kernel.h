@@ -25,8 +25,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-//template <typename DeviceType, typename T>
-//class BoxCoderKernel
+// template <typename DeviceType, typename T>
+// class BoxCoderKernel
 //    : public framework::OpKernelBase<DeviceType, BoxCoderParam<DeviceType>> {
 // public:
 //  void Compute(const BoxCoderParam<DeviceType>& param);

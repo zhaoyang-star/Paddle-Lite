@@ -33,7 +33,7 @@ class SoftmaxKernel
 };
 */
 
-DECLARE_KERNEL_ALL( Softmax);
+DECLARE_KERNEL_ALL(Softmax);
 
 }  // namespace operators
 }  // namespace paddle_mobile

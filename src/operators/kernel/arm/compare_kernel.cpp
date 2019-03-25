@@ -186,12 +186,12 @@ struct CompareCompute<int64_t, Comp> {
 
 #ifdef LESS_THAN_OP
 template <>
-bool LessThanKernel<CPU, float>::Init(CompareParam<CPU> *param) {
+bool LessThanKernelCpu<float>::Init(CompareParam<CPU> *param) {
   return true;
 }
 
 template <>
-void LessThanKernel<CPU, float>::Compute(const CompareParam<CPU> &param) {
+void LessThanKernelCpu<float>::Compute(const CompareParam<CPU> &param) {
   if (param.input_x_->type() == typeid(int64_t)) {
     CompareCompute<int64_t, LESS_THAN>()(param.input_x_, param.input_y_,
                                          param.axis_, param.output_);

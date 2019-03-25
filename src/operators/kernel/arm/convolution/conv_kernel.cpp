@@ -22,13 +22,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ConvKernel<CPU, float>::Init(ConvParam<CPU> *param) {
+bool ConvKernelCpu<float>::Init(ConvParam<CPU> *param) {
   InitBaseConvKernel(param);
   return true;
 }
 
 template <>
-void ConvKernel<CPU, float>::Compute(const ConvParam<CPU> &param) {
+void ConvKernelCpu<float>::Compute(const ConvParam<CPU> &param) {
   switch (param.ExecMode()) {
 #ifndef __aarch64__
     case ConvParam<CPU>::EXEC_GEMM_INT8:
@@ -60,7 +60,7 @@ void ConvKernel<CPU, float>::Compute(const ConvParam<CPU> &param) {
   }
 }
 
-template class ConvKernel<CPU, float>;
+template class ConvKernelCpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

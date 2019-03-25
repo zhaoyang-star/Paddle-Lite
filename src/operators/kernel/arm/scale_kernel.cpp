@@ -23,7 +23,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-void ScaleKernel<CPU, float>::Compute(const ScaleParam<CPU> &param) {
+void ScaleKernelCpu<float>::Compute(const ScaleParam<CPU> &param) {
   const auto input = param.InputX();
   auto output = param.Out();
   const float scale = param.Scale();

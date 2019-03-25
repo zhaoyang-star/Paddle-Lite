@@ -20,13 +20,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool DropoutKernelGpu< float>::Init(DropoutParam<GPU_CL> *param) {
+bool DropoutKernelGpu<float>::Init(DropoutParam<GPU_CL> *param) {
   this->cl_helper_.AddKernel("dropout", "dropout_kernel.cl");
   return true;
 }
 
 template <>
-void DropoutKernelGpu< float>::Compute(const DropoutParam<GPU_CL> &param) {
+void DropoutKernelGpu<float>::Compute(const DropoutParam<GPU_CL> &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*(param.Out()));
   auto *input_image = param.InputX()->GetCLImage();

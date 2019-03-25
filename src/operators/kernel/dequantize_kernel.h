@@ -32,7 +32,6 @@ class DequantizeKernel
 
 DECLARE_KERNEL_ALL(Dequantize);
 
-
 }  // namespace operators
 }  // namespace paddle_mobile
 

@@ -34,7 +34,6 @@ class FusionFcReluKernel
 
 DECLARE_KERNEL_ALL(FusionFcRelu);
 
-
 }  // namespace operators
 }  // namespace paddle_mobile
 

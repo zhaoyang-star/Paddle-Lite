@@ -48,7 +48,6 @@ class ConvAddKernel
 
 DECLARE_KERNEL_ALL_WITH_PARAMS(ConvAdd, FusionConvAddParam);
 
-
 }  // namespace operators
 }  // namespace paddle_mobile
 

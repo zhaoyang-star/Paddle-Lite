@@ -38,9 +38,7 @@ class ConvBNReluKernel
   bool Init(FusionConvBNReluParam<DeviceType> *param);
 };*/
 
-
 DECLARE_KERNEL_ALL_WITH_PARAMS(ConvBNRelu, FusionConvBNReluParam);
-
 
 }  // namespace operators
 }  // namespace paddle_mobile

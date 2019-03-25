@@ -35,9 +35,7 @@ class ConvKernel : public OpKernelBase<DeviceType, ConvParam<DeviceType>> {
   bool Init(ConvParam<DeviceType> *param);
 };*/
 
-
 DECLARE_KERNEL_ALL_WITH_PARAMS(Conv, ConvParam);
-
 
 }  // namespace operators
 }  // namespace paddle_mobile

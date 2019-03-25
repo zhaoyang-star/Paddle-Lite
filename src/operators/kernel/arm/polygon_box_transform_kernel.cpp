@@ -21,13 +21,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool PolygonBoxTransformKernel<CPU, float>::Init(
+bool PolygonBoxTransformKernelCpu<float>::Init(
     PolygonBoxTransformParam<CPU> *param) {
   return true;
 }
 
 template <>
-void PolygonBoxTransformKernel<CPU, float>::Compute(
+void PolygonBoxTransformKernelCpu<float>::Compute(
     const PolygonBoxTransformParam<CPU> &param) {
   PolygonBoxTransformCompute<float>(param);
 }

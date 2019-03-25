@@ -44,12 +44,12 @@ struct OnehotOpFunctor {
 };
 
 template <>
-bool OnehotKernel<CPU, float>::Init(OnehotParam<CPU>* param) {
+bool OnehotKernelCpu<float>::Init(OnehotParam<CPU>* param) {
   return true;
 }
 
 template <>
-void OnehotKernel<CPU, float>::Compute(const OnehotParam<CPU>& param) {
+void OnehotKernelCpu<float>::Compute(const OnehotParam<CPU>& param) {
   framework::VisitDataType(
       framework::ToDataType(param.dtype_),
       OnehotOpFunctor<int64_t>(param.input_, param.output_, param.depth_));

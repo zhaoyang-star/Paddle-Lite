@@ -33,9 +33,7 @@ class ConvTransposeKernel
   bool Init(ConvTransposeParam<DeviceType> *param);
 };*/
 
-
 DECLARE_KERNEL_ALL(ConvTranspose);
-
 
 }  // namespace operators
 }  // namespace paddle_mobile

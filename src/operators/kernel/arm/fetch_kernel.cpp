@@ -15,17 +15,17 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool FetchKernel<CPU, float>::Init(FetchParam<CPU> *param) {
+bool FetchKernelCpu<float>::Init(FetchParam<CPU> *param) {
   return true;
 }
 
 template <>
-void FetchKernel<CPU, float>::Compute(const FetchParam<CPU> &param) {
+void FetchKernelCpu<float>::Compute(const FetchParam<CPU> &param) {
   int col = param.Col();
   param.Out()->at(col).ShareDataWith(*(param.InputX()));
 }
 
-template class FetchKernel<CPU, float>;
+template class FetchKernelCpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

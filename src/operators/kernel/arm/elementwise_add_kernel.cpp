@@ -21,12 +21,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ElementwiseAddKernel<CPU, float>::Init(ElementwiseAddParam<CPU> *param) {
+bool ElementwiseAddKernelCpu<float>::Init(ElementwiseAddParam<CPU> *param) {
   return true;
 }
 
 template <>
-void ElementwiseAddKernel<CPU, float>::Compute(
+void ElementwiseAddKernelCpu<float>::Compute(
     const ElementwiseAddParam<CPU> &param) {
   ElementwiseAddCompute<float>(param);
   param.Out()->set_lod(param.InputX()->lod());

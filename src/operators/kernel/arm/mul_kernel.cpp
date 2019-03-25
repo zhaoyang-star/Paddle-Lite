@@ -21,17 +21,17 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool MulKernel<CPU, float>::Init(MulParam<CPU> *param) {
+bool MulKernelCpu<float>::Init(MulParam<CPU> *param) {
   return true;
 }
 
 template <>
-void MulKernel<CPU, float>::Compute(const MulParam<CPU> &param) {
+void MulKernelCpu<float>::Compute(const MulParam<CPU> &param) {
   MulCompute<float>(param);
   param.Out()->set_lod(param.InputX()->lod());
 }
 
-template class MulKernel<CPU, float>;
+template class MulKernelCpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

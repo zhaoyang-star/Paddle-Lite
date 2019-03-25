@@ -32,7 +32,7 @@ class MultiClassNMSKernel
   bool Init(MultiClassNMSParam<DeviceType>* param);
 };*/
 
-DECLARE_KERNEL_ALL( MultiClassNMS);
+DECLARE_KERNEL_ALL(MultiClassNMS);
 
 }  // namespace operators
 }  // namespace paddle_mobile

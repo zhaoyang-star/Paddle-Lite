@@ -36,7 +36,6 @@ class ElementwiseSubKernel
 
 DECLARE_KERNEL_ALL(ElementwiseSub);
 
-
 }  // namespace operators
 }  // namespace paddle_mobile
 

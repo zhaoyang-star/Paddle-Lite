@@ -23,12 +23,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool TopKKernel<CPU, float>::Init(TopKParam<CPU> *param) {
+bool TopKKernelCpu<float>::Init(TopKParam<CPU> *param) {
   return true;
 }
 
 template <>
-void TopKKernel<CPU, float>::Compute(const TopKParam<CPU> &param) {
+void TopKKernelCpu<float>::Compute(const TopKParam<CPU> &param) {
   const Tensor *input = param.input_;
   Tensor *output = param.output_;
   Tensor *indices = param.indices_;

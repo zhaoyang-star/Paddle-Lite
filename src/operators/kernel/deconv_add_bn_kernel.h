@@ -33,9 +33,7 @@ class DeconvAddBNKernel
   bool Init(FusionDeconvAddBNParam<DeviceType> *param);
 };*/
 
-
 DECLARE_KERNEL_ALL_WITH_PARAMS(DeconvAddBN, FusionDeconvAddBNParam);
-
 
 }  // namespace operators
 }  // namespace paddle_mobile

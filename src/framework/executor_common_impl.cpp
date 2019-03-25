@@ -1,16 +1,16 @@
 ///* Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
 //
-//Licensed under the Apache License, Version 2.0 (the "License");
-//you may not use this file except in compliance with the License.
-//You may obtain a copy of the License at
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
 //    http://www.apache.org/licenses/LICENSE-2.0
 //
-//Unless required by applicable law or agreed to in writing, software
-//distributed under the License is distributed on an "AS IS" BASIS,
-//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//See the License for the specific language governing permissions and
-//limitations under the License. */
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License. */
 //
 //#include "framework/executor_common_impl.h"
 //#include <algorithm>
@@ -33,21 +33,21 @@
 //#include "framework/cl/cl_image.h"
 //#endif
 //
-//namespace paddle_mobile {
-//namespace framework {
+// namespace paddle_mobile {
+// namespace framework {
 //
 //#pragma mark - executor
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::SetThreadNum(int threads) {
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::SetThreadNum(int threads) {
 //  set_global_num_threads(threads);
 //}
 //
-//template <typename Device, typename T>
-//ExecutorSpecificDevice<Device, T>::ExecutorSpecificDevice(
-//    const Program<T> &program, paddle_mobile::PaddleMobileConfigInternal config,
-//    int batch_size, const bool use_optimize, const bool lod_mode)
-//    : program_(program),
+// template <typename Device, typename T>
+// ExecutorSpecificDevice<Device, T>::ExecutorSpecificDevice(
+//    const Program<T> &program, paddle_mobile::PaddleMobileConfigInternal
+//    config, int batch_size, const bool use_optimize, const bool lod_mode) :
+//    program_(program),
 //      batch_size_(batch_size),
 //      use_optimize_(use_optimize),
 //      lod_mode_(lod_mode),
@@ -92,7 +92,8 @@
 //        VariableNameMap &inputs = op_desc->GetInputs();
 //        for (VariableNameMap::iterator input_iter = inputs.begin();
 //             input_iter != inputs.end(); input_iter++) {
-//          DLOG << "inputs:  " <<input_iter->first << "\t" << input_iter->second;
+//          DLOG << "inputs:  " <<input_iter->first << "\t" <<
+//          input_iter->second;
 //        }
 //
 //
@@ -125,8 +126,8 @@
 //  }
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::InitFeedFetchList() {
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::InitFeedFetchList() {
 //  std::unordered_map<std::string, int> feed_indices, fetch_indices;
 //  for (const auto &block : program_desc_->Blocks()) {
 //    for (const auto &op_desc : block->Ops()) {
@@ -143,7 +144,8 @@
 //  fetch_indices_.swap(fetch_indices);
 //
 //  auto *feed_var = program_.scope->Var("feed");
-//  auto *feed_list = feed_var->template GetMutable<framework::LoDTensorArray>();
+//  auto *feed_list = feed_var->template
+//  GetMutable<framework::LoDTensorArray>();
 //  feed_list->resize(feed_indices_.size());
 //
 //  auto *fetch_var = program_.scope->Var("fetch");
@@ -152,8 +154,8 @@
 //  fetch_list->resize(fetch_indices_.size());
 //}
 //
-//template <typename T>
-//static void LoadMemInternal(void **data, LoDTensor *tensor,
+// template <typename T>
+// static void LoadMemInternal(void **data, LoDTensor *tensor,
 //                            bool quant_uint8 = false) {
 //  char **data_buf = reinterpret_cast<char **>(data);
 //  int64_t size = tensor->numel();
@@ -177,8 +179,8 @@
 //  }
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::LoadMemory(
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::LoadMemory(
 //    void **data, const std::shared_ptr<VarDesc> var_desc, LoDTensor *tensor) {
 //  char **data_buf = reinterpret_cast<char **>(data);
 //  // version
@@ -228,8 +230,8 @@
 //  }
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::InitMemory() {
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::InitMemory() {
 //  for (const auto &block : program_desc_->Blocks()) {
 //    for (const auto &var_desc : block->Vars()) {
 //      auto var = program_.scope->Var(var_desc->Name());
@@ -252,8 +254,8 @@
 //  }
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::InitCombineMemory() {
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::InitCombineMemory() {
 //  char *origin_data = nullptr;
 //  bool self_alloc = false;
 //  if (program_.combined_params_buf && program_.combined_params_len) {
@@ -289,8 +291,8 @@
 //  LOG(kLOG_INFO) << "init combine memory finish";
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::InitNoPersistableMemory(
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::InitNoPersistableMemory(
 //    const Tensor &input_tensor) {
 //  for (const auto &block : program_desc_->Blocks()) {
 //    for (const auto &var_desc : block->Vars()) {
@@ -322,8 +324,8 @@
 //  output->mutable_data<T>();
 //}
 //
-//template <typename Device, typename T>
-//bool ExecutorSpecificDevice<Device, T>::varInputMemory(
+// template <typename Device, typename T>
+// bool ExecutorSpecificDevice<Device, T>::varInputMemory(
 //    const std::shared_ptr<VarDesc> &var_desc, Variable *var) const {
 //#ifdef PADDLE_MOBILE_FPGA
 //  framework::LoDTensor *tensor = var->template GetMutable<LoDTensor>();
@@ -364,8 +366,8 @@
 //  return true;
 //}
 //
-//template <typename Device, typename T>
-//PMStatus ExecutorSpecificDevice<Device, T>::Predict(
+// template <typename Device, typename T>
+// PMStatus ExecutorSpecificDevice<Device, T>::Predict(
 //    const std::vector<std::pair<std::string, Tensor>> &inputs) {
 //  for (const auto &input : inputs) {
 //    SetInput(input.second, input.first);
@@ -373,8 +375,8 @@
 //  return this->Predict();
 //}
 //
-//template <typename Device, typename T>
-//PMStatus ExecutorSpecificDevice<Device, T>::Predict(
+// template <typename Device, typename T>
+// PMStatus ExecutorSpecificDevice<Device, T>::Predict(
 //    const std::vector<std::pair<std::string, LoDTensor>> &inputs) {
 //  for (const auto &input : inputs) {
 //    SetInput(input.second, input.first);
@@ -382,15 +384,15 @@
 //  return this->Predict();
 //}
 //
-//template <typename Device, typename T>
-//std::vector<T> ExecutorSpecificDevice<Device, T>::Predict(
+// template <typename Device, typename T>
+// std::vector<T> ExecutorSpecificDevice<Device, T>::Predict(
 //    const std::vector<T> &input, const std::vector<int64_t> &dims) {
 //  PADDLE_MOBILE_ENFORCE(feed_indices_.size() != 0,
-//                        "We don't know which tensor should be assign, since no "
-//                        "feed op found in this model");
+//                        "We don't know which tensor should be assign, since no
+//                        " "feed op found in this model");
 //  PADDLE_MOBILE_ENFORCE(fetch_indices_.size() != 0,
-//                        "We don't know which tensor should be fetch out, since "
-//                        "no fetch op found in this model");
+//                        "We don't know which tensor should be fetch out, since
+//                        " "no fetch op found in this model");
 //  std::string input_name = feed_indices_.begin()->first;
 //  Tensor feed_tensor(input, make_ddim(dims));
 //  SetInput(feed_tensor, input_name);
@@ -405,9 +407,10 @@
 //  return output;
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::SetInput(const Tensor &input,
-//                                                 const std::string &var_name) {
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::SetInput(const Tensor &input,
+//                                                 const std::string &var_name)
+//                                                 {
 //  int index = 0;
 //  if (feed_indices_.find(var_name) != feed_indices_.end()) {
 //    index = feed_indices_.find(var_name)->second;
@@ -427,9 +430,10 @@
 //  target.ShareDataWith(input);
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::SetInput(const LoDTensor &input,
-//                                                 const std::string &var_name) {
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::SetInput(const LoDTensor &input,
+//                                                 const std::string &var_name)
+//                                                 {
 //  int index = 0;
 //  if (feed_indices_.find(var_name) != feed_indices_.end()) {
 //    index = feed_indices_.find(var_name)->second;
@@ -450,8 +454,8 @@
 //  target.set_lod(input.lod());
 //}
 //
-//template <typename Device, typename T>
-//std::shared_ptr<LoDTensor> ExecutorSpecificDevice<Device, T>::GetOutput(
+// template <typename Device, typename T>
+// std::shared_ptr<LoDTensor> ExecutorSpecificDevice<Device, T>::GetOutput(
 //    const std::string &var_name) {
 //  const auto &iter = fetch_indices_.find(var_name);
 //  if (var_name == "fetch" || iter != fetch_indices_.end()) {
@@ -461,7 +465,8 @@
 //    }
 //    auto *fetch_var = program_.scope->Var("fetch");
 //    framework::LoDTensor &target =
-//        fetch_var->template GetMutable<framework::LoDTensorArray>()->at(index);
+//        fetch_var->template
+//        GetMutable<framework::LoDTensorArray>()->at(index);
 //
 //    return std::make_shared<LoDTensor>(target);
 //  } else {
@@ -472,8 +477,8 @@
 //  }
 //}
 //
-//template <typename Device, typename T>
-//PMStatus ExecutorSpecificDevice<Device, T>::Predict() {
+// template <typename Device, typename T>
+// PMStatus ExecutorSpecificDevice<Device, T>::Predict() {
 //#if _OPENMP
 //  omp_set_num_threads(get_global_num_threads());
 //#endif
@@ -537,8 +542,8 @@
 //}
 //
 //#ifdef PADDLE_MOBILE_FPGA
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::InjectVariable(const Tensor &t,
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::InjectVariable(const Tensor &t,
 //                                                       std::string var_name) {
 //  Variable *g_feed_value = program_.scope->Var(var_name);
 //  Tensor *feed_tensor = g_feed_value->template GetMutable<LoDTensor>();
@@ -546,13 +551,14 @@
 //  feed_tensor->ShareDataWith(t);
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::FeedData(const Tensor &t) {
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::FeedData(const Tensor &t) {
 //  InjectVariable(t, "feed0");
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::FeedData(const std::vector<void *> &v) {
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::FeedData(const std::vector<void *>
+// &v) {
 //  auto input_size = v.size();
 //  int index = 0;
 //  auto vars = program_.scope->VarContain("feed", &index);
@@ -565,8 +571,8 @@
 //  }
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::GetResults(std::vector<void *> *v) {
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::GetResults(std::vector<void *> *v) {
 //  auto output_size = v->size();
 //  PADDLE_MOBILE_ENFORCE(output_size > 0, "Empty output");
 //  int index = 0;
@@ -581,8 +587,8 @@
 //  }
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::GetTensorResults(
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::GetTensorResults(
 //    std::vector<framework::Tensor *> *v) {
 //  int index = 0;
 //  auto vars = program_.scope->VarContain("fetch", &index);
@@ -594,15 +600,16 @@
 //  }
 //}
 //
-//template <typename Device, typename T>
-//framework::Tensor *ExecutorSpecificDevice<Device, T>::GetTensorByName(
+// template <typename Device, typename T>
+// framework::Tensor *ExecutorSpecificDevice<Device, T>::GetTensorByName(
 //    const std::string &name) {
 //  auto var = program_.scope->Var(name);
 //  return var->template GetMutable<LoDTensor>();
 //}
 //
-//template <typename Device, typename T>
-//std::shared_ptr<Tensor> ExecutorSpecificDevice<Device, T>::FetchResult(int id) {
+// template <typename Device, typename T>
+// std::shared_ptr<Tensor> ExecutorSpecificDevice<Device, T>::FetchResult(int
+// id) {
 //  auto &ops = ops_of_block0_;
 //
 //  PADDLE_MOBILE_ENFORCE(id < (int)ops.size(), "Index out of range");
@@ -615,8 +622,8 @@
 //  return std::make_shared<Tensor>(Tensor(*output_tensor));
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::Predict_From_To(int start, int end) {
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::Predict_From_To(int start, int end) {
 //  auto &ops = ops_of_block0_;
 //  end = end < 0 ? static_cast<int>(ops.size()) : end;
 //  PADDLE_MOBILE_ENFORCE(start >= 0 && start < end && end <= ops.size(),
@@ -641,20 +648,20 @@
 //  }
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::Predict_From(int start) {
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::Predict_From(int start) {
 //  Predict_From_To(start);
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::Predict_To(int end) {
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::Predict_To(int end) {
 //  Predict_From_To(0, end);
 //}
 //#endif
 //
 //#ifdef PADDLE_MOBILE_CL
-//template <>
-//void ExecutorSpecificDevice<GPU_CL, float>::InitNoPersistableMemory(
+// template <>
+// void ExecutorSpecificDevice<GPU_CL, float>::InitNoPersistableMemory(
 //    const Tensor &input_tensor) {
 //  DLOG << "CL InitNoPersistableMemory ";
 //  for (const auto &block : program_desc_->Blocks()) {
@@ -688,8 +695,8 @@
 //  output->mutable_data<float>();
 //}
 //
-//template <>
-//void ExecutorSpecificDevice<GPU_CL, float>::SetInput(
+// template <>
+// void ExecutorSpecificDevice<GPU_CL, float>::SetInput(
 //    const Tensor &input, const std::string &var_name) {
 //  int index = 0;
 //  if (feed_indices_.find(var_name) != feed_indices_.end()) {
@@ -697,7 +704,8 @@
 //  }
 //  auto *feed_var = program_.scope->Var("feed");
 //  framework::LoDTensor *target_tensor =
-//      &(feed_var->template GetMutable<framework::LoDTensorArray>()->at(index));
+//      &(feed_var->template
+//      GetMutable<framework::LoDTensorArray>()->at(index));
 //
 //  DLOG << "config_.load_when_predict   " << config_.load_when_predict;
 //  DLOG << "target_tensor->IsInitialized() " << target_tensor->IsInitialized();
@@ -721,13 +729,14 @@
 //  input_dim_last_ = static_cast<DDim>(dim);
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorSpecificDevice<Device, T>::LoadMemory(const VarDesc var_desc,
+// template <typename Device, typename T>
+// void ExecutorSpecificDevice<Device, T>::LoadMemory(const VarDesc var_desc,
 //                                                   float *tensorInput,
 //                                                   char **data) {}
 //
-//template <>
-//void ExecutorSpecificDevice<GPU_CL, float>::LoadMemory(const VarDesc var_desc,
+// template <>
+// void ExecutorSpecificDevice<GPU_CL, float>::LoadMemory(const VarDesc
+// var_desc,
 //                                                       float *tensorInput,
 //                                                       char **data) {
 //  // 1. version
@@ -803,8 +812,8 @@
 //  }
 //}
 //
-//template <>
-//void ExecutorSpecificDevice<GPU_CL, float>::InitMemory() {
+// template <>
+// void ExecutorSpecificDevice<GPU_CL, float>::InitMemory() {
 //  for (const auto &block : program_desc_->Blocks()) {
 //    for (const auto &var_desc : block->Vars()) {
 //      auto var = program_.scope->Var(var_desc->Name());
@@ -857,8 +866,8 @@
 //  }
 //}
 //
-//template <>
-//void ExecutorSpecificDevice<GPU_CL, float>::InitCombineMemory() {
+// template <>
+// void ExecutorSpecificDevice<GPU_CL, float>::InitCombineMemory() {
 //  DLOG << "CL InitCombineMemory---- "
 //       << "config_.load_when_predict: " << config_.load_when_predict;
 //  char *origin_data = nullptr;
@@ -923,11 +932,11 @@
 //
 //#endif
 //
-//template class ExecutorSpecificDevice<CPU, float>;
+// template class ExecutorSpecificDevice<CPU, float>;
 //
-//template class ExecutorSpecificDevice<FPGA, float>;
+// template class ExecutorSpecificDevice<FPGA, float>;
 //
-//template class ExecutorSpecificDevice<GPU_CL, float>;
+// template class ExecutorSpecificDevice<GPU_CL, float>;
 //
 //}  // namespace framework
 //}  // namespace paddle_mobile

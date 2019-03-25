@@ -33,7 +33,6 @@ class ElementwiseAddReluKernel
   bool Init(ElementwiseAddReluParam<DeviceType> *param);
 };*/
 
-
 DECLARE_KERNEL_ALL(ElementwiseAddRelu);
 
 }  // namespace operators

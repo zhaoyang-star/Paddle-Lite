@@ -19,12 +19,12 @@ namespace operators {
 
 #ifdef WRITE_TO_ARRAY_OP
 template <>
-bool WriteToArrayKernel<CPU, float>::Init(WriteToArrayParam<CPU> *param) {
+bool WriteToArrayKernelCpu<float>::Init(WriteToArrayParam<CPU> *param) {
   return true;
 }
 
 template <>
-void WriteToArrayKernel<CPU, float>::Compute(
+void WriteToArrayKernelCpu<float>::Compute(
     const WriteToArrayParam<CPU> &param) {
   int64_t offset = param.index_->data<int64_t>()[0];
   if (offset >= param.output_->size()) {
@@ -41,12 +41,12 @@ void WriteToArrayKernel<CPU, float>::Compute(
 
 #ifdef READ_FROM_ARRAY_OP
 template <>
-bool ReadFromArrayKernel<CPU, float>::Init(ReadFromArrayParam<CPU> *param) {
+bool ReadFromArrayKernelCpu<float>::Init(ReadFromArrayParam<CPU> *param) {
   return true;
 }
 
 template <>
-void ReadFromArrayKernel<CPU, float>::Compute(
+void ReadFromArrayKernelCpu<float>::Compute(
     const ReadFromArrayParam<CPU> &param) {
   int64_t offset = param.index_->data<int64_t>()[0];
   if (offset < param.input_->size()) {

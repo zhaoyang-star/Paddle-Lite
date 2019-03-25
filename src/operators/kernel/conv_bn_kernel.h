@@ -41,7 +41,6 @@ class ConvBNKernel
 */
 DECLARE_KERNEL_ALL_WITH_PARAMS(ConvBN, FusionConvBNParam);
 
-
 }  // namespace operators
 }  // namespace paddle_mobile
 

@@ -164,7 +164,7 @@ void SequencePoolImpl<FIRST, float>(const framework::LoDTensor &input,
 }
 
 template <typename T>
-class SequencePoolKernel<CPU, T>
+class SequencePoolKernelCpu<T>
     : public framework::OpKernelBase<CPU, SequencePoolParam<CPU>> {
  public:
   bool Init(SequencePoolParam<CPU> *param) { return true; }
@@ -189,7 +189,7 @@ class SequencePoolKernel<CPU, T>
   }
 };
 
-template class SequencePoolKernel<CPU, float>;
+template class SequencePoolKernelCpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

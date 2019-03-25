@@ -36,7 +36,6 @@ class DeconvAddReluKernel
 
 DECLARE_KERNEL_ALL_WITH_PARAMS(DeconvAddRelu, FusionDeconvAddReluParam);
 
-
 }  // namespace operators
 }  // namespace paddle_mobile
 

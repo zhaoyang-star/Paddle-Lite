@@ -22,7 +22,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <typename T>
-class SequenceSoftmaxKernel<CPU, T>
+class SequenceSoftmaxKernelCpu<T>
     : public framework::OpKernelBase<CPU, SoftmaxParam<CPU>> {
  public:
   bool Init(SoftmaxParam<CPU> *param) { return true; }
@@ -36,7 +36,7 @@ class SequenceSoftmaxKernel<CPU, T>
   }
 };
 
-template class SequenceSoftmaxKernel<CPU, float>;
+template class SequenceSoftmaxKernelCpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

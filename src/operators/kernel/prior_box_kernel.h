@@ -49,7 +49,7 @@ inline void ExpandAspectRatios(const std::vector<float> &input_aspect_ratior,
   }
 }
 
-//DECLARE_KERNEL_ALL_WITH_PARAMS(PriorBox,PriorBoxParam);
+// DECLARE_KERNEL_ALL_WITH_PARAMS(PriorBox,PriorBoxParam);
 DECLARE_KERNEL_ALL(PriorBox);
 #endif  // PRIORBOX_OP
 

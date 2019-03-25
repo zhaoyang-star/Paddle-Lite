@@ -24,7 +24,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool DWConvBNReluKernel<CPU, float>::Init(FusionDWConvBNReluParam<CPU> *param) {
+bool DWConvBNReluKernelCpu<float>::Init(FusionDWConvBNReluParam<CPU> *param) {
   const Tensor *mean = param->InputMean();
   const Tensor *variance = param->InputVariance();
   const Tensor *scale = param->InputScale();
@@ -64,7 +64,7 @@ bool DWConvBNReluKernel<CPU, float>::Init(FusionDWConvBNReluParam<CPU> *param) {
 }
 
 template <>
-void DWConvBNReluKernel<CPU, float>::Compute(
+void DWConvBNReluKernelCpu<float>::Compute(
     const FusionDWConvBNReluParam<CPU> &param) {
   switch (param.ExecMode()) {
     case ConvParam<CPU>::EXEC_DEPTHWISE3x3S1_FLOAT:
@@ -88,7 +88,7 @@ void DWConvBNReluKernel<CPU, float>::Compute(
                                   param.NewBias(), param.Output());
 }
 
-template class DWConvBNReluKernel<CPU, float>;
+template class DWConvBNReluKernelCpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

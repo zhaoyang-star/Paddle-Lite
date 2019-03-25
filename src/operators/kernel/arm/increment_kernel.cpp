@@ -21,12 +21,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool IncrementKernel<CPU, float>::Init(IncrementParam<CPU> *param) {
+bool IncrementKernelCpu<float>::Init(IncrementParam<CPU> *param) {
   return true;
 }
 
 template <>
-void IncrementKernel<CPU, float>::Compute(const IncrementParam<CPU> &param) {
+void IncrementKernelCpu<float>::Compute(const IncrementParam<CPU> &param) {
   IncrementCompute<float>(param);
 }
 

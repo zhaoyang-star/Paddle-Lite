@@ -32,7 +32,6 @@ class GruKernel
   bool Init(GruParam<DeviceType>* param);
 };*/
 
-
 DECLARE_KERNEL_ALL(Gru);
 
 }  // namespace operators

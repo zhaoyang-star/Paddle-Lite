@@ -18,18 +18,18 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool FeedKernel<CPU, float>::Init(FeedParam<CPU> *param) {
+bool FeedKernelCpu<float>::Init(FeedParam<CPU> *param) {
   return true;
 }
 
 template <>
-void FeedKernel<CPU, float>::Compute(const FeedParam<CPU> &param) {
+void FeedKernelCpu<float>::Compute(const FeedParam<CPU> &param) {
   int col = param.Col();
   param.Out()->ShareDataWith(param.InputX()->at(col));
   param.Out()->set_lod(param.InputX()->at(col).lod());
 }
 
-template class FeedKernel<CPU, float>;
+template class FeedKernelCpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

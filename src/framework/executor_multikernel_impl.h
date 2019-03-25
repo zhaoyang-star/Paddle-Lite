@@ -90,7 +90,7 @@ class ExecutorMultiKernel : ExecutorBase<T> {
   PaddleMobileConfigInternal config_;
   Program<T> program_;
   std::shared_ptr<ProgramDesc> program_desc_;
-  std::vector< *> ops_of_block0_;
+  std::vector<*> ops_of_block0_;
   std::unordered_map<std::string, int> feed_indices_;
   std::unordered_map<std::string, int> fetch_indices_;
 

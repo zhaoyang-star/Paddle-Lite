@@ -52,12 +52,12 @@ class StepExecutor {
 };
 
 template <>
-bool WhileKernel<CPU, float>::Init(WhileParam<CPU> *param) {
+bool WhileKernelCpu<float>::Init(WhileParam<CPU> *param) {
   return true;
 }
 
 template <>
-void WhileKernel<CPU, float>::Compute(const WhileParam<CPU> &param) {
+void WhileKernelCpu<float>::Compute(const WhileParam<CPU> &param) {
   auto &current_scope = param.scope_->NewScope();
   StepExecutor executor(param.sub_block_, &current_scope);
   while (param.cond_->data<bool>()[0]) {

@@ -20,12 +20,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool LookupKernel<CPU, float>::Init(LookupParam<CPU> *param) {
+bool LookupKernelCpu<float>::Init(LookupParam<CPU> *param) {
   return true;
 }
 
 template <>
-void LookupKernel<CPU, float>::Compute(const LookupParam<CPU> &param) {
+void LookupKernelCpu<float>::Compute(const LookupParam<CPU> &param) {
   LookupCompute<float>(param);
   param.Out()->set_lod(param.InputIds()->lod());
 }

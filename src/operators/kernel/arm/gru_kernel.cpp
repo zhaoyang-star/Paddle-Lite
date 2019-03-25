@@ -21,17 +21,17 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool GruKernel<CPU, float>::Init(GruParam<CPU> *param) {
+bool GruKernelCpu<float>::Init(GruParam<CPU> *param) {
   return true;
 }
 
 template <>
-void GruKernel<CPU, float>::Compute(const GruParam<CPU> &param) {
+void GruKernelCpu<float>::Compute(const GruParam<CPU> &param) {
   GruCompute<float>(param);
   param.OutHidden()->set_lod(param.InputInput()->lod());
 }
 
-template class GruKernel<CPU, float>;
+template class GruKernelCpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

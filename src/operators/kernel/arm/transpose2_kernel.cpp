@@ -117,12 +117,12 @@ void Transpose2Compute(const Transpose2Param<CPU> &param) {
 }
 
 template <>
-bool Transpose2Kernel<CPU, float>::Init(Transpose2Param<CPU> *param) {
+bool Transpose2KernelCpu<float>::Init(Transpose2Param<CPU> *param) {
   return true;
 }
 
 template <>
-void Transpose2Kernel<CPU, float>::Compute(const Transpose2Param<CPU> &param) {
+void Transpose2KernelCpu<float>::Compute(const Transpose2Param<CPU> &param) {
   const std::vector<int> &axis = param.Axis();
   bool shuffle_channel = IsShuffleChannel(axis);
   if (shuffle_channel) {

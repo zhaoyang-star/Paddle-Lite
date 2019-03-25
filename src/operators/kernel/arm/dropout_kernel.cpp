@@ -21,7 +21,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool DropoutKernel<CPU, float>::Init(DropoutParam<CPU> *para) {
+bool DropoutKernelCpu<float>::Init(DropoutParam<CPU> *para) {
   return true;
 }
 
@@ -35,7 +35,7 @@ struct DropoutFunctor {
 };
 
 template <>
-void DropoutKernel<CPU, float>::Compute(const DropoutParam<CPU> &param) {
+void DropoutKernelCpu<float>::Compute(const DropoutParam<CPU> &param) {
   const auto *input_x = param.InputX();
   auto *input_x_ptr = input_x->data<float>();
   auto *out = param.Out();

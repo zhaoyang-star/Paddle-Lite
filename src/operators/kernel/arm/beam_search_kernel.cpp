@@ -243,12 +243,12 @@ class BeamSearchFunctor {
 };
 
 template <>
-bool BeamSearchKernel<CPU, float>::Init(BeamSearchParam<CPU> *param) {
+bool BeamSearchKernelCpu<float>::Init(BeamSearchParam<CPU> *param) {
   return true;
 }
 
 template <>
-void BeamSearchKernel<CPU, float>::Compute(const BeamSearchParam<CPU> &param) {
+void BeamSearchKernelCpu<float>::Compute(const BeamSearchParam<CPU> &param) {
   BeamSearchFunctor<CPU, float> alg;
   alg(param.pre_ids_, param.pre_scores_, param.ids_, param.scores_,
       param.selected_ids_, param.selected_scores_, param.parent_idx_,

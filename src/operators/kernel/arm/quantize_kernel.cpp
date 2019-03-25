@@ -180,12 +180,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool QuantizeKernel<CPU, float>::Init(QuantizeParam<CPU> *param) {
+bool QuantizeKernelCpu<float>::Init(QuantizeParam<CPU> *param) {
   return true;
 }
 
 template <>
-void QuantizeKernel<CPU, float>::Compute(const QuantizeParam<CPU> &param) {
+void QuantizeKernelCpu<float>::Compute(const QuantizeParam<CPU> &param) {
   const LoDTensor *input = param.input_;
   LoDTensor *output = param.output_;
   Tensor *output_scale = param.online_scale_;

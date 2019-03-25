@@ -40,7 +40,6 @@ class ConvBNAddReluKernel
 
 DECLARE_KERNEL_ALL_WITH_PARAMS(ConvBNAddRelu, FusionConvBNAddReluParam);
 
-
 }  // namespace operators
 }  // namespace paddle_mobile
 

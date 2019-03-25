@@ -66,7 +66,7 @@ inline void SequenceExpandImpl(const framework::LoDTensor &x,
 }
 
 template <typename T>
-class SequenceExpandKernel<CPU, T>
+class SequenceExpandKernelCpu<T>
     : public framework::OpKernelBase<CPU, SequenceExpandParam<CPU>> {
  public:
   bool Init(SequenceExpandParam<CPU> *param) { return true; }
@@ -106,8 +106,8 @@ class SequenceExpandKernel<CPU, T>
   }
 };
 
-template class SequenceExpandKernel<CPU, float>;
-// template class SequenceExpandKernel<CPU, int64_t>;
+template class SequenceExpandKernelCpu<float>;
+// template class SequenceExpandKernelCpu< int64_t>;
 
 }  // namespace operators
 }  // namespace paddle_mobile
