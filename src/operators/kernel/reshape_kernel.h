@@ -67,13 +67,16 @@ inline framework::DDim ValidateShape(const std::vector<int> shape,
   return framework::make_ddim(output_shape);
 }
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class ReshapeKernel
     : public framework::OpKernelBase<DeviceType, ReshapeParam<DeviceType>> {
  public:
   void Compute(const ReshapeParam<DeviceType>& param);
   bool Init(ReshapeParam<DeviceType>* param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Reshape);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

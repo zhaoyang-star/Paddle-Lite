@@ -69,7 +69,7 @@ class BeamSearchParam : public OpParam {
   bool is_accumulated_ = true;
 };
 
-DECLARE_KERNEL(BeamSearch, BeamSearchParam);
+DECLARE_KERNEL_ALL(BeamSearch);
 
 }  // namespace operators
 }  // namespace paddle_mobile

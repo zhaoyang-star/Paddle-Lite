@@ -22,13 +22,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
-class BatchNormKernel
-    : public framework::OpKernelBase<DeviceType, BatchNormParam<DeviceType>> {
- public:
-  void Compute(const BatchNormParam<DeviceType> &param);
-  bool Init(BatchNormParam<DeviceType> *param);
-};
+DECLARE_KERNEL_ALL(BatchNorm);
 
 }  // namespace operators
 }  // namespace paddle_mobile

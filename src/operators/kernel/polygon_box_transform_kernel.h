@@ -21,7 +21,7 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-
+/*
 template <typename DeviceType, typename T>
 class PolygonBoxTransformKernel
     : public framework::OpKernelBase<DeviceType,
@@ -29,7 +29,10 @@ class PolygonBoxTransformKernel
  public:
   void Compute(const PolygonBoxTransformParam<DeviceType>& param);
   bool Init(PolygonBoxTransformParam<DeviceType>* param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(PolygonBoxTransform);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

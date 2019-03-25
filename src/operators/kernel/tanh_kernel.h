@@ -22,14 +22,16 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using framework::OpKernelBase;
+/*using framework::OpKernelBase;
 
 template <typename DeviceType, typename T>
 class TanhKernel : public OpKernelBase<DeviceType, TanhParam<DeviceType>> {
  public:
   void Compute(const TanhParam<DeviceType>& param);
   bool Init(TanhParam<DeviceType>* param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Tanh);
 
 }  // namespace operators
 }  // namespace paddle_mobile

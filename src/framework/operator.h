@@ -52,12 +52,14 @@ static T *GetVarValue(const std::string &key, const VariableNameMap &var_map,
   }
 }
 
+/*
 template <typename Dtype>
+*/
 class OperatorBase {
  public:
   OperatorBase(const std::string &type, const VariableNameMap &inputs,
                const VariableNameMap &outputs, const AttributeMap &attrs,
-               framework::Scope *scope);
+               framework::Scope *scope, OpType &opType);
   virtual ~OperatorBase() {}
 
   virtual void Init() = 0;
@@ -88,18 +90,19 @@ class OperatorBase {
   VariableNameMap inputs_;
   VariableNameMap outputs_;
   AttributeMap attrs_;
+  OpType op_type_;
 
  private:
   void CheckAllInputOutputSet() const;
 };
 
-template <typename Dtype, typename ParamType, typename KernelType>
-class OperatorWithKernel : public OperatorBase<Dtype> {
+template <typename ParamType, typename KernelType>
+class OperatorWithKernel : public OperatorBase {
  public:
   OperatorWithKernel(const std::string &type, const VariableNameMap &inputs,
                      const VariableNameMap &outputs, const AttributeMap &attrs,
-                     framework::Scope *scope)
-      : OperatorBase<Dtype>(type, inputs, outputs, attrs, scope),
+                     framework::Scope *scope, OpType &opType)
+      : OperatorBase(type, inputs, outputs, attrs, scope, opType),
         param_(inputs, outputs, attrs, scope) {
 #ifdef PADDLE_MOBILE_CL
     kernel_.InitCLHelper(scope->GetCLScpoe());
@@ -119,10 +122,10 @@ class OperatorWithKernel : public OperatorBase<Dtype> {
   ParamType param_;
 };
 
-template <typename Dtype, typename P>
+template <typename P>
 class OpKernelBase {
  public:
-  OpKernelBase() = default;
+  OpKernelBase(OpType &op_type) : op_type_(op_type){};
 
 #ifdef PADDLE_MOBILE_CL
   virtual void InitCLHelper(CLScope *clScope) {
@@ -139,7 +142,7 @@ class OpKernelBase {
   CLHelper cl_helper_;
 #endif
 
- private:
+  OpType op_type_;
 };
 
 class FusionOpMatcher {
@@ -182,7 +185,7 @@ class FusionOpMatcher {
     void InferShape() const override;                                         \
   };
 
-#define DECLARE_KERNEL(OpName, OpParam)                                   \
+#define DECLARE_KERNEL_OLD(OpName, OpParam)                               \
   template <typename DeviceType, typename T>                              \
   class OpName##Kernel                                                    \
       : public framework::OpKernelBase<DeviceType, OpParam<DeviceType>> { \
@@ -197,6 +200,40 @@ class FusionOpMatcher {
       const ::paddle_mobile::framework::AttributeMap &attrs,                   \
       ::paddle_mobile::framework::Scope *scope)                                \
       : parent_cls<Dtype, T>(type, inputs, outputs, attrs, scope) {}
+
+#define DECLARE_KERNEL_WITHPARAMS(OpName, DeviceName, DeviceType, OpParam) \
+  template <typename DeviceType, typename T>                               \
+  class OpName##Kernel##DeviceName                                         \
+      : public framework::OpKernelBase<OpParam<DeviceType>> {              \
+   public:                                                                 \
+    bool Init(OpParam<DeviceType> *param);                                 \
+    void Compute(const OpParam<DeviceType> &param);                        \
+  };
+
+#define DECLARE_KERNEL(OpName, DeviceName, DeviceType) \
+  DECLARE_KERNEL_WITHPARAMS(OpName, DeviceName, DeviceType, OpName##Param);
+
+#define DECLARE_KERNEL_CPU(OpName) DECLARE_KERNEL(OpName, cpu, CPU);
+#define DECLARE_KERNEL_CPU_WITH_PARAMS(OpName, OpParam) \
+  DECLARE_KERNEL_WITHPARAMS(OpName, cpu, CPU, OpParam);
+
+#define DECLARE_KERNEL_GPU(OpName) DECLARE_KERNEL(OpName, gpu, GPU_CL);
+#define DECLARE_KERNEL_GPU_WITH_PARAMS(OpName, OpParam) \
+  DECLARE_KERNEL_WITHPARAMS(OpName, gpu, GPU_CL, OpParam);
+
+#define DECLARE_KERNEL_FPGA(OpName) DECLARE_KERNEL(OpName, fpga, FPGA);
+#define DECLARE_KERNEL_FPGA_WITH_PARAMS(OpName, OpParam) \
+  DECLARE_KERNEL_WITHPARAMS(OpName, fpga, FPGA, OpParam);
+
+#define DECLARE_KERNEL_ALL(OpName) \
+  DECLARE_KERNEL_CPU(OpName);      \
+  DECLARE_KERNEL_GPU(OpName);      \
+  DECLARE_KERNEL_FPGA(OpName);
+
+#define DECLARE_KERNEL_ALL_WITH_PARAMS(OpName, OpParam) \
+  DECLARE_KERNEL_CPU_WITH_PARAMS(OpName, OpParam);      \
+  DECLARE_KERNEL_GPU_WITH_PARAMS(OpName, OpParam);      \
+  DECLARE_KERNEL_FPGA_WITH_PARAMS(OpName, OpParam);
 
 }  // namespace framework
 }  // namespace paddle_mobile

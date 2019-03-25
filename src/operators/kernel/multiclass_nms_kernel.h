@@ -23,14 +23,17 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class MultiClassNMSKernel
     : public framework::OpKernelBase<DeviceType,
                                      MultiClassNMSParam<DeviceType>> {
  public:
   void Compute(const MultiClassNMSParam<DeviceType>& param);
   bool Init(MultiClassNMSParam<DeviceType>* param);
-};
+};*/
+
+DECLARE_KERNEL_ALL( MultiClassNMS);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

@@ -25,14 +25,17 @@ namespace operators {
 
 using namespace framework;
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class ElementwiseAddKernel
     : public framework::OpKernelBase<DeviceType,
                                      ElementwiseAddParam<DeviceType>> {
  public:
   void Compute(const ElementwiseAddParam<DeviceType> &param);
   bool Init(ElementwiseAddParam<DeviceType> *param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(ElementwiseAdd);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

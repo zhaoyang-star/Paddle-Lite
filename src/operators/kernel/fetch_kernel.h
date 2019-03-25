@@ -22,13 +22,14 @@ namespace operators {
 
 using namespace framework;
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class FetchKernel
     : public framework::OpKernelBase<DeviceType, FetchParam<DeviceType>> {
  public:
   void Compute(const FetchParam<DeviceType> &param);
   bool Init(FetchParam<DeviceType> *param);
-};
+};*/
+DECLARE_KERNEL_ALL(Fetch);
 
 }  // namespace operators
 }  // namespace paddle_mobile

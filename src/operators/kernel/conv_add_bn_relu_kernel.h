@@ -30,7 +30,7 @@ namespace operators {
 using framework::DDim;
 using framework::OpKernelBase;
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class ConvAddBNReluKernel
     : public OpKernelBase<DeviceType, FusionConvAddBNReluParam<DeviceType>> {
  public:
@@ -39,7 +39,9 @@ class ConvAddBNReluKernel
   inline int maptofactor(int i, int factor) {
     return (i + factor - 1) / factor;
   }
-};
+};*/
+
+DECLARE_KERNEL_ALL_WITH_PARAMS(ConvAddBNRelu, FusionConvAddBNReluParam);
 
 }  // namespace operators
 }  // namespace paddle_mobile

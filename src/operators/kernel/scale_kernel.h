@@ -20,11 +20,14 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class ScaleKernel
     : public framework::OpKernelBase<DeviceType, ScaleParam<DeviceType>> {
  public:
   void Compute(const ScaleParam<DeviceType>& param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Scale);
+
 }  // namespace operators
 }  // namespace paddle_mobile

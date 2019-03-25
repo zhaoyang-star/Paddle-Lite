@@ -28,12 +28,16 @@ namespace operators {
 
 using framework::OpKernelBase;
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class ConvKernel : public OpKernelBase<DeviceType, ConvParam<DeviceType>> {
  public:
   void Compute(const ConvParam<DeviceType> &param);
   bool Init(ConvParam<DeviceType> *param);
-};
+};*/
+
+
+DECLARE_KERNEL_ALL_WITH_PARAMS(Conv, ConvParam);
+
 
 }  // namespace operators
 }  // namespace paddle_mobile

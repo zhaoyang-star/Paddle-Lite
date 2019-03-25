@@ -23,6 +23,7 @@ namespace paddle_mobile {
 namespace operators {
 using framework::OpKernelBase;
 
+/*
 template <typename DeviceType, typename T>
 class SoftmaxKernel
     : public OpKernelBase<DeviceType, SoftmaxParam<DeviceType>> {
@@ -30,6 +31,10 @@ class SoftmaxKernel
   void Compute(const SoftmaxParam<DeviceType> &param);
   bool Init(SoftmaxParam<DeviceType> *param);
 };
+*/
+
+DECLARE_KERNEL_ALL( Softmax);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

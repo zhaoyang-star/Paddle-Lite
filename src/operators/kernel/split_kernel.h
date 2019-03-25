@@ -23,14 +23,17 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-
+/*
 template <typename DeviceType, typename T>
 class SplitKernel
     : public framework::OpKernelBase<DeviceType, SplitParam<DeviceType>> {
  public:
   void Compute(const SplitParam<DeviceType>& param);
   bool Init(SplitParam<DeviceType>* param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Split);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

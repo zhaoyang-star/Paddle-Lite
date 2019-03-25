@@ -25,13 +25,16 @@ namespace operators {
 
 using namespace framework;
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class MulKernel
     : public framework::OpKernelBase<DeviceType, MulParam<DeviceType>> {
  public:
   void Compute(const MulParam<DeviceType> &param);
   bool Init(MulParam<DeviceType> *param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Mul);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

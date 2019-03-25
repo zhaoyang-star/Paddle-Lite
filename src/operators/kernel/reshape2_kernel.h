@@ -23,13 +23,16 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class Reshape2Kernel
     : public framework::OpKernelBase<DeviceType, Reshape2Param<DeviceType>> {
  public:
   void Compute(const Reshape2Param<DeviceType>& param);
   bool Init(Reshape2Param<DeviceType>* param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Reshape2);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

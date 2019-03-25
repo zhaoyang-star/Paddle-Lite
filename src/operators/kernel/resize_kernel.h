@@ -70,12 +70,15 @@ inline framework::DDim CalOutputShape(const ResizeParam<DeviceType> &param) {
   return out_dims;
 }
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class ResizeKernel
     : public framework::OpKernelBase<DeviceType, ResizeParam<DeviceType>> {
  public:
   void Compute(const ResizeParam<DeviceType> &param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Resize);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

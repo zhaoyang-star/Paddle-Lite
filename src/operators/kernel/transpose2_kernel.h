@@ -24,13 +24,16 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class Transpose2Kernel
     : public framework::OpKernelBase<DeviceType, Transpose2Param<DeviceType>> {
  public:
   void Compute(const Transpose2Param<DeviceType>& param);
   bool Init(Transpose2Param<DeviceType>* param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Transpose2);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

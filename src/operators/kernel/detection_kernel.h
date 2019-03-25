@@ -58,8 +58,7 @@ class AnchorGeneratorParam : public OpParam {
   std::vector<float> stride_;
   float offset_;
 };
-
-DECLARE_KERNEL(AnchorGenerator, AnchorGeneratorParam);
+DECLARE_KERNEL_ALL(AnchorGenerator);
 #endif
 
 #ifdef PROPOSAL_OP
@@ -115,7 +114,8 @@ class ProposalParam : public OpParam {
 #endif
 };
 
-DECLARE_KERNEL(Proposal, ProposalParam);
+DECLARE_KERNEL_ALL(Proposal);
+
 #endif
 
 #ifdef PSROI_POOL_OP
@@ -151,7 +151,8 @@ class PSRoiPoolParam : public OpParam {
 #endif
 };
 
-DECLARE_KERNEL(PSRoiPool, PSRoiPoolParam);
+DECLARE_KERNEL_ALL(PSRoiPool);
+
 #endif
 
 #ifdef ROIALIGN_POOL_OP
@@ -219,8 +220,8 @@ class RoiPerspectiveParam : public OpParam {
   int transformed_height_;
   int transformed_width_;
 };
+DECLARE_KERNEL_ALL(RoiPerspective);
 
-DECLARE_KERNEL(RoiPerspective, RoiPerspectiveParam);
 #endif
 
 }  // namespace operators

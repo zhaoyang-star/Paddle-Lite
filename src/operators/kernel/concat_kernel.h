@@ -23,14 +23,14 @@ namespace operators {
 
 using namespace framework;
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class ConcatKernel
     : public framework::OpKernelBase<DeviceType, ConcatParam<DeviceType>> {
  public:
   void Compute(const ConcatParam<DeviceType> &param);
   bool Init(ConcatParam<DeviceType> *param);
-};
-
+};*/
+DECLARE_KERNEL_ALL(Concat);
 }  // namespace operators
 }  // namespace paddle_mobile
 

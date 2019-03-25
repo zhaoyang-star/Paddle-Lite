@@ -46,7 +46,7 @@ class Pad2DParam : public OpParam {
   std::string mode_;
 };
 
-DECLARE_KERNEL(Pad2D, Pad2DParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(Pad2D, Pad2DParam);
 
 }  // namespace operators
 }  // namespace paddle_mobile

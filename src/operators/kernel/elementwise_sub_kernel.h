@@ -23,6 +23,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
+/*
 template <typename DeviceType, typename T>
 class ElementwiseSubKernel
     : public framework::OpKernelBase<DeviceType,
@@ -31,6 +32,10 @@ class ElementwiseSubKernel
   void Compute(const ElementwiseSubParam<DeviceType> &param);
   bool Init(ElementwiseSubParam<DeviceType> *param);
 };
+*/
+
+DECLARE_KERNEL_ALL(ElementwiseSub);
+
 
 }  // namespace operators
 }  // namespace paddle_mobile

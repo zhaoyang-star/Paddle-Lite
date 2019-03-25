@@ -30,13 +30,15 @@ namespace operators {
 using framework::DDim;
 using framework::OpKernelBase;
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class DWConvBNReluKernel
     : public OpKernelBase<DeviceType, FusionDWConvBNReluParam<DeviceType>> {
  public:
   void Compute(const FusionDWConvBNReluParam<DeviceType> &param);
   bool Init(FusionDWConvBNReluParam<DeviceType> *param);
-};
+};*/
+
+DECLARE_KERNEL_ALL_WITH_PARAMS(DWConvBNRelu, FusionDWConvBNReluParam);
 
 }  // namespace operators
 }  // namespace paddle_mobile

@@ -23,14 +23,17 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-
+/*
 template <typename DeviceType, typename T>
 class FlattenKernel
     : public framework::OpKernelBase<DeviceType, FlattenParam<DeviceType>> {
  public:
   void Compute(const FlattenParam<DeviceType>& param);
   bool Init(FlattenParam<DeviceType>* param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Flatten);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

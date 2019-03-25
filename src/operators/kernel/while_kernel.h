@@ -38,7 +38,7 @@ class WhileParam : public OpParam {
   framework::BlockDesc *sub_block_;
 };
 
-DECLARE_KERNEL(While, WhileParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(While, WhileParam);
 #endif  // WHILE_OP
 
 }  // namespace operators

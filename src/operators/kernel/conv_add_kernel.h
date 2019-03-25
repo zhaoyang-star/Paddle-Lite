@@ -35,7 +35,7 @@ namespace operators {
 using framework::DDim;
 using framework::OpKernelBase;
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class ConvAddKernel
     : public OpKernelBase<DeviceType, FusionConvAddParam<DeviceType>> {
  public:
@@ -44,7 +44,10 @@ class ConvAddKernel
   inline int maptofactor(int i, int factor) {
     return (i + factor - 1) / factor;
   }
-};
+};*/
+
+DECLARE_KERNEL_ALL_WITH_PARAMS(ConvAdd, FusionConvAddParam);
+
 
 }  // namespace operators
 }  // namespace paddle_mobile

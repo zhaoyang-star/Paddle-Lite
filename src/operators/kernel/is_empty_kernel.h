@@ -22,13 +22,14 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class IsEmptyKernel
     : public framework::OpKernelBase<DeviceType, IsEmptyParam<DeviceType>> {
  public:
   void Compute(const IsEmptyParam<DeviceType> &param);
   bool Init(IsEmptyParam<DeviceType> *param);
-};
+};*/
+DECLARE_KERNEL_ALL(IsEmpty);
 
 }  // namespace operators
 }  // namespace paddle_mobile

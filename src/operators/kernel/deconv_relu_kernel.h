@@ -22,7 +22,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using framework::OpKernelBase;
+/*using framework::OpKernelBase;
 
 template <typename DeviceType, typename T>
 class DeconvReluKernel
@@ -31,7 +31,10 @@ class DeconvReluKernel
   void Compute(const FusionDeconvReluParam<DeviceType> &param);
 
   bool Init(FusionDeconvReluParam<DeviceType> *param);
-};
+};*/
+
+DECLARE_KERNEL_ALL_WITH_PARAMS(DeconvRelu, FusionDeconvReluParam);
+
 
 }  // namespace operators
 }  // namespace paddle_mobile

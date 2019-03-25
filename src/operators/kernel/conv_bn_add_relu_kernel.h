@@ -27,7 +27,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using framework::DDim;
+/*using framework::DDim;
 using framework::OpKernelBase;
 
 template <typename DeviceType, typename T>
@@ -36,7 +36,10 @@ class ConvBNAddReluKernel
  public:
   void Compute(const FusionConvBNAddReluParam<DeviceType> &param);
   bool Init(FusionConvBNAddReluParam<DeviceType> *param);
-};
+};*/
+
+DECLARE_KERNEL_ALL_WITH_PARAMS(ConvBNAddRelu, FusionConvBNAddReluParam);
+
 
 }  // namespace operators
 }  // namespace paddle_mobile

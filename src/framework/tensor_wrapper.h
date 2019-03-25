@@ -56,13 +56,13 @@ class TensorWrapper {
   bool IsInitialized() const { return holder_cpu_ != nullptr; }
 
   framework::CLImage *MuteClImage() {
-    mem_type_ = ComputeGPU;
+    mem_type_ = TYPE_GPU;
     Clear();
     return this->GetMutableGPU<framework::CLImage>();
   }
 
   framework::LoDTensor *MuteLodTensor() {
-    mem_type_ = ComputeCPU;
+    mem_type_ = TYPE_CPU;
     Clear();
     return this->GetMutableCPU<framework::LoDTensor>();
   }
@@ -82,7 +82,7 @@ class TensorWrapper {
     T *template getInner<RType,Dtype>() {
       // 当前参数类型代表当前的kernel类型,
       if (std::is_same<GPU_CL, RequestDeviceType>::value &&
-          this->GetMemType() == ComputeGPU) {
+          this->GetMemType() == TYPE_GPU) {
         // gpu kernel gpu mem
         return this->Get<CLImage>();
 
@@ -95,7 +95,7 @@ class TensorWrapper {
   //
   //    //
   //    //    if(std::is_same<GPU_CL, RequestDeviceType>::value &&
-  //    //    this->GetMemType()== ComputeGPU){
+  //    //    this->GetMemType()== TYPE_GPU){
   //    //
   //    //    }
   //    return nullptr;
@@ -106,22 +106,22 @@ class TensorWrapper {
   //    // 当前参数类型代表当前的kernel类型,
   //    const Type *currentMem = this->Get<Type>();
   //    if (std::is_same<GPU_CL, RequestDeviceType>::value &&
-  //        this->GetMemType() == ComputeGPU) {
+  //        this->GetMemType() == TYPE_GPU) {
   //      // gpu kernel gpu mem
   //      return const_cast<Type *>(currentMem);
   //
   //    } else if (std::is_same<CPU, RequestDeviceType>::value &&
-  //               this->GetMemType() == ComputeCPU) {
+  //               this->GetMemType() == TYPE_CPU) {
   //      // cpu cpu mem
   //      return const_cast<Type *>(currentMem);
   //
   //    } else if (std::is_same<CPU, RequestDeviceType>::value &&
-  //               this->GetMemType() == ComputeGPU) {
+  //               this->GetMemType() == TYPE_GPU) {
   //      /*
-  //          if (mem_type_ == ComputeGPU) {
+  //          if (mem_type_ == TYPE_GPU) {
   //            const CLImage *pClImage = this->Get<CLImage>();
   //
-  //          } else if (mem_type_ == ComputeCPU) {
+  //          } else if (mem_type_ == TYPE_CPU) {
   //            const LoDTensor *pLoDTensor = this->Get<LoDTensor>();
   //
   //          } else {
@@ -166,7 +166,7 @@ class TensorWrapper {
   //      return pTensor;
   //
   //    } else if (std::is_same<GPU_CL, RequestDeviceType>::value &&
-  //               this->GetMemType() == ComputeCPU) {
+  //               this->GetMemType() == TYPE_CPU) {
   //      // cast gpu to cpu
   //      return const_cast<Type *>(currentMem);
   //
@@ -182,21 +182,21 @@ class TensorWrapper {
     // 当前参数类型代表当前的kernel类型,
     const Type *currentMem = this->Get<Type>();
     if (std::is_same<GPU_CL, RequestDeviceType>::value &&
-        this->GetMemType() == ComputeGPU) {
+        this->GetMemType() == TYPE_GPU) {
       // gpu kernel gpu mem
       return const_cast<Type *>(currentMem);
 
     } else if (std::is_same<CPU, RequestDeviceType>::value &&
-               this->GetMemType() == ComputeCPU) {
+               this->GetMemType() == TYPE_CPU) {
       // cpu cpu mem
       return const_cast<Type *>(currentMem);
 
     } else if (std::is_same<CPU, RequestDeviceType>::value &&
-               this->GetMemType() == ComputeGPU) {
-      if (mem_type_ == ComputeGPU) {
+               this->GetMemType() == TYPE_GPU) {
+      if (mem_type_ == TYPE_GPU) {
         const CLImage *pClImage = this->Get<CLImage>();
 
-      } else if (mem_type_ == ComputeCPU) {
+      } else if (mem_type_ == TYPE_CPU) {
         const LoDTensor *pLoDTensor = this->Get<LoDTensor>();
 
       } else {
@@ -241,7 +241,7 @@ class TensorWrapper {
       return reinterpret_cast<Type *>(pTensor);
 
     } else if (std::is_same<GPU_CL, RequestDeviceType>::value &&
-               this->GetMemType() == ComputeCPU) {
+               this->GetMemType() == TYPE_CPU) {
       // cast gpu to cpu
       const LoDTensor *input = this->Get<LoDTensor>();
       const float *input_data = input->data<float>();
@@ -311,7 +311,7 @@ class TensorWrapper {
 
   //  template <>
   //  LoDTensor *getInner() {
-  //  //  if (this->GetMemType() == ComputeCPU) {
+  //  //  if (this->GetMemType() == TYPE_CPU) {
   //      const LoDTensor *currentMem = this->Get<LoDTensor>();
   //      return const_cast<LoDTensor *>(currentMem);
   ////    } else if (this->GetMemType() == ComputeGPU) {
@@ -353,9 +353,9 @@ class TensorWrapper {
  private:
   template <typename T>
   const T *Get() const {
-    if (mem_type_ == MemType::ComputeCPU) {
+    if (mem_type_ == MemType::TYPE_CPU) {
       return static_cast<const T *>(holder_cpu_->Ptr());
-    } else if (mem_type_ == MemType::ComputeGPU) {
+    } else if (mem_type_ == MemType::TYPE_GPU) {
       return static_cast<const T *>(holder_gpu_->Ptr());
     } else {
       PADDLE_MOBILE_ENFORCE(false, "not support memtype pleae impl in Memtype");

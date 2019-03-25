@@ -22,14 +22,17 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class ElementwiseMulKernel
     : public framework::OpKernelBase<DeviceType,
                                      ElementwiseMulParam<DeviceType>> {
  public:
   void Compute(const ElementwiseMulParam<DeviceType> &param);
   bool Init(ElementwiseMulParam<DeviceType> *param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(ElementwiseMul);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

@@ -22,7 +22,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using namespace framework;
+/*using namespace framework;
 
 template <typename DeviceType, typename T>
 class ElementwiseAddReluKernel
@@ -31,7 +31,11 @@ class ElementwiseAddReluKernel
  public:
   void Compute(const ElementwiseAddReluParam<DeviceType> &param);
   bool Init(ElementwiseAddReluParam<DeviceType> *param);
-};
+};*/
+
+
+DECLARE_KERNEL_ALL(ElementwiseAddRelu);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

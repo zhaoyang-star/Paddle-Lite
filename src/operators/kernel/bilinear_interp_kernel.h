@@ -24,6 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
+/*
 template <typename DeviceType, typename T>
 class BilinearInterpKernel
     : public framework::OpKernelBase<DeviceType,
@@ -32,6 +33,10 @@ class BilinearInterpKernel
   void Compute(const BilinearInterpParam<DeviceType>& param);
   bool Init(BilinearInterpParam<DeviceType>* param);
 };
+*/
+
+DECLARE_KERNEL_ALL(BilinearInterp);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

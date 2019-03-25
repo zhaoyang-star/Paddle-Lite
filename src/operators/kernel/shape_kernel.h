@@ -24,13 +24,16 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class ShapeKernel
     : public framework::OpKernelBase<DeviceType, ShapeParam<DeviceType>> {
  public:
   void Compute(const ShapeParam<DeviceType>& param);
   bool Init(ShapeParam<DeviceType>* param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Shape);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

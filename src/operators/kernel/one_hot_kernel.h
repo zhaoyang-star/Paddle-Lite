@@ -46,7 +46,7 @@ class OnehotParam : public OpParam {
   int dtype_;
 };
 
-DECLARE_KERNEL(Onehot, OnehotParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(Onehot, OnehotParam);
 
 }  // namespace operators
 }  // namespace paddle_mobile

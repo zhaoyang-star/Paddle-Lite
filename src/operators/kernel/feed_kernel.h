@@ -20,6 +20,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
+/*
 template <typename DeviceType, typename T>
 class FeedKernel
     : public framework::OpKernelBase<DeviceType, FeedParam<DeviceType>> {
@@ -27,6 +28,8 @@ class FeedKernel
   void Compute(const FeedParam<DeviceType> &param);
   bool Init(FeedParam<DeviceType> *param);
 };
+*/
+DECLARE_KERNEL_ALL(Feed);
 
 }  // namespace operators
 }  // namespace paddle_mobile

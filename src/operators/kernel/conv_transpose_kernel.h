@@ -22,7 +22,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using framework::OpKernelBase;
+/*using framework::OpKernelBase;
 
 template <typename DeviceType, typename T>
 class ConvTransposeKernel
@@ -31,7 +31,11 @@ class ConvTransposeKernel
   void Compute(const ConvTransposeParam<DeviceType> &param);
 
   bool Init(ConvTransposeParam<DeviceType> *param);
-};
+};*/
+
+
+DECLARE_KERNEL_ALL(ConvTranspose);
+
 
 }  // namespace operators
 }  // namespace paddle_mobile

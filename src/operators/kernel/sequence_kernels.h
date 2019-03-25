@@ -21,15 +21,15 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef SEQUENCE_EXPAND_OP
-DECLARE_KERNEL(SequenceExpand, SequenceExpandParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(SequenceExpand, SequenceExpandParam);
 #endif  // SEQUENCE_EXPAND_OP
 
 #ifdef SEQUENCE_POOL_OP
-DECLARE_KERNEL(SequencePool, SequencePoolParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(SequencePool, SequencePoolParam);
 #endif  // SEQUENCE_POOL_OP
 
 #ifdef SEQUENCE_SOFTMAX_OP
-DECLARE_KERNEL(SequenceSoftmax, SoftmaxParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(SequenceSoftmax, SoftmaxParam);
 #endif  // SEQUENCE_SOFTMAX_OP
 
 }  // namespace operators

@@ -23,12 +23,15 @@ namespace paddle_mobile {
 namespace operators {
 using framework::OpKernelBase;
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class PoolKernel : public OpKernelBase<DeviceType, PoolParam<DeviceType>> {
  public:
   void Compute(const PoolParam<DeviceType> &param);
   bool Init(PoolParam<DeviceType> *param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Pool);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

@@ -50,7 +50,7 @@ class BeamSearchDecodeParam : public OpParam {
   int end_id_;
 };
 
-DECLARE_KERNEL(BeamSearchDecode, BeamSearchDecodeParam);
+DECLARE_KERNEL_ALL(BeamSearchDecode);
 
 }  // namespace operators
 }  // namespace paddle_mobile

@@ -49,7 +49,7 @@ inline void ExpandAspectRatios(const std::vector<float> &input_aspect_ratior,
   }
 }
 
-DECLARE_KERNEL(PriorBox, PriorBoxParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(PriorBox, PriorBoxParam);
 #endif  // PRIORBOX_OP
 
 #ifdef DENSITY_PRIORBOX_OP
@@ -106,7 +106,7 @@ class DensityPriorBoxParam : public OpParam {
   vector<int> densities_;
 };
 
-DECLARE_KERNEL(DensityPriorBox, DensityPriorBoxParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(DensityPriorBox, DensityPriorBoxParam);
 #endif  // DENSITY_PRIORBOX_OP
 
 }  // namespace operators

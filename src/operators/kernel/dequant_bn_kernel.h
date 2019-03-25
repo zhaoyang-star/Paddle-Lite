@@ -21,27 +21,27 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef FUSION_DEQUANT_BN_OP
-DECLARE_KERNEL(FusionDequantBN, FusionDequantBNParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(FusionDequantBN, FusionDequantBNParam);
 #endif
 
 #ifdef FUSION_DEQUANT_BN_RELU_OP
-DECLARE_KERNEL(FusionDequantBNRelu, FusionDequantBNParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(FusionDequantBNRelu, FusionDequantBNParam);
 #endif
 
 #ifdef FUSION_DEQUANT_ADD_BN_OP
-DECLARE_KERNEL(FusionDequantAddBN, FusionDequantAddBNParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(FusionDequantAddBN, FusionDequantAddBNParam);
 #endif
 
 #ifdef FUSION_DEQUANT_ADD_BN_RELU_OP
-DECLARE_KERNEL(FusionDequantAddBNRelu, FusionDequantAddBNParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(FusionDequantAddBNRelu, FusionDequantAddBNParam);
 #endif
 
 #ifdef FUSION_DEQUANT_ADD_BN_QUANT_OP
-DECLARE_KERNEL(FusionDequantAddBNQuant, FusionDequantAddBNQuantParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(FusionDequantAddBNQuant, FusionDequantAddBNQuantParam);
 #endif
 
 #ifdef FUSION_DEQUANT_ADD_BN_RELU_QUANT_OP
-DECLARE_KERNEL(FusionDequantAddBNReluQuant, FusionDequantAddBNQuantParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(FusionDequantAddBNReluQuant, FusionDequantAddBNQuantParam);
 #endif
 
 }  // namespace operators

@@ -22,13 +22,16 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class DropoutKernel
     : public framework::OpKernelBase<DeviceType, DropoutParam<DeviceType>> {
  public:
   void Compute(const DropoutParam<DeviceType>& param);
   bool Init(DropoutParam<DeviceType>* para);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Dropout);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

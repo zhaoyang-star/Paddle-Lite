@@ -21,11 +21,11 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef WRITE_TO_ARRAY_OP
-DECLARE_KERNEL(WriteToArray, WriteToArrayParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(WriteToArray, WriteToArrayParam);
 #endif  // WRITE_TO_ARRAY_OP
 
 #ifdef READ_FROM_ARRAY_OP
-DECLARE_KERNEL(ReadFromArray, ReadFromArrayParam);
+DECLARE_KERNEL_ALL_WITH_PARAMS(ReadFromArray, ReadFromArrayParam);
 #endif  // READ_FROM_ARRAY_OP
 
 }  // namespace operators

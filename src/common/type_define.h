@@ -24,7 +24,6 @@ limitations under the License. */
 namespace paddle_mobile {
 
 namespace framework {
-template <typename Dtype>
 class OperatorBase;
 class OpDesc;
 class BlockDesc;

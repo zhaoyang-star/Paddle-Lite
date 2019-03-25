@@ -22,6 +22,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
+/*
 template <typename DeviceType, typename T>
 class NormKernel
     : public framework::OpKernelBase<DeviceType, NormParam<DeviceType>> {
@@ -29,6 +30,8 @@ class NormKernel
   void Compute(const NormParam<DeviceType> &param);
   bool Init(NormParam<DeviceType> *param);
 };
+*/
+DECLARE_KERNEL_ALL(Norm);
 
 }  // namespace operators
 }  // namespace paddle_mobile

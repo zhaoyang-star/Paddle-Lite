@@ -24,13 +24,16 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class CrfKernel
     : public framework::OpKernelBase<DeviceType, CrfParam<DeviceType>> {
  public:
   void Compute(const CrfParam<DeviceType>& param);
   bool Init(CrfParam<DeviceType>* param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Crf);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

@@ -24,13 +24,17 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class GruKernel
     : public framework::OpKernelBase<DeviceType, GruParam<DeviceType>> {
  public:
   void Compute(const GruParam<DeviceType>& param);
   bool Init(GruParam<DeviceType>* param);
-};
+};*/
+
+
+DECLARE_KERNEL_ALL(Gru);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

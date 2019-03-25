@@ -21,13 +21,14 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class SumKernel
     : public framework::OpKernelBase<DeviceType, SumParam<DeviceType>> {
  public:
   void Compute(const SumParam<DeviceType> &param);
   bool Init(SumParam<DeviceType> *param);
-};
+};*/
+DECLARE_KERNEL_ALL(Sum);
 
 }  // namespace operators
 }  // namespace paddle_mobile

@@ -23,13 +23,15 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class FusionFcKernel
     : public framework::OpKernelBase<DeviceType, FusionFcParam<DeviceType>> {
  public:
   void Compute(const FusionFcParam<DeviceType>& param);
   bool Init(FusionFcParam<DeviceType>* param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(FusionFc);
 
 }  // namespace operators
 }  // namespace paddle_mobile

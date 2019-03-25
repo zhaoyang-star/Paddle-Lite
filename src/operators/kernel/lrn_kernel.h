@@ -168,13 +168,16 @@ struct LRNFunctor {
   }
 };
 
-template <typename DeviceType, typename T>
+/*template <typename DeviceType, typename T>
 class LrnKernel
     : public framework::OpKernelBase<DeviceType, LrnParam<DeviceType>> {
  public:
   void Compute(const LrnParam<DeviceType> &param);
   bool Init(LrnParam<DeviceType> *param);
-};
+};*/
+
+DECLARE_KERNEL_ALL(Lrn);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

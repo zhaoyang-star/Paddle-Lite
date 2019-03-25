@@ -18,8 +18,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename Dtype>
-vector<string> OperatorBase<Dtype>::GetOutKeys() const {
+vector<string> OperatorBase::GetOutKeys() const {
   auto it = op_input_output_key.find(type_);
   if (it == op_input_output_key.end()) {
     DLOG << type_ << " has no outputs";
@@ -28,8 +27,7 @@ vector<string> OperatorBase<Dtype>::GetOutKeys() const {
   return it->second.second;
 }
 
-template <typename Dtype>
-vector<string> OperatorBase<Dtype>::GetInputKeys() const {
+vector<string> OperatorBase::GetInputKeys() const {
   auto it = op_input_output_key.find(type_);
   if (it == op_input_output_key.end()) {
     DLOG << type_ << " has no inputs";
@@ -38,29 +36,28 @@ vector<string> OperatorBase<Dtype>::GetInputKeys() const {
   return it->second.first;
 }
 
-template <typename Dtype>
-OperatorBase<Dtype>::OperatorBase(const std::string &type,
-                                  const VariableNameMap &inputs,
-                                  const VariableNameMap &outputs,
-                                  const AttributeMap &attrs,
-                                  framework::Scope *scope)
-    : /*type_(type),*/
+OperatorBase::OperatorBase(const std::string &type,
+                           const VariableNameMap &inputs,
+                           const VariableNameMap &outputs,
+                           const AttributeMap &attrs, framework::Scope *scope,
+                           OpType &opType)
+    : type_(type),
       inputs_(inputs),
       outputs_(outputs),
       attrs_(attrs),
-      scope_(scope) {
-  type_ = type;
+      scope_(scope),
+      op_type_(op_type_)
+
+{
   CheckAllInputOutputSet();
 #ifdef PADDLE_MOBILE_FPGA
   InsertTensors();
 #endif
 }
 
-template <typename Dtype>
-void OperatorBase<Dtype>::CheckAllInputOutputSet() const {}
+void OperatorBase::CheckAllInputOutputSet() const {}
 
-template <typename Dtype>
-void OperatorBase<Dtype>::Run() {
+void OperatorBase::Run() {
   RunImpl();
 #ifdef PADDLE_MOBILE_DEBUG
   DLOG << "-------------" << type_ << "----------------------------";
@@ -156,9 +153,7 @@ void OperatorBase<Dtype>::InsertTensors() {
 }
 #endif
 
-template class OperatorBase<CPU>;
-template class OperatorBase<FPGA>;
-template class OperatorBase<GPU_CL>;
+// template class OperatorBase;
 
 }  // namespace framework
 }  // namespace paddle_mobile
