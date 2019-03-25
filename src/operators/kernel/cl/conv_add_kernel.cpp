@@ -21,7 +21,7 @@ namespace operators {
 bool optimise_convadd = true;
 
 template <>
-bool ConvAddKernel<GPU_CL, float>::Init(FusionConvAddParam<GPU_CL> *param) {
+bool ConvAddKernelGpu<float>::Init(FusionConvAddParam<GPU_CL> *param) {
   PADDLE_MOBILE_ENFORCE(
       param->Filter()->dims()[2] == param->Filter()->dims()[3] &&
           param->Paddings()[0] == param->Paddings()[1],
@@ -71,8 +71,7 @@ bool ConvAddKernel<GPU_CL, float>::Init(FusionConvAddParam<GPU_CL> *param) {
 }
 
 template <>
-void ConvAddKernel<GPU_CL, float>::Compute(
-    const FusionConvAddParam<GPU_CL> &param) {
+void ConvAddKernelGpu<float>::Compute(const FusionConvAddParam<GPU_CL> &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.Output());
   int c_block = default_work_size[0];
@@ -212,7 +211,7 @@ void ConvAddKernel<GPU_CL, float>::Compute(
   }
 }
 
-template class ConvAddKernel<GPU_CL, float>;
+template class ConvAddKernelGpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

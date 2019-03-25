@@ -20,7 +20,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool MultiClassNMSKernel<GPU_CL, float>::Init(
+bool MultiClassNMSKernelGpu< float>::Init(
     MultiClassNMSParam<GPU_CL>* param) {
   this->cl_helper_.AddKernel("fetch", "fetch_kernel.cl");
   this->cl_helper_.AddKernel("feed", "feed_kernel.cl");
@@ -324,7 +324,7 @@ void MultiClassNMSCompute(const MultiClassNMSParam<GPU_CL>& param,
   DLOG << "yangfei20";
 }
 template <>
-void MultiClassNMSKernel<GPU_CL, float>::Compute(
+void MultiClassNMSKernelGpu< float>::Compute(
     const MultiClassNMSParam<GPU_CL>& param) {
   auto kernel0 = this->cl_helper_.KernelAt(0);
   auto kernel1 = this->cl_helper_.KernelAt(1);

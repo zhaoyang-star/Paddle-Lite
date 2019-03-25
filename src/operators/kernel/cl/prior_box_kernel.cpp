@@ -20,14 +20,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool PriorBoxKernel<GPU_CL, float>::Init(PriorBoxParam<GPU_CL> *param) {
+bool PriorBoxKernelGpu<float>::Init(PriorBoxParam<GPU_CL> *param) {
   this->cl_helper_.AddKernel("prior_box", "prior_box_kernel.cl");
   return true;
 }
 
 template <>
-void PriorBoxKernel<GPU_CL, float>::Compute(
-    const PriorBoxParam<GPU_CL> &param) {
+void PriorBoxKernelGpu<float>::Compute(const PriorBoxParam<GPU_CL> &param) {
   const auto *input_ = param.Input();
   const auto &input_dims = input_->dims();
 
@@ -199,7 +198,8 @@ void PriorBoxKernel<GPU_CL, float>::Compute(
   CL_CHECK_ERRORS(status);
   status = clSetKernelArg(kernel, 15, sizeof(int), &isclip);
   CL_CHECK_ERRORS(status);
-  size_t global_work_size[2] = {c_block, nh};
+  size_t global_work_size[2] = {static_cast<size_t>(c_block),
+                                static_cast<size_t>(nh)};
   status = clEnqueueNDRangeKernel(this->cl_helper_.CLCommandQueue(), kernel, 2,
                                   NULL, global_work_size, NULL, 0, NULL, NULL);
   CL_CHECK_ERRORS(status);
@@ -208,7 +208,7 @@ void PriorBoxKernel<GPU_CL, float>::Compute(
   paddle_mobile::memory::Free(box_height);
   paddle_mobile::memory::Free(variancesptr);
 }
-template class PriorBoxKernel<GPU_CL, float>;
+template class PriorBoxKernelGpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

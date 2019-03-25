@@ -20,7 +20,7 @@
 // namespace operators {
 //
 // template <>
-// bool DequantizeKernel<GPU_CL, float>::Init(DequantizeParam<GPU_CL> *param) {
+// bool DequantizeKernelGpu< float>::Init(DequantizeParam<GPU_CL> *param) {
 //  DLOG << " depthwise conv kernel init begin ";
 //  PADDLE_MOBILE_ENFORCE(
 //      param->Filter()->dims()[2] == param->Filter()->dims()[3] &&
@@ -37,7 +37,7 @@
 //}
 //
 // template <>
-// void DequantizeKernel<GPU_CL, float>::Compute(
+// void DequantizeKernelGpu< float>::Compute(
 //    const DequantizeParam<GPU_CL> &param) {
 //  auto kernel = this->cl_helper_.KernelAt(0);
 //  auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.Output());
@@ -88,7 +88,7 @@
 //  CL_CHECK_ERRORS(status);
 //}
 //
-// template class DepthwiseConvKernel<GPU_CL, float>;
+// template class DepthwiseConvKernelGpu< float>;
 //
 //}  // namespace operators
 //}  // namespace paddle_mobile

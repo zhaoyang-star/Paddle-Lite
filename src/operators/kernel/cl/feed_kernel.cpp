@@ -19,14 +19,14 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool FeedKernel<GPU_CL, float>::Init(FeedParam<GPU_CL> *param) {
+bool FeedKernelGpu<float>::Init(FeedParam<GPU_CL> *param) {
   DLOG << "Init feed";
   this->cl_helper_.AddKernel("feed", "feed_kernel.cl");
   return true;
 }
 
 template <>
-void FeedKernel<GPU_CL, float>::Compute(const FeedParam<GPU_CL> &param) {
+void FeedKernelGpu<float>::Compute(const FeedParam<GPU_CL> &param) {
   const int col = param.Col();
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*(param.Out()));
@@ -74,7 +74,7 @@ void FeedKernel<GPU_CL, float>::Compute(const FeedParam<GPU_CL> &param) {
   CL_CHECK_ERRORS(status);
 }
 
-template class FeedKernel<GPU_CL, float>;
+template class FeedKernelGpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

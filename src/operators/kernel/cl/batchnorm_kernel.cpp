@@ -21,7 +21,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool BatchNormKernel<GPU_CL, float>::Init(BatchNormParam<GPU_CL> *param) {
+bool BatchNormKernelGpu<float>::Init(BatchNormParam<GPU_CL> *param) {
   this->cl_helper_.AddKernel("batchnorm", "batchnorm_kernel.cl");
   const framework::CLImage *mean = param->InputMean();
   const framework::CLImage *variance = param->InputVariance();
@@ -72,8 +72,7 @@ bool BatchNormKernel<GPU_CL, float>::Init(BatchNormParam<GPU_CL> *param) {
 }
 
 template <>
-void BatchNormKernel<GPU_CL, float>::Compute(
-    const BatchNormParam<GPU_CL> &param) {
+void BatchNormKernelGpu<float>::Compute(const BatchNormParam<GPU_CL> &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.OutputY());
 
@@ -105,7 +104,7 @@ void BatchNormKernel<GPU_CL, float>::Compute(
                          default_work_size.data(), NULL, 0, NULL, NULL);
 }
 
-template class BatchNormKernel<GPU_CL, float>;
+template class BatchNormKernelGpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

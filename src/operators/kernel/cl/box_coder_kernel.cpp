@@ -20,7 +20,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool BoxCoderKernel<GPU_CL, float>::Init(BoxCoderParam<GPU_CL>* param) {
+bool BoxCoderKernelGpu< float>::Init(BoxCoderParam<GPU_CL>* param) {
   if (param->CodeType() == "decode_center_size") {
     this->cl_helper_.AddKernel("box_decoder", "box_coder_kernel.cl");
   }
@@ -28,7 +28,7 @@ bool BoxCoderKernel<GPU_CL, float>::Init(BoxCoderParam<GPU_CL>* param) {
 }
 
 template <>
-void BoxCoderKernel<GPU_CL, float>::Compute(
+void BoxCoderKernelGpu< float>::Compute(
     const BoxCoderParam<GPU_CL>& param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.OutputBox());

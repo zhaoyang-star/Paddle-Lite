@@ -20,13 +20,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool SoftmaxKernel<GPU_CL, float>::Init(SoftmaxParam<GPU_CL> *param) {
+bool SoftmaxKernelGpu< float>::Init(SoftmaxParam<GPU_CL> *param) {
   this->cl_helper_.AddKernel("softmax", "softmax.cl");
   return true;
 }
 
 template <>
-void SoftmaxKernel<GPU_CL, float>::Compute(const SoftmaxParam<GPU_CL> &param) {
+void SoftmaxKernelGpu< float>::Compute(const SoftmaxParam<GPU_CL> &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*(param.Out()));
   const auto *input = param.InputX();
@@ -58,7 +58,7 @@ void SoftmaxKernel<GPU_CL, float>::Compute(const SoftmaxParam<GPU_CL> &param) {
   CL_CHECK_ERRORS(status);
 }
 
-template class SoftmaxKernel<GPU_CL, float>;
+template class SoftmaxKernelGpu< float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

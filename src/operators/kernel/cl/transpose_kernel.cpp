@@ -19,7 +19,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool TransposeKernel<GPU_CL, float>::Init(TransposeParam<GPU_CL> *param) {
+bool TransposeKernelGpu< float>::Init(TransposeParam<GPU_CL> *param) {
   if (param->Out()->dims().size() == 4) {
     this->cl_helper_.AddKernel("transpose_4d", "transpose_kernel.cl");
   } else if (param->Out()->dims().size() < 4) {
@@ -29,7 +29,7 @@ bool TransposeKernel<GPU_CL, float>::Init(TransposeParam<GPU_CL> *param) {
 }
 
 template <>
-void TransposeKernel<GPU_CL, float>::Compute(
+void TransposeKernelGpu< float>::Compute(
     const TransposeParam<GPU_CL> &param) {
   if (param.Out()->dims().size() == 4) {
     auto kernel = this->cl_helper_.KernelAt(0);

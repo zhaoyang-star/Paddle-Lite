@@ -19,7 +19,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ReluKernel<GPU_CL, float>::Init(ReluParam<GPU_CL>* param) {
+bool ReluKernelGpu< float>::Init(ReluParam<GPU_CL>* param) {
   this->cl_helper_.AddKernel("relu", "relu.cl");
   //  this->cl_helper_.AddKernel("relu_p0", "relu.cl");
   //  this->cl_helper_.AddKernel("relu_p1", "relu.cl");
@@ -32,7 +32,7 @@ bool ReluKernel<GPU_CL, float>::Init(ReluParam<GPU_CL>* param) {
 }
 
 template <>
-void ReluKernel<GPU_CL, float>::Compute(const ReluParam<GPU_CL>& param) {
+void ReluKernelGpu< float>::Compute(const ReluParam<GPU_CL>& param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   //  auto kernel_p0 = this->cl_helper_.KernelAt(1);
   //  auto kernel_p1 = this->cl_helper_.KernelAt(2);
@@ -61,7 +61,7 @@ void ReluKernel<GPU_CL, float>::Compute(const ReluParam<GPU_CL>& param) {
   //                         work_size, NULL, 0, NULL, NULL);
 }
 
-template class ReluKernel<GPU_CL, float>;
+template class ReluKernelGpu< float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

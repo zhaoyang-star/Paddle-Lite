@@ -20,7 +20,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ConcatKernel<GPU_CL, float>::Init(ConcatParam<GPU_CL> *param) {
+bool ConcatKernelGpu<float>::Init(ConcatParam<GPU_CL> *param) {
   if (param->Out()->dims().size() < 4) {
     this->cl_helper_.AddKernel("concatByH", "concat_kernel.cl");
   } else if (param->Out()->dims().size() == 4) {
@@ -31,7 +31,7 @@ bool ConcatKernel<GPU_CL, float>::Init(ConcatParam<GPU_CL> *param) {
 }
 
 template <>
-void ConcatKernel<GPU_CL, float>::Compute(const ConcatParam<GPU_CL> &param) {
+void ConcatKernelGpu<float>::Compute(const ConcatParam<GPU_CL> &param) {
   DLOG << "yangfei50";
   DLOG << param.Out()->dims();
   if (param.Out()->dims().size() < 4) {

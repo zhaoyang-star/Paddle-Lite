@@ -1055,9 +1055,9 @@ class PriorBoxParam : public OpParam {
 
   const RType *InputImage() const { return input_image_; }
 
-  GType *OutputBoxes() const { return output_boxes_; }
+  RType *OutputBoxes() const { return output_boxes_->template getInner<RType, Dtype>(); }
 
-  GType *OutputVariances() const { return output_variances_; }
+  RType *OutputVariances() const { return output_variances_->template getInner<RType, Dtype>(); }
 
   const vector<float> &MinSizes() const { return min_sizes_; }
 
@@ -1121,7 +1121,9 @@ class BoxCoderParam : public OpParam {
 
   const RType *InputTargetBox() const { return input_targetbox_; }
 
-  GType *OutputBox() const { return output_box_; }
+  RType *OutputBox() const {
+    return output_box_->template getInner<RType, Dtype>;
+  }
 
   const std::string &CodeType() const { return code_type_; }
 
@@ -1228,9 +1230,13 @@ class MultiClassNMSParam : public OpParam {
     score_threshold_ = GetAttr<float>("score_threshold", attrs);
   }
 
-  GType *InputBBoxes() const { return input_bboxes_; }
+  RType *InputBBoxes() const {
+    return input_bboxes_->template getInner<RType, Dtype>();
+  }
 
-  GType *InputScores() const { return input_scores_; }
+  RType *InputScores() const {
+    return input_scores_->template getInner<RType, Dtype>();
+  }
 
   RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 
@@ -1854,11 +1860,11 @@ class FusionFcParam : public OpParam {
     y_num_col_dims_ = GetAttr<int>("y_num_col_dims", attrs);
     axis_ = GetAttr<int>("axis", attrs);
   }
-  GType *InputX() const { return input_x_->template getInner<RType, Dtype>(); }
+  RType *InputX() const { return input_x_->template getInner<RType, Dtype>(); }
 
-  GType *InputY() const { return input_y_->template getInner<RType, Dtype>(); }
+  RType *InputY() const { return input_y_->template getInner<RType, Dtype>(); }
 
-  GType *InputZ() const { return input_z_; }
+  RType *InputZ() const { return input_z_->template getInner<RType, Dtype>(); }
 
   RType *Out() const { return out_->template getInner<RType, Dtype>(); }
 

@@ -20,7 +20,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ConvAddReluKernel<GPU_CL, float>::Init(
+bool ConvAddReluKernelGpu< float>::Init(
     FusionConvAddReluParam<GPU_CL> *param) {
   PADDLE_MOBILE_ENFORCE(
       param->Filter()->dims()[2] == param->Filter()->dims()[3] &&
@@ -70,7 +70,7 @@ bool ConvAddReluKernel<GPU_CL, float>::Init(
 }
 
 template <>
-void ConvAddReluKernel<GPU_CL, float>::Compute(
+void ConvAddReluKernelGpu< float>::Compute(
     const FusionConvAddReluParam<GPU_CL> &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.Output());
@@ -152,7 +152,7 @@ void ConvAddReluKernel<GPU_CL, float>::Compute(
   CL_CHECK_ERRORS(status);
 }
 
-template class ConvAddReluKernel<GPU_CL, float>;
+template class ConvAddReluKernelGpu< float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

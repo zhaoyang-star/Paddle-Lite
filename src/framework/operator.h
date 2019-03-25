@@ -202,7 +202,7 @@ class FusionOpMatcher {
       : parent_cls<Dtype, T>(type, inputs, outputs, attrs, scope) {}
 
 #define DECLARE_KERNEL_WITHPARAMS(OpName, DeviceName, DeviceType, OpParam) \
-  template <typename DeviceType, typename T>                               \
+  template <typename T>                                                    \
   class OpName##Kernel##DeviceName                                         \
       : public framework::OpKernelBase<OpParam<DeviceType>> {              \
    public:                                                                 \
@@ -213,22 +213,23 @@ class FusionOpMatcher {
 #define DECLARE_KERNEL(OpName, DeviceName, DeviceType) \
   DECLARE_KERNEL_WITHPARAMS(OpName, DeviceName, DeviceType, OpName##Param);
 
-#define DECLARE_KERNEL_CPU(OpName) DECLARE_KERNEL(OpName, cpu, CPU);
-#define DECLARE_KERNEL_CPU_WITH_PARAMS(OpName, OpParam) \
-  DECLARE_KERNEL_WITHPARAMS(OpName, cpu, CPU, OpParam);
-
-#define DECLARE_KERNEL_GPU(OpName) DECLARE_KERNEL(OpName, gpu, GPU_CL);
-#define DECLARE_KERNEL_GPU_WITH_PARAMS(OpName, OpParam) \
-  DECLARE_KERNEL_WITHPARAMS(OpName, gpu, GPU_CL, OpParam);
-
-#define DECLARE_KERNEL_FPGA(OpName) DECLARE_KERNEL(OpName, fpga, FPGA);
-#define DECLARE_KERNEL_FPGA_WITH_PARAMS(OpName, OpParam) \
-  DECLARE_KERNEL_WITHPARAMS(OpName, fpga, FPGA, OpParam);
+#define DECLARE_KERNEL_CPU(OpName) DECLARE_KERNEL(OpName, Cpu, CPU);
+#define DECLARE_KERNEL_GPU(OpName) DECLARE_KERNEL(OpName, Gpu, GPU_CL);
+#define DECLARE_KERNEL_FPGA(OpName) DECLARE_KERNEL(OpName, Fpga, FPGA);
 
 #define DECLARE_KERNEL_ALL(OpName) \
   DECLARE_KERNEL_CPU(OpName);      \
   DECLARE_KERNEL_GPU(OpName);      \
   DECLARE_KERNEL_FPGA(OpName);
+
+#define DECLARE_KERNEL_CPU_WITH_PARAMS(OpName, OpParam) \
+  DECLARE_KERNEL_WITHPARAMS(OpName, Cpu, CPU, OpParam);
+
+#define DECLARE_KERNEL_GPU_WITH_PARAMS(OpName, OpParam) \
+  DECLARE_KERNEL_WITHPARAMS(OpName, Gpu, GPU_CL, OpParam);
+
+#define DECLARE_KERNEL_FPGA_WITH_PARAMS(OpName, OpParam) \
+  DECLARE_KERNEL_WITHPARAMS(OpName, Fpga, FPGA, OpParam);
 
 #define DECLARE_KERNEL_ALL_WITH_PARAMS(OpName, OpParam) \
   DECLARE_KERNEL_CPU_WITH_PARAMS(OpName, OpParam);      \

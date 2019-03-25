@@ -20,7 +20,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ElementwiseAddKernel<GPU_CL, float>::Init(
+bool ElementwiseAddKernelGpu< float>::Init(
     ElementwiseAddParam<GPU_CL> *param) {
   DLOG << "-----init add-----";
   CLImage *bias = (CLImage *)(param->InputY());
@@ -42,7 +42,7 @@ bool ElementwiseAddKernel<GPU_CL, float>::Init(
 }
 
 template <>
-void ElementwiseAddKernel<GPU_CL, float>::Compute(
+void ElementwiseAddKernelGpu< float>::Compute(
     const ElementwiseAddParam<GPU_CL> &param) {
   auto input = param.InputX();
   auto bias = param.InputY();
@@ -100,7 +100,7 @@ void ElementwiseAddKernel<GPU_CL, float>::Compute(
   }
 }
 
-template class ElementwiseAddKernel<GPU_CL, float>;
+template class ElementwiseAddKernelGpu< float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile
