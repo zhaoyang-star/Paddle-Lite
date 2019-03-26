@@ -23,7 +23,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-DECLARE_OPERATOR(BeamSearch, BeamSearchParam, BeamSearchKernel);
+DECLARE_OPERATOR(BeamSearch);
 
 }  // namespace operators
 }  // namespace paddle_mobile

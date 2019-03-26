@@ -25,7 +25,7 @@ namespace operators {
 /*
 using framework::OpKernelBase;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class DeconvAddReluKernel
     : public OpKernelBase<DeviceType, FusionDeconvAddReluParam<DeviceType>> {
  public:

@@ -51,7 +51,7 @@ class FusionConvAddBNMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_CONV_ADD_BN; }
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FusionConvAddBNOp : public framework::OperatorWithKernel<
                               DeviceType, FusionConvAddBNParam<DeviceType>,
                               operators::ConvAddBNKernel<DeviceType, T>> {

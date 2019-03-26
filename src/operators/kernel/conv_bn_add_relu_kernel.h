@@ -30,7 +30,7 @@ namespace operators {
 /*using framework::DDim;
 using framework::OpKernelBase;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class ConvBNAddReluKernel
     : public OpKernelBase<DeviceType, FusionConvBNAddReluParam<DeviceType>> {
  public:

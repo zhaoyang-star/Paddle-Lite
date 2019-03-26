@@ -20,7 +20,7 @@
 // namespace operators {
 //
 // template <>
-// bool DequantizeKernelGpu< float>::Init(DequantizeParam<GPU_CL> *param) {
+// bool DequantizeKernelGpu< float>::Init(DequantizeParam *param) {
 //  DLOG << " depthwise conv kernel init begin ";
 //  PADDLE_MOBILE_ENFORCE(
 //      param->Filter()->dims()[2] == param->Filter()->dims()[3] &&
@@ -38,7 +38,7 @@
 //
 // template <>
 // void DequantizeKernelGpu< float>::Compute(
-//    const DequantizeParam<GPU_CL> &param) {
+//    const DequantizeParam &param) {
 //  auto kernel = this->cl_helper_.KernelAt(0);
 //  auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.Output());
 //  int c_block = default_work_size[0];

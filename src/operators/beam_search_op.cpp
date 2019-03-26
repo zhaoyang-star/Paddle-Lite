@@ -21,16 +21,14 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void BeamSearchOp<Dtype, T>::InferShape() const {}
+template <typename T>
+void BeamSearchOp<T>::InferShape() const {}
 
 }  // namespace operators
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
 
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(beam_search, ops::BeamSearchOp);
-#endif
+REGISTER_OPERATOR(beam_search, ops::BeamSearchOp);
 
 #endif  // BEAM_SEARCH_OP

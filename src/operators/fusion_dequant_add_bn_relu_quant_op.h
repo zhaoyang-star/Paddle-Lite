@@ -52,7 +52,7 @@ class FusionDequantAddBNReluQuantMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_DEQUANT_ADD_BN_RELU_QUANT; }
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FusionDequantAddBNReluQuantOp
     : public framework::OperatorWithKernel<
           DeviceType, FusionDequantAddBNReluQuantParam<DeviceType>,
@@ -99,7 +99,7 @@ class FusionDequantAddBNQuantMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_DEQUANT_ADD_BN_QUANT; }
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FusionDequantAddBNQuantOp
     : public framework::OperatorWithKernel<
           DeviceType, FusionDequantAddBNQuantParam<DeviceType>,

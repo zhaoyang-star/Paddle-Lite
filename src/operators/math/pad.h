@@ -19,7 +19,7 @@ namespace paddle_mobile {
 namespace operators {
 namespace math {
 
-template <typename DeviceType, typename T>
+template <typename T>
 class PadFunctor {
  public:
   void operator()(const framework::Tensor &input, const int pad_top,

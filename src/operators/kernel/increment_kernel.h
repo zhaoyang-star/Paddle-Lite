@@ -22,7 +22,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-/*template <typename DeviceType, typename T>
+/*template <typename T>
 class IncrementKernel
     : public framework::OpKernelBase<DeviceType, IncrementParam<DeviceType>> {
  public:

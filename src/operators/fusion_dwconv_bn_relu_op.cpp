@@ -20,8 +20,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void FusionDWConvBNReluOp<Dtype, T>::InferShape() const {
+template <typename T>
+void FusionDWConvBNReluOp<T>::InferShape() const {
   auto in_dims = this->param_.Input()->dims();
   auto filter_dims = this->param_.Filter()->dims();
   const std::vector<int> &strides = this->param_.Strides();
@@ -51,13 +51,9 @@ void FusionDWConvBNReluOp<Dtype, T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_dwconv_bn_relu, ops::FusionDWConvBNReluMatcher);
 
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(fusion_dwconv_bn_relu, ops::FusionDWConvBNReluOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(fusion_dwconv_bn_relu, ops::FusionDWConvBNReluOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-#endif
+
+REGISTER_OPERATOR(fusion_dwconv_bn_relu, ops::FusionDWConvBNReluOp);
+
+
 
 #endif

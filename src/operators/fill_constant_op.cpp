@@ -17,8 +17,8 @@ limitations under the License. */
 #include "operators/fill_constant_op.h"
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(fill_constant, ops::FillConstantOp);
+
+REGISTER_OPERATOR(fill_constant, ops::FillConstantOp);
 #endif
 #ifdef PADDLE_MOBILE_FPGA
 REGISTER_OPERATOR_FPGA(fill_constant, ops::FillConstantOp);

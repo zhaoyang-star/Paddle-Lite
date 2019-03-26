@@ -19,8 +19,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
-void SequenceExpandOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void SequenceExpandOp<T>::InferShape() const {
   const auto *input_x = this->param_.input_x_;
   const auto *input_y = this->param_.input_y_;
   const auto &x_lod = input_x->lod();
@@ -49,8 +49,8 @@ void SequenceExpandOp<DeviceType, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(sequence_expand, ops::SequenceExpandOp);
+
+REGISTER_OPERATOR(sequence_expand, ops::SequenceExpandOp);
 #endif
 
 #endif  // SEQUENCE_EXPAND_OP

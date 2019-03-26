@@ -24,7 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-/*template <typename DeviceType, typename T>
+/*template <typename T>
 class ShapeKernel
     : public framework::OpKernelBase<DeviceType, ShapeParam<DeviceType>> {
  public:

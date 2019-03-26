@@ -23,7 +23,7 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef ANCHOR_GENERATOR_OP
-template <typename Dtype>
+
 class AnchorGeneratorParam : public OpParam {
  public:
   AnchorGeneratorParam(const VariableNameMap &inputs,
@@ -62,7 +62,7 @@ DECLARE_KERNEL_ALL(AnchorGenerator);
 #endif
 
 #ifdef PROPOSAL_OP
-template <typename Dtype>
+
 class ProposalParam : public OpParam {
  public:
   ProposalParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -119,7 +119,7 @@ DECLARE_KERNEL_ALL(Proposal);
 #endif
 
 #ifdef PSROI_POOL_OP
-template <typename Dtype>
+
 class PSRoiPoolParam : public OpParam {
  public:
   PSRoiPoolParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -156,7 +156,7 @@ DECLARE_KERNEL_ALL(PSRoiPool);
 #endif
 
 #ifdef ROIALIGN_POOL_OP
-template <typename Dtype>
+
 class RoiAlignPoolParam : public OpParam {
  public:
   RoiAlignPoolParam(const VariableNameMap &inputs,
@@ -193,7 +193,7 @@ DECLARE_KERNEL(RoiAlignPool, RoiAlignPoolParam);
 #endif
 
 #ifdef ROI_PERSPECTIVE_OP
-template <typename Dtype>
+
 class RoiPerspectiveParam : public OpParam {
  public:
   RoiPerspectiveParam(const VariableNameMap &inputs,

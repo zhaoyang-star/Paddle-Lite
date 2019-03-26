@@ -27,7 +27,7 @@ namespace operators {
 
 using paddle_mobile::framework::Tensor;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class ResizeOp : public framework::OperatorWithKernel<
                      DeviceType, ResizeParam<DeviceType>,
                      operators::ResizeKernel<DeviceType, T>> {

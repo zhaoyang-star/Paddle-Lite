@@ -72,7 +72,6 @@ bool PSRoiPoolKernel<FPGA, float>::Init(PSRoiPoolParam<FPGA>* param) {
   return true;
 }
 
-template <typename Dtype>
 void PSROIPooling(const Dtype* bottom_data, const int channels,
                   const int height, const int width, const int pooled_height,
                   const int pooled_width, const Dtype* bottom_rois,

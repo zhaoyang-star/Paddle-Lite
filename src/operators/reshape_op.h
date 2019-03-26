@@ -27,7 +27,7 @@ namespace operators {
 
 using paddle_mobile::framework::Tensor;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class ReshapeOp : public framework::OperatorWithKernel<
                       DeviceType, ReshapeParam<DeviceType>,
                       operators::ReshapeKernel<DeviceType, T>> {

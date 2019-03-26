@@ -20,14 +20,14 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool PoolKernelGpu<float>::Init(PoolParam<GPU_CL> *param) {
+bool PoolKernelGpu<float>::Init(PoolParam *param) {
   std::string pooling_type = param->PoolingType();
   this->cl_helper_.AddKernel("pool_" + pooling_type, "pool_kernel.cl");
   return true;
 }
 
 template <>
-void PoolKernelGpu<float>::Compute(const PoolParam<GPU_CL> &param) {
+void PoolKernelGpu<float>::Compute(const PoolParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.Output());
 

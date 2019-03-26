@@ -24,20 +24,38 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
-class CastOp : public framework::OperatorWithKernel<
-                   DeviceType, CastParam<DeviceType>,
-                   operators::CastKernel<DeviceType, T>> {
+// template <typename T>
+// class CastOp : public framework::OperatorWithKernel<
+//                   DeviceType, CastParam<DeviceType>,
+//                   operators::CastKernel<DeviceType, T>> {
+// public:
+//  CastOp(const std::string &type, const VariableNameMap &inputs,
+//         const VariableNameMap &outputs, const framework::AttributeMap &attrs,
+//         framework::Scope *scope)
+//      : framework::OperatorWithKernel<DeviceType, CastParam<DeviceType>,
+//                                      operators::CastKernel<DeviceType, T>>(
+//            type, inputs, outputs, attrs, scope) {}
+//  // inference output shape
+//  void InferShape() const override;
+//};
+/*template <typename T>
+class CastOp : public framework::OperatorWithKernels<T, CastParam> {
  public:
   CastOp(const std::string &type, const VariableNameMap &inputs,
          const VariableNameMap &outputs, const framework::AttributeMap &attrs,
          framework::Scope *scope)
-      : framework::OperatorWithKernel<DeviceType, CastParam<DeviceType>,
-                                      operators::CastKernel<DeviceType, T>>(
-            type, inputs, outputs, attrs, scope) {}
-  // inference output shape
+      : framework::OperatorWithKernels<T, CastParam>(type, inputs, outputs,
+                                                     attrs, scope) {
+    framework::OperatorWithKernels<T, CastParam>::kernels.insert(TYPE_GPU,
+                                                                 kernelGpu_);
+    framework::OperatorWithKernels<T, CastParam>::kernels.insert(TYPE_CPU,
+                                                                 kernelCpu_);
+  }
   void InferShape() const override;
-};
+  CastKernelCpu<T> kernelCpu_;
+  CastKernelGpu<T> kernelGpu_;
+};*/
+DECLARE_OPERATOR_WITH_PARAMS(Cast, CastParam);
 
 }  // namespace operators
 }  // namespace paddle_mobile

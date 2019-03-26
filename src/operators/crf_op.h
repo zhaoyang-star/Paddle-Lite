@@ -23,23 +23,7 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-
-using paddle_mobile::framework::Tensor;
-
-template <typename DeviceType, typename T>
-class CrfOp : public framework::OperatorWithKernel<
-                  DeviceType, CrfParam<DeviceType>,
-                  operators::CrfKernel<DeviceType, T>> {
- public:
-  CrfOp(const std::string &type, const VariableNameMap &inputs,
-        const VariableNameMap &outputs, const framework::AttributeMap &attrs,
-        framework::Scope *scope)
-      : framework::OperatorWithKernel<DeviceType, CrfParam<DeviceType>,
-                                      operators::CrfKernel<DeviceType, T>>(
-            type, inputs, outputs, attrs, scope) {}
-  void InferShape() const override;
-};
-
+DECLARE_OPERATOR(Crf);
 }  // namespace operators
 }  // namespace paddle_mobile
 

@@ -25,7 +25,7 @@ namespace operators {
 
 using namespace framework;
 
-/*template <typename DeviceType, typename T>
+/*template <typename T>
 class ElementwiseAddKernel
     : public framework::OpKernelBase<DeviceType,
                                      ElementwiseAddParam<DeviceType>> {

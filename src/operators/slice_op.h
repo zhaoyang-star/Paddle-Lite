@@ -27,7 +27,7 @@ namespace operators {
 
 using paddle_mobile::framework::Tensor;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class SliceOp : public framework::OperatorWithKernel<
                     DeviceType, SliceParam<DeviceType>,
                     operators::SliceKernel<DeviceType, T>> {

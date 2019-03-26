@@ -22,8 +22,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void LookupOp<Dtype, T>::InferShape() const {
+template <typename T>
+void LookupOp<T>::InferShape() const {
   PADDLE_MOBILE_ENFORCE(this->param_.InputW() != nullptr,
                         "Input(W) of LookupTableOp should not be null.");
   auto *ids_t = this->param_.InputIds();
@@ -56,11 +56,10 @@ void LookupOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(lookup_table, ops::LookupOp);
-#endif
 
-#ifdef PADDLE_MOBILE_FPGA
-#endif
+REGISTER_OPERATOR(lookup_table, ops::LookupOp);
+
+
+
 
 #endif

@@ -23,10 +23,10 @@ namespace paddle_mobile {
 namespace operators {
 using std::string;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FetchOp
     : public framework::OperatorWithKernel<DeviceType, FetchParam<DeviceType>,
-                                           FetchKernel<DeviceType, T>> {
+                                           FetchKernel<T>> {
  public:
   FetchOp(const string &type, const VariableNameMap &inputs,
           const VariableNameMap &outputs, const framework::AttributeMap attrs,

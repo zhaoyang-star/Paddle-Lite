@@ -25,9 +25,11 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
+
+/*
 using paddle_mobile::framework::Tensor;
 
-template <typename DeviceType, typename T>
+ template <typename T>
 class BilinearOp : public framework::OperatorWithKernel<
                        DeviceType, BilinearInterpParam<DeviceType>,
                        operators::BilinearInterpKernel<DeviceType, T>> {
@@ -40,7 +42,10 @@ class BilinearOp : public framework::OperatorWithKernel<
             operators::BilinearInterpKernel<DeviceType, T>>(
             type, inputs, outputs, attrs, scope) {}
   void InferShape() const override;
-};
+};*/
+
+DECLARE_OPERATOR(BilinearInterp);
+
 
 }  // namespace operators
 }  // namespace paddle_mobile

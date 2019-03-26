@@ -40,7 +40,7 @@ class FusionDeconvReluMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_FC_RELU; }
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FusionDeconvReluOp : public framework::OperatorWithKernel<
                                DeviceType, FusionDeconvReluParam<DeviceType>,
                                operators::DeconvReluKernel<DeviceType, T>> {

@@ -19,8 +19,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
-void CastOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void CastOp<T>::InferShape() const {
   const auto &dims = this->param_.input_->dims();
   this->param_.output_->Resize(dims);
 }
@@ -29,8 +29,8 @@ void CastOp<DeviceType, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(cast, ops::CastOp);
+
+REGISTER_OPERATOR(cast, ops::CastOp);
 #endif
 
 #endif  // CAST_OP

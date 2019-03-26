@@ -70,7 +70,7 @@ inline framework::DDim CalOutputShape(const ResizeParam<DeviceType> &param) {
   return out_dims;
 }
 
-/*template <typename DeviceType, typename T>
+/*template <typename T>
 class ResizeKernel
     : public framework::OpKernelBase<DeviceType, ResizeParam<DeviceType>> {
  public:

@@ -27,8 +27,8 @@ int Im2SequenceOutputSize(int input_size, int kernel, int padding_1,
   return output_size;
 }
 
-template <typename Dtype, typename T>
-void Im2SequenceOp<Dtype, T>::InferShape() const {
+template <typename T>
+void Im2SequenceOp<T>::InferShape() const {
   auto in_x_dims = this->param_.Input()->dims();
   const std::vector<int> &kernels = this->param_.Kernels();
   const std::vector<int> &strides = this->param_.Strides();
@@ -48,8 +48,7 @@ void Im2SequenceOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(im2sequence, ops::Im2SequenceOp);
-#endif
+
+REGISTER_OPERATOR(im2sequence, ops::Im2SequenceOp);
 
 #endif  // IM2SEQUENCE_OP

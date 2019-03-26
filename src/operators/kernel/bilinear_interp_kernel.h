@@ -25,7 +25,7 @@ namespace paddle_mobile {
 namespace operators {
 
 /*
-template <typename DeviceType, typename T>
+template <typename T>
 class BilinearInterpKernel
     : public framework::OpKernelBase<DeviceType,
                                      BilinearInterpParam<DeviceType>> {

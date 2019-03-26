@@ -22,7 +22,7 @@ namespace operators {
 
 using namespace framework;
 
-/*template <typename DeviceType, typename T>
+/*template <typename T>
 class FetchKernel
     : public framework::OpKernelBase<DeviceType, FetchParam<DeviceType>> {
  public:

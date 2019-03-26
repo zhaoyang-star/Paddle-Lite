@@ -21,7 +21,7 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef WHILE_OP
-template <typename Dtype>
+
 class WhileParam : public OpParam {
  public:
   WhileParam(const VariableNameMap &inputs, const VariableNameMap &outputs,

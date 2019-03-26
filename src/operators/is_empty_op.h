@@ -24,7 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 using std::string;
-template <typename DeviceType, typename T>
+template <typename T>
 class IsEmptyOp
     : public framework::OperatorWithKernel<DeviceType, IsEmptyParam<DeviceType>,
                                            IsEmptyKernel<DeviceType, T>> {

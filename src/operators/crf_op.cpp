@@ -22,8 +22,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void CrfOp<Dtype, T>::InferShape() const {
+template <typename T>
+void CrfOp<T>::InferShape() const {
   PADDLE_MOBILE_ENFORCE(this->param_.InputEmission(),
                         "Input(Emission) should be not null.");
   PADDLE_MOBILE_ENFORCE(this->param_.InputTransition(),
@@ -45,11 +45,8 @@ void CrfOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(crf_decoding, ops::CrfOp);
-#endif
 
-#ifdef PADDLE_MOBILE_FPGA
-#endif
+REGISTER_OPERATOR(crf_decoding, ops::CrfOp);
+
 
 #endif

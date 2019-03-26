@@ -54,7 +54,7 @@ DECLARE_KERNEL_ALL(PriorBox);
 #endif  // PRIORBOX_OP
 
 #ifdef DENSITY_PRIORBOX_OP
-template <typename Dtype>
+
 class DensityPriorBoxParam : public OpParam {
   typedef typename DtypeTensorTrait<Dtype>::gtype GType;
 

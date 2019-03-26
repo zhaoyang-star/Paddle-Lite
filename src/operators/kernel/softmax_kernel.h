@@ -24,7 +24,7 @@ namespace operators {
 using framework::OpKernelBase;
 
 /*
-template <typename DeviceType, typename T>
+template <typename T>
 class SoftmaxKernel
     : public OpKernelBase<DeviceType, SoftmaxParam<DeviceType>> {
  public:

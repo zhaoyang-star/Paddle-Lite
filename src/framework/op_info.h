@@ -21,21 +21,19 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename Dtype>
 struct OpInfo {
-  OpCreator<Dtype> creator_;
-  const OpCreator<Dtype> &Creator() const {
+  OpCreator creator_;
+  const OpCreator &Creator() const {
     PADDLE_MOBILE_ENFORCE(creator_ != nullptr,
                           "Operator Creator has not been registered");
     return creator_;
   }
 };
 
-template <typename Dtype>
 class OpInfoMap {
  public:
-  static OpInfoMap<Dtype> *Instance() {
-    static OpInfoMap<Dtype> *s_instance = nullptr;
+  static OpInfoMap *Instance() {
+    static OpInfoMap *s_instance = nullptr;
     if (s_instance == nullptr) {
       s_instance = new OpInfoMap();
     }
@@ -46,20 +44,20 @@ class OpInfoMap {
     return map_.find(op_type) != map_.end();
   }
 
-  void Insert(const std::string &type, const OpInfo<Dtype> &info) {
+  void Insert(const std::string &type, const OpInfo &info) {
     PADDLE_MOBILE_ENFORCE(!Has(type), "Operator %s has been registered",
                           type.c_str());
     map_.insert({type, info});
   }
 
-  const OpInfo<Dtype> &Get(const std::string &type) const {
+  const OpInfo &Get(const std::string &type) const {
     auto op_info_ptr = GetNullable(type);
     PADDLE_MOBILE_ENFORCE(op_info_ptr != nullptr,
                           "Operator %s has not been registered", type.c_str());
     return *op_info_ptr;
   }
 
-  const OpInfo<Dtype> *GetNullable(const std::string &type) const {
+  const OpInfo *GetNullable(const std::string &type) const {
     auto it = map_.find(type);
     if (it == map_.end()) {
       return nullptr;
@@ -68,17 +66,13 @@ class OpInfoMap {
     }
   }
 
-  const std::unordered_map<std::string, OpInfo<Dtype>> &map() const {
-    return map_;
-  }
+  const std::unordered_map<std::string, OpInfo> &map() const { return map_; }
 
-  std::unordered_map<std::string, OpInfo<Dtype>> *mutable_map() {
-    return &map_;
-  }
+  std::unordered_map<std::string, OpInfo> *mutable_map() { return &map_; }
 
  private:
   OpInfoMap() = default;
-  std::unordered_map<std::string, OpInfo<Dtype>> map_;
+  std::unordered_map<std::string, OpInfo> map_;
 
   //  DISABLE_COPY_AND_ASSIGN(OpInfoMap);
 };

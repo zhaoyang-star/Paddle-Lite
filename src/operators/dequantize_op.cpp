@@ -19,8 +19,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
-void DequantizeOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void DequantizeOp<T>::InferShape() const {
   const auto& input_dims = this->param_.input_->dims();
   this->param_.output_->Resize(input_dims);
 }
@@ -29,8 +29,8 @@ void DequantizeOp<DeviceType, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(dequantize, ops::DequantizeOp);
+
+REGISTER_OPERATOR(dequantize, ops::DequantizeOp);
 #endif
 
 #endif  // DEQUANT_OP

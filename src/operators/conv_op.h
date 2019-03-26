@@ -22,22 +22,25 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-using std::string;
-template <typename DeviceType, typename T>
-class ConvOp : public framework::OperatorWithKernel<
-                   DeviceType, ConvParam<DeviceType>,
-                   operators::ConvKernel<DeviceType, T>> {
+/*using std::string;
+template <typename T>
+class ConvOp
+    : public framework::OperatorWithKernel<ConvParam,
+                                           operators::ConvKernelGpu<T>> {
  public:
   ConvOp(const std::string &type, const VariableNameMap &inputs,
          const VariableNameMap &outputs, const framework::AttributeMap &attrs,
          framework::Scope *scope)
-      : framework::OperatorWithKernel<DeviceType, ConvParam<DeviceType>,
-                                      operators::ConvKernel<DeviceType, T>>(
+      : framework::OperatorWithKernel<ConvParam<DeviceType>,
+                                      operators::ConvKernel<T>>(
             type, inputs, outputs, attrs, scope) {}
   void InferShape() const override;
 
  private:
-};
+};*/
+
+
+DECLARE_OPERATOR_WITH_PARAMS(Conv, ConvParam);
 
 }  // namespace operators
 }  // namespace paddle_mobile

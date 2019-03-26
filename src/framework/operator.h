@@ -59,7 +59,7 @@ class OperatorBase {
  public:
   OperatorBase(const std::string &type, const VariableNameMap &inputs,
                const VariableNameMap &outputs, const AttributeMap &attrs,
-               framework::Scope *scope, OpType &opType);
+               framework::Scope *scope);
   virtual ~OperatorBase() {}
 
   virtual void Init() = 0;
@@ -90,36 +90,9 @@ class OperatorBase {
   VariableNameMap inputs_;
   VariableNameMap outputs_;
   AttributeMap attrs_;
-  OpType op_type_;
 
  private:
   void CheckAllInputOutputSet() const;
-};
-
-template <typename ParamType, typename KernelType>
-class OperatorWithKernel : public OperatorBase {
- public:
-  OperatorWithKernel(const std::string &type, const VariableNameMap &inputs,
-                     const VariableNameMap &outputs, const AttributeMap &attrs,
-                     framework::Scope *scope, OpType &opType)
-      : OperatorBase(type, inputs, outputs, attrs, scope, opType),
-        param_(inputs, outputs, attrs, scope) {
-#ifdef PADDLE_MOBILE_CL
-    kernel_.InitCLHelper(scope->GetCLScpoe());
-#endif
-  }
-  virtual void RunImpl() { this->kernel_.Compute(this->param_); }
-
-  virtual void InferShape() const = 0;
-
-  void Init() {
-    PADDLE_MOBILE_ENFORCE(kernel_.Init(&param_), "  %s kernel init failed",
-                          this->type_.c_str());
-  }
-
- protected:
-  KernelType kernel_;
-  ParamType param_;
 };
 
 template <typename P>
@@ -143,6 +116,61 @@ class OpKernelBase {
 #endif
 
   OpType op_type_;
+};
+
+template <typename ParamType, typename KernelType>
+class OperatorWithKernel : public OperatorBase {
+ public:
+  OperatorWithKernel(const std::string &type, const VariableNameMap &inputs,
+                     const VariableNameMap &outputs, const AttributeMap &attrs,
+                     framework::Scope *scope)
+      : OperatorBase(type, inputs, outputs, attrs, scope),
+        param_(inputs, outputs, attrs, scope) {
+#ifdef PADDLE_MOBILE_CL
+    kernel_.InitCLHelper(scope->GetCLScpoe());
+#endif
+  }
+  virtual void RunImpl() { this->kernel_.Compute(this->param_); }
+
+  virtual void InferShape() const = 0;
+
+  void Init() {
+    PADDLE_MOBILE_ENFORCE(kernel_.Init(&param_), "  %s kernel init failed",
+                          this->type_.c_str());
+  }
+
+ protected:
+  KernelType kernel_;
+  ParamType param_;
+};
+
+template <typename T, typename ParamType>
+class OperatorWithKernels : public OperatorBase {
+ public:
+  OperatorWithKernels(const std::string &type, const VariableNameMap &inputs,
+                      const VariableNameMap &outputs, const AttributeMap &attrs,
+                      framework::Scope *scope)
+
+      : OperatorBase(type, inputs, outputs, attrs, scope),
+        param_(inputs, outputs, attrs, scope) {
+#ifdef PADDLE_MOBILE_CL
+//    kernel_.InitCLHelper(scope->GetCLScpoe());
+#endif
+  }
+  virtual void RunImpl() { this->kernel_.Compute(this->param_); }
+
+  virtual void InferShape() const = 0;
+
+  void Init() {
+    //    PADDLE_MOBILE_ENFORCE(kernel_.Init(&param_), "  %s kernel init
+    //    failed",
+    //                          this->type_.c_str());
+  }
+  std::unordered_map<RunTimeType, OpKernelBase<ParamType>> kernels;
+
+ protected:
+  //  OpKernelBase<ParamType> kernel_;
+  ParamType param_;
 };
 
 class FusionOpMatcher {
@@ -169,21 +197,92 @@ class FusionOpMatcher {
   std::shared_ptr<OpDesc> new_opdesc_;
 };
 
-#define DECLARE_OPERATOR(OpName, OpParam, OpKernel)                           \
-  template <typename DeviceType, typename T>                                  \
-  class OpName##Op : public framework::OperatorWithKernel<                    \
-                         DeviceType, OpParam<DeviceType>,                     \
-                         operators::OpKernel<DeviceType, T>> {                \
+#ifdef PADDLE_MOBILE_CPU
+#else
+#endif
+
+#define INIT_KERNEKS(OpName, OpParam, KernelType, DeviceName) \
+  framework::OperatorWithKernels<T, OpParam>::kernels.insert( \
+      KernelType, kernel##DeviceName##_);
+
+#define REGIST_KERNEL_TYPE(OpName, DeviceName) \
+  OpName##Kernel##DeviceName<T> kernel##DeviceName##_;
+
+#ifdef PADDLE_MOBILE_CPU
+#define REGIST_KERNEL_CPU(OpName) REGIST_KERNEL_TYPE(OpName, Cpu);
+#define INIT_KERNEKS_CPU(OpName, OpParam) \
+  INIT_KERNEKS(OpName, OpParam, TYPE_CPU, Cpu);
+#else
+#define REGIST_KERNEL_CPU(OpName) ;
+#define INIT_KERNEKS_CPU(OpName, OpParam) ;
+#endif
+#ifdef PADDLE_MOBILE_CL
+#define REGIST_KERNEL_GPU(OpName) REGIST_KERNEL_TYPE(OpName, Gpu);
+#define INIT_KERNEKS_GPU(OpName, OpParam) \
+  INIT_KERNEKS(OpName, OpParam, TYPE_GPU, Gpu);
+#else
+#define REGIST_KERNEL_GPU(OpName) ;
+#define INIT_KERNEKS_GPU(OpName, OpParam) ;
+#endif
+
+#ifdef PADDLE_MOBILE_FPGA
+#define REGIST_KERNEL_FPGA(OpName) REGIST_KERNEL_TYPE(OpName, Fpga);
+#define INIT_KERNEKS_GPU(OpName, OpParam) \
+  INIT_KERNEKS(OpName, OpParam, TYPE_FPGA, Fpga);
+#else
+#define REGIST_KERNEL_FPGA(OpName) ;
+#define INIT_KERNEKS_FPGA(OpName, OpParam) ;
+#endif
+
+#define DECLARE_OPERATOR_WITH_PARAMS(OpName, OpParam)                         \
+  template <typename T>                                                       \
+  class OpName##Op : public framework::OperatorWithKernels<T, OpParam> {      \
    public:                                                                    \
     OpName##Op(const std::string &type, const VariableNameMap &inputs,        \
                const VariableNameMap &outputs,                                \
                const framework::AttributeMap &attrs, framework::Scope *scope) \
-        : framework::OperatorWithKernel<DeviceType, OpParam<DeviceType>,      \
-                                        operators::OpKernel<DeviceType, T>>(  \
-              type, inputs, outputs, attrs, scope) {}                         \
+        : framework::OperatorWithKernels<T, OpParam>(type, inputs, outputs,   \
+                                                     attrs, scope) {          \
+      INIT_KERNEKS_CPU(OpName, OpParam);                                      \
+      INIT_KERNEKS_GPU(OpName, OpParam);                                      \
+      INIT_KERNEKS_FPGA(OpName, OpParam);                                     \
+    }                                                                         \
                                                                               \
     void InferShape() const override;                                         \
+    REGIST_KERNEL_CPU(OpName);                                                \
+    REGIST_KERNEL_GPU(OpName);                                                \
+    REGIST_KERNEL_FPGA(OpName);                                               \
   };
+
+#define DECLARE_OPERATOR(OpName) \
+  DECLARE_OPERATOR_WITH_PARAMS(OpName, OpName##Param)
+
+/*
+#define DECLARE_OPERATOR_CPU(OpName) DECLARE_OPERATOR(OpName, Cpu, CPU)
+
+#define DECLARE_OPERATOR_GPU(OpName) DECLARE_OPERATOR(OpName, Gpu, GPU_CL)
+
+#define DECLARE_OPERATOR_FPGA(OpName) DECLARE_OPERATOR(OpName, Fpga, FPGA)
+
+#define DECLARE_OPERATOR_ALL(OpName) \
+  DECLARE_OPERATOR_CPU(OpName);      \
+  DECLARE_OPERATOR_GPU(OpName);      \
+  DECLARE_OPERATOR_FPGA(OpName);
+*/
+
+/*template <typename DeviceType, typename T>
+class SplitOp
+    : public framework::OperatorWithKernel<SplitParam<DeviceType>,
+      operators::SplitKernelCpu<T>> {
+public:
+SplitOp(const std::string &type, const VariableNameMap &inputs,
+        const VariableNameMap &outputs, const framework::AttributeMap &attrs,
+        framework::Scope *scope)
+    : framework::OperatorWithKernel<SplitParam<DeviceType>,
+      operators::SplitKernelCpu<T>>(
+type, inputs, outputs, attrs, scope) {}
+void InferShape() const override;
+};*/
 
 #define DECLARE_KERNEL_OLD(OpName, OpParam)                               \
   template <typename DeviceType, typename T>                              \
@@ -201,13 +300,12 @@ class FusionOpMatcher {
       ::paddle_mobile::framework::Scope *scope)                                \
       : parent_cls<Dtype, T>(type, inputs, outputs, attrs, scope) {}
 
-#define DECLARE_KERNEL_WITHPARAMS(OpName, DeviceName, DeviceType, OpParam) \
-  template <typename T>                                                    \
-  class OpName##Kernel##DeviceName                                         \
-      : public framework::OpKernelBase<OpParam<DeviceType>> {              \
-   public:                                                                 \
-    bool Init(OpParam<DeviceType> *param);                                 \
-    void Compute(const OpParam<DeviceType> &param);                        \
+#define DECLARE_KERNEL_WITHPARAMS(OpName, DeviceName, DeviceType, OpParam)     \
+  template <typename T>                                                        \
+  class OpName##Kernel##DeviceName : public framework::OpKernelBase<OpParam> { \
+   public:                                                                     \
+    bool Init(OpParam *param);                                                 \
+    void Compute(const OpParam &param);                                        \
   };
 
 #define DECLARE_KERNEL(OpName, DeviceName, DeviceType) \

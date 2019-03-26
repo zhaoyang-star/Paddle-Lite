@@ -87,7 +87,7 @@ ExecutorMultiKernel<T>::ExecutorMultiKernel(
       if (!lod_mode) {
         op_handler_gpu->InferShape();
       }
-      op_desc->SetComputeType(ComputeType::TYPE_GPU);
+      op_desc->SetComputeType(RunTimeType::TYPE_GPU);
       ops_of_block0_.push_back(&(op_handler_gpu.get()));
 
     } else if (OpInfoMap<CPU>::Instance()->Has(op_desc->Type())) {
@@ -102,7 +102,7 @@ ExecutorMultiKernel<T>::ExecutorMultiKernel(
       if (!lod_mode) {
         op_handler_cpu->InferShape();
       }
-      op_desc->SetComputeType(ComputeType::TYPE_CPU);
+      op_desc->SetComputeType(RunTimeType::TYPE_CPU);
 
       ops_of_block0_.push_back(&(op_handler_cpu.get()));
 

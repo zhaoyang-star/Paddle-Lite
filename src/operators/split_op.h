@@ -25,21 +25,23 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using paddle_mobile::framework::Tensor;
-
-template <typename DeviceType, typename T>
-class SplitOp : public framework::OperatorWithKernel<
-                    DeviceType, SplitParam<DeviceType>,
-                    operators::SplitKernel<DeviceType, T>> {
+/*
+template <typename T>
+class SplitOp
+    : public framework::OperatorWithKernel<SplitParam<DeviceType>,
+                                           operators::SplitKernelCpu<T>> {
  public:
   SplitOp(const std::string &type, const VariableNameMap &inputs,
           const VariableNameMap &outputs, const framework::AttributeMap &attrs,
           framework::Scope *scope)
-      : framework::OperatorWithKernel<DeviceType, SplitParam<DeviceType>,
-                                      operators::SplitKernel<DeviceType, T>>(
+      : framework::OperatorWithKernel<SplitParam<DeviceType>,
+                                      operators::SplitKernelCpu<T>>(
             type, inputs, outputs, attrs, scope) {}
   void InferShape() const override;
 };
+*/
+
+DECLARE_OPERATOR_ALL(Split);
 }  // namespace operators
 }  // namespace paddle_mobile
 

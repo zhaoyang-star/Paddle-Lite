@@ -19,8 +19,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
-void SplitOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void SplitOp<T>::InferShape() const {
   PADDLE_MOBILE_ENFORCE(this->param_.InputX() != nullptr,
                         "Input(X) of SplitOp should not be null.");
   //  std::string str;
@@ -80,8 +80,8 @@ void SplitOp<DeviceType, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(split, ops::SplitOp);
+
+REGISTER_OPERATOR(split, ops::SplitOp);
 #endif
 #ifdef PADDLE_MOBILE_FPGA
 REGISTER_OPERATOR_FPGA(split, ops::SplitOp);

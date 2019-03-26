@@ -23,8 +23,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void ConvOp<Dtype, T>::InferShape() const {
+template <typename T>
+void ConvOp<T>::InferShape() const {
   auto in_dims = this->param_.Input()->dims();
   auto filter_dims = this->param_.Filter()->dims();
   const std::vector<int> &strides = this->param_.Strides();
@@ -52,8 +52,8 @@ void ConvOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(conv2d, ops::ConvOp);
+
+REGISTER_OPERATOR(conv2d, ops::ConvOp);
 #endif
 
 #ifdef PADDLE_MOBILE_FPGA

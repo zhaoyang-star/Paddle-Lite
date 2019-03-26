@@ -24,8 +24,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void DepthwiseConvOp<Dtype, T>::InferShape() const {
+template <typename T>
+void DepthwiseConvOp<T>::InferShape() const {
   auto in_dims = this->param_.Input()->dims();
   auto filter_dims = this->param_.Filter()->dims();
   const std::vector<int> &strides = this->param_.Strides();
@@ -53,8 +53,8 @@ void DepthwiseConvOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(depthwise_conv2d, ops::DepthwiseConvOp);
+
+REGISTER_OPERATOR(depthwise_conv2d, ops::DepthwiseConvOp);
 #endif
 
 #endif

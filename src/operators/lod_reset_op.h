@@ -24,7 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-DECLARE_OPERATOR(LodReset, LodResetParam, LodResetKernel);
+DECLARE_OPERATOR_WITH_PARAMS(LodReset, LodResetParam);
 
 }  // namespace operators
 }  // namespace paddle_mobile

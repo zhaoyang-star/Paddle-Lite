@@ -24,7 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 using std::string;
-template <typename DeviceType, typename T>
+template <typename T>
 class ElementwiseMulOp : public framework::OperatorWithKernel<
                              DeviceType, ElementwiseMulParam<DeviceType>,
                              operators::ElementwiseMulKernel<DeviceType, T>> {

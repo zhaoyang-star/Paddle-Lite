@@ -26,7 +26,7 @@ namespace operators {
 
 using paddle_mobile::framework::Tensor;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class GruOp : public framework::OperatorWithKernel<
                   DeviceType, GruParam<DeviceType>,
                   operators::GruKernel<DeviceType, T>> {

@@ -17,8 +17,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
-void FeedOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void FeedOp<T>::InferShape() const {
   auto out_dims = this->param_.Out()->dims();
   out_dims[0] = this->param_.BatchSize();
   int col = this->param_.Col();
@@ -35,8 +35,8 @@ void FeedOp<DeviceType, T>::InferShape() const {
 
 namespace ops = paddle_mobile::operators;
 
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(feed, ops::FeedOp);
+
+REGISTER_OPERATOR(feed, ops::FeedOp);
 #endif
 #ifdef PADDLE_MOBILE_FPGA
 REGISTER_OPERATOR_FPGA(feed, ops::FeedOp);

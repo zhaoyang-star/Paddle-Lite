@@ -21,7 +21,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool FusionFcKernelGpu<float>::Init(FusionFcParam<GPU_CL> *param) {
+bool FusionFcKernelGpu<float>::Init(FusionFcParam *param) {
   param->InputY()->InitNormalCLImage(cl_helper_.CLContext(),
                                      this->cl_helper_.CLCommandQueue());
   param->InputZ()->InitNormalCLImage(cl_helper_.CLContext(),
@@ -32,7 +32,7 @@ bool FusionFcKernelGpu<float>::Init(FusionFcParam<GPU_CL> *param) {
 }
 
 template <typename P>
-void FusionFcCompute(const FusionFcParam<GPU_CL> &param, cl_context context,
+void FusionFcCompute(const FusionFcParam &param, cl_context context,
                      cl_command_queue commandQueue, cl_kernel kernel0,
                      cl_kernel kernel1) {
   auto *input_x_image = param.InputX();
@@ -109,7 +109,7 @@ void FusionFcCompute(const FusionFcParam<GPU_CL> &param, cl_context context,
 }
 
 template <>
-void FusionFcKernelGpu<float>::Compute(const FusionFcParam<GPU_CL> &param) {
+void FusionFcKernelGpu<float>::Compute(const FusionFcParam &param) {
   auto kernel0 = this->cl_helper_.KernelAt(0);
   auto kernel1 = this->cl_helper_.KernelAt(1);
   FusionFcCompute<float>(param, this->cl_helper_.CLContext(),

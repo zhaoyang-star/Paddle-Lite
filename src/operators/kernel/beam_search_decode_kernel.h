@@ -22,7 +22,6 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype>
 class BeamSearchDecodeParam : public OpParam {
  public:
   BeamSearchDecodeParam(const VariableNameMap &inputs,

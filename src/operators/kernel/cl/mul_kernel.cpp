@@ -20,12 +20,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool MulKernelGpu<float>::Init(MulParam<GPU_CL> *param) {
+bool MulKernelGpu<float>::Init(MulParam *param) {
   return true;
 }
 
 template <>
-void MulKernelGpu<float>::Compute(const MulParam<GPU_CL> &param) {}
+void MulKernelGpu<float>::Compute(const MulParam &param) {}
 
 template class MulKernelGpu<float>;
 

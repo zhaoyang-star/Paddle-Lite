@@ -32,13 +32,13 @@ class Registrar {
   void Touch() {}
 };
 
-template <typename Dtype, size_t I, bool at_end, typename... ARGS>
+template <size_t I, bool at_end, typename... ARGS>
 class OperatorRegistrarRecursive;
 
-template <typename Dtype, typename... ARGS>
+template <typename... ARGS>
 struct OperatorRegistrar : public Registrar {
   explicit OperatorRegistrar(const std::string& op_type) {
-    if (OpInfoMap<Dtype>::Instance()->Has(op_type)) {
+    if (OpInfoMap::Instance()->Has(op_type)) {
       LOG(paddle_mobile::kLOG_DEBUG1)
           << op_type << " is registered more than once.";
       return;
@@ -48,15 +48,15 @@ struct OperatorRegistrar : public Registrar {
           << "OperatorRegistrar should be invoked at least by OpClass";
       return;
     }
-    OpInfo<Dtype> info;
-    OperatorRegistrarRecursive<Dtype, 0, false, ARGS...>(op_type, &info);
-    OpInfoMap<Dtype>::Instance()->Insert(op_type, info);
+    OpInfo info;
+    OperatorRegistrarRecursive<0, false, ARGS...>(op_type, &info);
+    OpInfoMap::Instance()->Insert(op_type, info);
   }
 };
 
-template <typename Dtype, typename T>
+template <typename T>
 struct OpInfoFiller {
-  void operator()(const std::string& op_type, OpInfo<Dtype>* info) const {
+  void operator()(const std::string& op_type, OpInfo* info) const {
     info->creator_ = [](const std::string& type, const VariableNameMap& inputs,
                         const VariableNameMap& outputs,
                         const AttributeMap& attrs, framework::Scope* scope) {
@@ -65,48 +65,48 @@ struct OpInfoFiller {
   }
 };
 
-template <typename Dtype, size_t I, typename... ARGS>
-class OperatorRegistrarRecursive<Dtype, I, false, ARGS...> {
+template <size_t I, typename... ARGS>
+class OperatorRegistrarRecursive<I, false, ARGS...> {
  public:
   using T = typename std::tuple_element<I, std::tuple<ARGS...>>::type;
-  OperatorRegistrarRecursive(const std::string& op_type, OpInfo<Dtype>* info) {
-    OpInfoFiller<Dtype, T> fill;
+  OperatorRegistrarRecursive(const std::string& op_type, OpInfo* info) {
+    OpInfoFiller<T> fill;
     fill(op_type, info);
     constexpr auto size = sizeof...(ARGS);
-    OperatorRegistrarRecursive<Dtype, I + 1, I + 1 == size, ARGS...> reg(
-        op_type, info);
+    OperatorRegistrarRecursive<I + 1, I + 1 == size, ARGS...> reg(op_type,
+                                                                  info);
     (void)(reg);
   }
 };
 
-template <typename Dtype, size_t I, typename... ARGS>
-class OperatorRegistrarRecursive<Dtype, I, true, ARGS...> {
+template <size_t I, typename... ARGS>
+class OperatorRegistrarRecursive<I, true, ARGS...> {
  public:
-  OperatorRegistrarRecursive(const std::string& op_type, OpInfo<Dtype>* info) {}
+  OperatorRegistrarRecursive(const std::string& op_type, OpInfo* info) {}
 };
 
-template <typename Dtype>
 class OpRegistry {
  public:
-  static std::shared_ptr<OperatorBase<Dtype>> CreateOp(
+  static std::shared_ptr<OperatorBase> CreateOp(
       const std::string& type, const VariableNameMap& inputs,
       const VariableNameMap& outputs, const AttributeMap attrs,
       paddle_mobile::framework::Scope* scope) {
-    auto& info = OpInfoMap<Dtype>::Instance()->Get(type);
+    auto& info = OpInfoMap::Instance()->Get(type);
     auto op = info.Creator()(type, inputs, outputs, attrs, scope);
-    return std::shared_ptr<OperatorBase<Dtype>>(op);
+    return std::shared_ptr<OperatorBase>(op);
   }
 };
 
+/*
 #define REGISTER_OPERATOR(op_type, op_class, device_name, device_type)     \
   template class op_class<device_type, float>;                             \
-  template <typename Dtype, typename T>                                    \
-  class _OpClass_##op_type##_##device_name : public op_class<Dtype, T> {   \
+  template <typename T>                                                    \
+  class _OpClass_##op_type##_##device_name : public op_class<T> {          \
    public:                                                                 \
     DEFINE_OP_CONSTRUCTOR(_OpClass_##op_type##_##device_name, op_class);   \
   };                                                                       \
   static paddle_mobile::framework::OperatorRegistrar<                      \
-      device_type, _OpClass_##op_type##_##device_name<device_type, float>> \
+       _OpClass_##op_type##_<float>> \
       __op_registrar_##op_type##_##device_name(#op_type);                  \
   int TouchOpRegistrar_##op_type##_##device_name() {                       \
     __op_registrar_##op_type##_##device_name.Touch();                      \
@@ -121,6 +121,18 @@ class OpRegistry {
 
 #define REGISTER_OPERATOR_CL(op_type, op_class) \
   REGISTER_OPERATOR(op_type, op_class, cl, paddle_mobile::GPU_CL);
+*/
 
+#define REGISTER_OPERATOR(OpType, OpClass)                           \
+  static paddle_mobile::framework::OperatorRegistrar<OpClass<float>> \
+      __op_registrar_##OpType(#OpType);                              \
+  int TouchOpRegistrar_##OpType##_() {                               \
+    __op_registrar_##OpType.Touch();                                 \
+    return 0;                                                        \
+  }
+
+#define REGISTER_OPERATOR_FPGA(op_type, op_class) ;
+
+#define REGISTER_OPERATOR_CL(op_type, op_class) ;
 }  // namespace framework
 }  // namespace paddle_mobile

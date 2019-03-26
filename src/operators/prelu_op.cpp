@@ -18,8 +18,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void PReluOp<Dtype, T>::InferShape() const {
+template <typename T>
+void PReluOp<T>::InferShape() const {
   auto input_dims = this->param_.InputX()->dims();
   this->param_.Out()->Resize(input_dims);
 }
@@ -33,8 +33,8 @@ void PReluOp<Dtype, T>::InferShape() const {
  * 都是需要和model中类型对应起来的
  * */
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(prelu, ops::PReluOp);
-#endif
+
+REGISTER_OPERATOR(prelu, ops::PReluOp);
+
 
 #endif

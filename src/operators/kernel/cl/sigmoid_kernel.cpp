@@ -19,13 +19,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool SigmoidKernelGpu<float>::Init(SigmoidParam<GPU_CL>* param) {
+bool SigmoidKernelGpu<float>::Init(SigmoidParam* param) {
   this->cl_helper_.AddKernel("sigmoid", "sigmoid.cl");
   return true;
 }
 
 template <>
-void SigmoidKernelGpu<float>::Compute(const SigmoidParam<GPU_CL>& param) {
+void SigmoidKernelGpu<float>::Compute(const SigmoidParam& param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   const auto* input = param.InputX();
   auto* output = param.Out();

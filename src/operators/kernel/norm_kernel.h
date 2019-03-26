@@ -23,7 +23,7 @@ namespace paddle_mobile {
 namespace operators {
 
 /*
-template <typename DeviceType, typename T>
+template <typename T>
 class NormKernel
     : public framework::OpKernelBase<DeviceType, NormParam<DeviceType>> {
  public:

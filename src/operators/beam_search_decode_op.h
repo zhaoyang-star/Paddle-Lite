@@ -22,9 +22,24 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
+/*template <typename T>
+class BeamSearchDecodeOp : public framework::OperatorWithKernels<T,
+BeamSearchDecodeParam> { public: BeamSearchDecodeOp(const std::string &type,
+const VariableNameMap &inputs, const VariableNameMap &outputs, const
+framework::AttributeMap &attrs, framework::Scope *scope) :
+framework::OperatorWithKernels<T, BeamSearchDecodeParam>(type, inputs, outputs,
+                                                     attrs, scope) {
+    framework::OperatorWithKernels<T,
+BeamSearchDecodeParam>::kernels.insert(TYPE_GPU, kernelGpu_);
+    framework::OperatorWithKernels<T,
+BeamSearchDecodeParam>::kernels.insert(TYPE_CPU, kernelCpu_);
+  }
+  void InferShape() const override;
+  BeamSearchDecodeKernelCpu<T> kernelCpu_;
+  BeamSearchDecodeKernelGpu<T> kernelGpu_;
+};*/
 
-DECLARE_OPERATOR(BeamSearchDecode, BeamSearchDecodeParam,
-                 BeamSearchDecodeKernel);
+DECLARE_OPERATOR(BeamSearchDecode);
 
 }  // namespace operators
 }  // namespace paddle_mobile

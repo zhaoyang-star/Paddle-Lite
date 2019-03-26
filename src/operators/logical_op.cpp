@@ -18,8 +18,8 @@ namespace paddle_mobile {
 namespace operators {
 
 #define DEFINE_LOGICAL_INFERSHAPE(OpName)                   \
-  template <typename Dtype, typename T>                     \
-  void OpName##Op<Dtype, T>::InferShape() const {           \
+  template <typename T>                                     \
+  void OpName##Op<T>::InferShape() const {                  \
     const auto &input_dims = this->param_.InputX()->dims(); \
     this->param_.Out()->Resize(input_dims);                 \
   }
@@ -45,25 +45,21 @@ DEFINE_LOGICAL_INFERSHAPE(LogicalXor);
 
 namespace ops = paddle_mobile::operators;
 #ifdef LOGICAL_AND_OP
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(logical_and, ops::LogicalAndOp);
-#endif
+
+REGISTER_OPERATOR(logical_and, ops::LogicalAndOp);
 #endif  // LOGICAL_AND_OP
 
 #ifdef LOGICAL_OR_OP
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(logical_or, ops::LogicalOrOp);
-#endif
+
+REGISTER_OPERATOR(logical_or, ops::LogicalOrOp);
 #endif  // LOGICAL_OR_OP
 
 #ifdef LOGICAL_NOT_OP
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(logical_not, ops::LogicalNotOp);
-#endif
+
+REGISTER_OPERATOR(logical_not, ops::LogicalNotOp);
 #endif  // LOGICAL_NOT_OP
 
 #ifdef LOGICAL_XOR_OP
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(logical_xor, ops::LogicalXorOp);
-#endif
+
+REGISTER_OPERATOR(logical_xor, ops::LogicalXorOp);
 #endif  // LOGICAL_XOR_OP

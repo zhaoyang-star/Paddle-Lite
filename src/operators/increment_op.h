@@ -24,7 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 using std::string;
-template <typename DeviceType, typename T>
+template <typename T>
 class IncrementOp
     : public framework::OperatorWithKernel<DeviceType,
                                            IncrementParam<DeviceType>,

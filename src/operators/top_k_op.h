@@ -24,7 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+template <typename T>
 class TopKOp : public framework::OperatorWithKernel<
                    DeviceType, TopKParam<DeviceType>,
                    operators::TopKKernel<DeviceType, T>> {

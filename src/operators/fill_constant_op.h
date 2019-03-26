@@ -26,7 +26,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FillConstantOp : public framework::OperatorBase<DeviceType> {
  public:
   FillConstantOp(const std::string &type, const VariableNameMap &inputs,

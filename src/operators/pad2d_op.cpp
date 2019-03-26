@@ -18,8 +18,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void Pad2DOp<Dtype, T>::InferShape() const {
+template <typename T>
+void Pad2DOp<T>::InferShape() const {
   auto input_dims = this->param_.input_->dims();
   const auto &paddings = this->param_.paddings_;
   PADDLE_MOBILE_ENFORCE(paddings.size() == 4,
@@ -34,11 +34,8 @@ void Pad2DOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(pad2d, ops::Pad2DOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(pad2d, ops::Pad2DOp);
-#endif
+
+REGISTER_OPERATOR(pad2d, ops::Pad2DOp);
+
 
 #endif  // PAD2D_OP

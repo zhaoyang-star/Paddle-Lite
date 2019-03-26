@@ -43,7 +43,7 @@ class FusionFcMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FC; }
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FusionFcOp : public framework::OperatorWithKernel<
                        DeviceType, FusionFcParam<DeviceType>,
                        operators::FusionFcKernel<DeviceType, T>> {

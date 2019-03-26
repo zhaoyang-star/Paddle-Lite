@@ -18,8 +18,8 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-template <typename DeviceType, typename T>
-void SoftmaxOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void SoftmaxOp<T>::InferShape() const {
   this->param_.Out()->Resize(this->param_.InputX()->dims());
 }
 
@@ -27,14 +27,7 @@ void SoftmaxOp<DeviceType, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(softmax, ops::SoftmaxOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(softmax, ops::SoftmaxOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(softmax, ops::SoftmaxOp);
-#endif
+
+REGISTER_OPERATOR(softmax, ops::SoftmaxOp);
 
 #endif

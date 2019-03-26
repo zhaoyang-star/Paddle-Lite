@@ -23,7 +23,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 using std::string;
-template <typename DeviceType, typename T>
+template <typename T>
 class SumOp : public framework::OperatorWithKernel<
                   DeviceType, SumParam<DeviceType>,
                   operators::SumKernel<DeviceType, T>> {

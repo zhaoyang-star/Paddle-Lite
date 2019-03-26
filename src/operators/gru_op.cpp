@@ -21,8 +21,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void GruOp<Dtype, T>::InferShape() const {
+template <typename T>
+void GruOp<T>::InferShape() const {
   auto input_dims = this->param_.InputInput()->dims();
   auto weight_dims = this->param_.InputWeight()->dims();
   int input_size = input_dims[1];
@@ -57,10 +57,9 @@ void GruOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(gru, ops::GruOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-#endif
+
+REGISTER_OPERATOR(gru, ops::GruOp);
+
+
 
 #endif

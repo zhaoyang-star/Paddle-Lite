@@ -18,8 +18,8 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef WHILE_OP
-template <typename Dtype, typename T>
-void WhileOp<Dtype, T>::InferShape() const {
+template <typename T>
+void WhileOp<T>::InferShape() const {
   // TODO(hjchen2)
 }
 #endif  // WHILE_OP
@@ -29,8 +29,8 @@ void WhileOp<Dtype, T>::InferShape() const {
 
 namespace ops = paddle_mobile::operators;
 
-#ifdef PADDLE_MOBILE_CPU
+
 #ifdef WHILE_OP
-REGISTER_OPERATOR_CPU(while, ops::WhileOp);
+REGISTER_OPERATOR(while, ops::WhileOp);
 #endif  // WHILE_OP
 #endif

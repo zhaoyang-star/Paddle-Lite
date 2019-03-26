@@ -19,8 +19,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
-void TopKOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void TopKOp<T>::InferShape() const {
   const int k = this->param_.k_;
   auto dims = this->param_.input_->dims();
   // should check k <= dims[-1] && k >= 1
@@ -35,8 +35,8 @@ void TopKOp<DeviceType, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(top_k, ops::TopKOp);
-#endif
+
+REGISTER_OPERATOR(top_k, ops::TopKOp);
+
 
 #endif  // TOP_K_OP

@@ -19,13 +19,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ReshapeKernelGpu<float>::Init(ReshapeParam<GPU_CL> *param) {
+bool ReshapeKernelGpu<float>::Init(ReshapeParam *param) {
   this->cl_helper_.AddKernel("reshape", "reshape.cl");
   return true;
 }
 
 template <>
-void ReshapeKernelGpu<float>::Compute(const ReshapeParam<GPU_CL> &param) {
+void ReshapeKernelGpu<float>::Compute(const ReshapeParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.Out());
   const auto *input = param.InputX();

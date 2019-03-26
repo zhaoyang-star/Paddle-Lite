@@ -18,8 +18,8 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-template <typename DeviceType, typename T>
-void ShapeOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void ShapeOp<T>::InferShape() const {
   PADDLE_MOBILE_ENFORCE(this->param_.Input() != nullptr,
                         "Input (Input) of get_shape op should not be null.");
   PADDLE_MOBILE_ENFORCE(this->param_.Out() != nullptr,
@@ -31,8 +31,8 @@ void ShapeOp<DeviceType, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(shape, ops::ShapeOp);
-#endif
+
+REGISTER_OPERATOR(shape, ops::ShapeOp);
+
 
 #endif

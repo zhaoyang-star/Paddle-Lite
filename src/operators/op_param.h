@@ -49,7 +49,6 @@ using framework::Variable;
 using std::string;
 using std::vector;
 
-template <typename Dtype>
 struct DtypeTensorTrait {
   //  typedef framework::TensorWrapper wtype;
 
@@ -57,10 +56,10 @@ struct DtypeTensorTrait {
   typedef framework::TensorWrapper gtype;
   // This type will be the parent class type
   // or the same type.
-  typedef framework::LoDTensor rtype;
+  typedef framework::TensorWrapper rtype;
 };
 
-template <>
+/*template <>
 struct DtypeTensorTrait<CPU> {
   //  typedef framework::TensorWrapper wtype;
 
@@ -82,7 +81,7 @@ struct DtypeTensorTrait<GPU_CL> {
 
   //  typedef framework::TensorWrapper wtype;
 };
-#endif
+#endif*/
 
 class OpParam {
  public:
@@ -108,7 +107,7 @@ class OpParam {
 
   VariableNameMap inputs_;
   Scope *scope_pointer_ = nullptr;
-  ComputeType compute_type_;
+  RunTimeType compute_type_;
 
  protected:
   template <typename T>
@@ -450,10 +449,9 @@ class OpParam {
   }
 };
 
-template <typename Dtype>
 class ConvParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   ConvParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -470,16 +468,12 @@ class ConvParam : public OpParam {
     groups = OpParam::GetAttr<int>("groups", attrs);
   }
 
-  const RType *Input() const {
-    return input_->template getInner<RType, Dtype>();
-  }
+  const RType *Input() const { return input_; }
 
-  RType *Filter() const { return filter_->template getInner<RType, Dtype>(); }
+  RType *Filter() const { return filter_; }
 
-  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
-  RType *TransformedFilter() const {
-    return transformed_filter_->template getInner<RType, Dtype>();
-  }
+  RType *Output() const { return output_; }
+  RType *TransformedFilter() const { return transformed_filter_; }
 
   const vector<int> &Strides() const { return strides_; }
 
@@ -544,13 +538,12 @@ class ConvParam : public OpParam {
   void SetFpgaArgs(const fpga::DWconvArgs &args) { fpga_dwconv_args = args; }
 #endif
 };
-template <typename Dtype>
-Print &operator<<(Print &printer, const ConvParam<Dtype> &conv_param);
 
-template <typename Dtype>
+Print &operator<<(Print &printer, const ConvParam &conv_param);
+
 class ElementwiseAddParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   ElementwiseAddParam(const VariableNameMap &inputs,
@@ -563,15 +556,11 @@ class ElementwiseAddParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  const RType *InputY() const {
-    return input_y_->template getInner<RType, Dtype>();
-  }
+  const RType *InputY() const { return input_y_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   const int &Axis() const { return axis_; }
 
@@ -596,10 +585,10 @@ class ElementwiseAddParam : public OpParam {
 };
 
 #ifdef ELEMENTWISEMUL_OP
-template <typename Dtype>
+
 class ElementwiseMulParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   ElementwiseMulParam(const VariableNameMap &inputs,
@@ -612,15 +601,11 @@ class ElementwiseMulParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  const RType *InputY() const {
-    return input_y_->template getInner<RType, Dtype>();
-  }
+  const RType *InputY() const { return input_y_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   const int &Axis() const { return axis_; }
 
@@ -639,15 +624,15 @@ class ElementwiseMulParam : public OpParam {
 #endif
 
 #ifdef FUSION_ELEMENTWISEADDRELU_OP
-template <typename Dtype>
-using ElementwiseAddReluParam = ElementwiseAddParam<Dtype>;
+
+using ElementwiseAddReluParam = ElementwiseAddParam;
 #endif
 
 #ifdef ELEMENTWISESUB_OP
-template <typename Dtype>
+
 class ElementwiseSubParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   ElementwiseSubParam(const VariableNameMap &inputs,
@@ -660,15 +645,11 @@ class ElementwiseSubParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  const RType *InputY() const {
-    return input_y_->template getInner<RType, Dtype>();
-  }
+  const RType *InputY() const { return input_y_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   const int &Axis() const { return axis_; }
 
@@ -681,10 +662,10 @@ class ElementwiseSubParam : public OpParam {
 #endif
 
 #ifdef MUL_OP
-template <typename Dtype>
+
 class MulParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   MulParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -697,15 +678,11 @@ class MulParam : public OpParam {
     y_num_col_dims_ = GetAttr<int>("y_num_col_dims", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  const RType *InputY() const {
-    return input_y_->template getInner<RType, Dtype>();
-  }
+  const RType *InputY() const { return input_y_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   const int &XNumColDims() const { return x_num_col_dims_; }
 
@@ -721,10 +698,10 @@ class MulParam : public OpParam {
 #endif
 
 #ifdef CONCAT_OP
-template <typename Dtype>
+
 class ConcatParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   ConcatParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -737,7 +714,7 @@ class ConcatParam : public OpParam {
 
   vector<GType *> Inputs() const { return inputs_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   const int &Axis() const { return axis_; }
 
@@ -758,10 +735,10 @@ class ConcatParam : public OpParam {
 #endif
 
 #ifdef SUM_OP
-template <typename Dtype>
+
 class SumParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   SumParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -779,7 +756,7 @@ class SumParam : public OpParam {
 
   vector<GType *> Inputs() const { return inputs_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
  private:
   vector<Variable *> inputs_vars_;
@@ -790,10 +767,10 @@ class SumParam : public OpParam {
 #endif
 
 #ifdef LRN_OP
-template <typename Dtype>
+
 class LrnParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   LrnParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -809,11 +786,9 @@ class LrnParam : public OpParam {
     data_format_ = GetStringAttr("data_format", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   GType *MidOut() const { return mid_out_; }
 
@@ -840,10 +815,10 @@ class LrnParam : public OpParam {
 #endif
 
 #ifdef NORM_OP
-template <typename Dtype>
+
 class NormParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   NormParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -856,11 +831,9 @@ class NormParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   GType *OutputNorm() const { return output_norm_; }
 
@@ -878,10 +851,10 @@ class NormParam : public OpParam {
 #endif
 
 #ifdef BATCHNORM_OP
-template <typename Dtype>
+
 class BatchNormParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   BatchNormParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -898,29 +871,17 @@ class BatchNormParam : public OpParam {
     //    is_test_ = GetAttr<bool>("is_test", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  RType *OutputY() const {
-    return output_y_->template getInner<RType, Dtype>();
-  }
+  RType *OutputY() const { return output_y_; }
 
-  const RType *InputBias() const {
-    return input_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const {
-    return input_mean_->template getInner<RType, Dtype>();
-  }
+  const RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const {
-    return input_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const {
-    return input_variance_->template getInner<RType, Dtype>();
-  }
+  const RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -934,13 +895,9 @@ class BatchNormParam : public OpParam {
 
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const {
-    return new_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const {
-    return new_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *NewBias() const { return new_bias_; }
 
  private:
   GType *input_x_;
@@ -959,10 +916,10 @@ class BatchNormParam : public OpParam {
 #endif
 
 #ifdef POOL_OP
-template <typename Dtype>
+
 class PoolParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   PoolParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -979,11 +936,9 @@ class PoolParam : public OpParam {
     global_pooling_ = GetAttr<bool>("global_pooling", attrs);
   }
 
-  const RType *Input() const {
-    return input_->template getInner<RType, Dtype>();
-  }
+  const RType *Input() const { return input_; }
 
-  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
+  RType *Output() const { return output_; }
 
   const string &PoolingType() const { return pooling_type_; }
 
@@ -1019,10 +974,10 @@ class PoolParam : public OpParam {
 #endif
 
 #ifdef PRIORBOX_OP
-template <typename Dtype>
+
 class PriorBoxParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   PriorBoxParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1049,19 +1004,13 @@ class PriorBoxParam : public OpParam {
     step_h_ = GetAttr<float>("step_h", attrs);
     offset_ = GetAttr<float>("offset", attrs);
   }
-  const RType *Input() const {
-    return input_->template getInner<RType, Dtype>();
-  }
+  const RType *Input() const { return input_; }
 
   const RType *InputImage() const { return input_image_; }
 
-  RType *OutputBoxes() const {
-    return output_boxes_->template getInner<RType, Dtype>();
-  }
+  RType *OutputBoxes() const { return output_boxes_; }
 
-  RType *OutputVariances() const {
-    return output_variances_->template getInner<RType, Dtype>();
-  }
+  RType *OutputVariances() const { return output_variances_; }
 
   const vector<float> &MinSizes() const { return min_sizes_; }
 
@@ -1104,10 +1053,10 @@ class PriorBoxParam : public OpParam {
 #endif
 
 #ifdef BOXCODER_OP
-template <typename Dtype>
+
 class BoxCoderParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   BoxCoderParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1125,9 +1074,7 @@ class BoxCoderParam : public OpParam {
 
   const RType *InputTargetBox() const { return input_targetbox_; }
 
-  RType *OutputBox() const {
-    return output_box_->template getInner<RType, Dtype>;
-  }
+  RType *OutputBox() const { return output_box_; }
 
   const std::string &CodeType() const { return code_type_; }
 
@@ -1141,10 +1088,10 @@ class BoxCoderParam : public OpParam {
 #endif
 
 #ifdef SOFTMAX_OP
-template <typename Dtype>
+
 class SoftmaxParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   SoftmaxParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1153,10 +1100,8 @@ class SoftmaxParam : public OpParam {
     input_x_ = InputXFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  const RType *InputX() const { return input_x_; }
+  RType *Out() const { return out_; }
 
  private:
   GType *input_x_;
@@ -1180,10 +1125,10 @@ class SoftmaxParam : public OpParam {
 #endif
 
 #ifdef SIGMOID_OP
-template <typename Dtype>
+
 class SigmoidParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   SigmoidParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1192,10 +1137,8 @@ class SigmoidParam : public OpParam {
     input_x_ = InputXFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  const RType *InputX() const { return input_x_; }
+  RType *Out() const { return out_; }
 
  private:
   GType *input_x_;
@@ -1213,10 +1156,10 @@ class SigmoidParam : public OpParam {
 #endif
 
 #ifdef MULTICLASSNMS_OP
-template <typename Dtype>
+
 class MultiClassNMSParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   MultiClassNMSParam(const VariableNameMap &inputs,
@@ -1234,15 +1177,11 @@ class MultiClassNMSParam : public OpParam {
     score_threshold_ = GetAttr<float>("score_threshold", attrs);
   }
 
-  RType *InputBBoxes() const {
-    return input_bboxes_->template getInner<RType, Dtype>();
-  }
+  RType *InputBBoxes() const { return input_bboxes_; }
 
-  RType *InputScores() const {
-    return input_scores_->template getInner<RType, Dtype>();
-  }
+  RType *InputScores() const { return input_scores_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   const int &BackGroundLabel() const { return background_label_; }
 
@@ -1270,10 +1209,10 @@ class MultiClassNMSParam : public OpParam {
 #endif
 
 #ifdef POLYGONBOXTRANSFORM_OP
-template <typename Dtype>
+
 class PolygonBoxTransformParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   PolygonBoxTransformParam(const VariableNameMap &inputs,
@@ -1283,10 +1222,8 @@ class PolygonBoxTransformParam : public OpParam {
     input_ = InputFrom<GType>(inputs, *scope);
     output_ = OutputFrom<GType>(outputs, *scope);
   }
-  const RType *Input() const {
-    return input_->template getInner<RType, Dtype>();
-  }
-  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
+  const RType *Input() const { return input_; }
+  RType *Output() const { return output_; }
 
  private:
   GType *input_;
@@ -1294,10 +1231,9 @@ class PolygonBoxTransformParam : public OpParam {
 };
 #endif
 
-template <typename Dtype>
 class FeedParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FeedParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1310,7 +1246,7 @@ class FeedParam : public OpParam {
     batch_size = var->GetValue<int>();
   }
   const std::vector<LoDTensor> *InputX() const { return input_x_; }
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
   const int Col() const { return col_; }
   const int BatchSize() const { return batch_size; }
 
@@ -1321,10 +1257,9 @@ class FeedParam : public OpParam {
   int batch_size;
 };
 
-template <typename Dtype>
 class FetchParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FetchParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1335,9 +1270,7 @@ class FetchParam : public OpParam {
     col_ = GetAttr<int>("col", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
   std::vector<LoDTensor> *Out() const { return out_; }
   const int Col() const { return col_; }
 
@@ -1353,10 +1286,10 @@ class FetchParam : public OpParam {
 };
 
 #ifdef FILL_CONSTANT_OP
-template <typename Dtype>
+
 class FillConstantParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FillConstantParam(const VariableNameMap &inputs,
@@ -1372,7 +1305,7 @@ class FillConstantParam : public OpParam {
 
   Variable *OutVar() const { return out_var_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   const int &DataDtype() const { return dtype_; }
 
@@ -1390,10 +1323,10 @@ class FillConstantParam : public OpParam {
 #endif
 
 #ifdef TRANSPOSE_OP
-template <typename Dtype>
+
 class TransposeParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   TransposeParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1404,11 +1337,9 @@ class TransposeParam : public OpParam {
     axis_ = GetAttr<vector<int>>("axis", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   const vector<int> &Axis() const { return axis_; }
 
@@ -1420,10 +1351,10 @@ class TransposeParam : public OpParam {
 #endif
 
 #ifdef TRANSPOSE2_OP
-template <typename Dtype>
+
 class Transpose2Param : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   Transpose2Param(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1435,11 +1366,9 @@ class Transpose2Param : public OpParam {
     axis_ = GetAttr<vector<int>>("axis", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   GType *OutputXShape() const { return output_xshape_; }
 
@@ -1454,10 +1383,10 @@ class Transpose2Param : public OpParam {
 #endif
 
 #ifdef LOOKUP_OP
-template <typename Dtype>
+
 class LookupParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   LookupParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1471,7 +1400,7 @@ class LookupParam : public OpParam {
 
   const RType *InputW() const { return input_w_; }
   const RType *InputIds() const { return input_ids_; }
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
   int64_t PaddingIdx() const { return padding_idx_; }
 
  private:
@@ -1483,10 +1412,10 @@ class LookupParam : public OpParam {
 #endif
 
 #ifdef CRF_OP
-template <typename Dtype>
+
 class CrfParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   //    {G_OP_TYPE_CRF, {{"Emission", "Transition", "Label"}, {"ViterbiPath"}}},
@@ -1522,10 +1451,10 @@ class CrfParam : public OpParam {
 #endif
 
 #ifdef RESHAPE_OP
-template <typename Dtype>
+
 class ReshapeParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   ReshapeParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1544,15 +1473,11 @@ class ReshapeParam : public OpParam {
     }
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  const RType *InputShape() const {
-    return input_shape_->template getInner<RType, Dtype>();
-  }
+  const RType *InputShape() const { return input_shape_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   const vector<int> &Shape() const { return shape_; }
 
@@ -1568,10 +1493,10 @@ class ReshapeParam : public OpParam {
 #endif
 
 #ifdef RESHAPE2_OP
-template <typename Dtype>
+
 class Reshape2Param : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   Reshape2Param(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1589,15 +1514,11 @@ class Reshape2Param : public OpParam {
     }
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  const RType *InputShape() const {
-    return input_shape_->template getInner<RType, Dtype>();
-  }
+  const RType *InputShape() const { return input_shape_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   GType *OutputXShape() const { return output_xshape_; }
 
@@ -1616,10 +1537,10 @@ class Reshape2Param : public OpParam {
 #endif
 
 #ifdef SCALE_OP
-template <typename Dtype>
+
 class ScaleParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   ScaleParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1631,11 +1552,9 @@ class ScaleParam : public OpParam {
     bias_ = GetAttr<float>("bias", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   const float Scale() const { return scale_; }
 
@@ -1650,10 +1569,10 @@ class ScaleParam : public OpParam {
 #endif
 
 #ifdef SLICE_OP
-template <typename Dtype>
+
 class SliceParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   SliceParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1677,10 +1596,10 @@ class SliceParam : public OpParam {
 #endif
 
 #ifdef RESIZE_OP
-template <typename Dtype>
+
 class ResizeParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   ResizeParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1696,15 +1615,11 @@ class ResizeParam : public OpParam {
     out_width_scale_ = GetAttr<float>("out_width_scale", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  const RType *InputShape() const {
-    return input_shape_->template getInner<RType, Dtype>();
-  }
+  const RType *InputShape() const { return input_shape_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   const bool &IsPyramidTest() const { return is_pyramid_test_; }
 
@@ -1732,10 +1647,10 @@ class ResizeParam : public OpParam {
 /*
  * @b op 层实例化好这个 param 传递给 kernel 层使用
  * */
-template <typename Dtype>
+
 class ReluParamBase : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   ReluParamBase(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1745,42 +1660,33 @@ class ReluParamBase : public OpParam {
     out_ = OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
  private:
   GType *input_x_;
   GType *out_;
 };
 
-template <typename Dtype>
-class ReluParam : public ReluParamBase<Dtype> {
+class ReluParam : public ReluParamBase {
  public:
-  using ReluParamBase<Dtype>::ReluParamBase;
-};
+  using ReluParamBase::ReluParamBase;
 
 #ifdef PADDLE_MOBILE_CL
-template <>
-class ReluParam<GPU_CL> : public ReluParamBase<GPU_CL> {
- public:
-  using ReluParamBase<GPU_CL>::ReluParamBase;
   framework::CLImage &getMidImage() { return midImage; }
 
  private:
   framework::CLImage midImage;
+#endif
 };
-#endif
 
 #endif
-
 #ifdef TANH_OP
-template <typename Dtype>
+
 class TanhParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   TanhParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1789,10 +1695,8 @@ class TanhParam : public OpParam {
     input_x_ = InputXFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  const RType *InputX() const { return input_x_; }
+  RType *Out() const { return out_; }
 
  private:
   GType *input_x_;
@@ -1815,10 +1719,10 @@ class TanhParam : public OpParam {
 #endif
 
 #ifdef PRELU_OP
-template <typename Dtype>
+
 class PReluParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   PReluParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1827,16 +1731,13 @@ class PReluParam : public OpParam {
     DLOG << "PReluParam inputs before";
     input_x_ = InputXFrom<GType>(inputs, *scope);
     alpha_ = InputAlphaFrom<GType>(inputs, *scope);
-    framework::DDim dims = alpha_->dims();
     out_ = OutFrom<GType>(outputs, *scope);
     mode_ = GetStringAttr("mode", attrs);
     DLOG << "PReluParam mode after" << mode_;
   }
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
   const RType *InputAlpha() const { return alpha_; }
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
   const std::string &Mode() const { return mode_; }
 
  private:
@@ -1847,10 +1748,9 @@ class PReluParam : public OpParam {
 };
 #endif
 
-template <typename Dtype>
 class FusionFcParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionFcParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -1864,13 +1764,13 @@ class FusionFcParam : public OpParam {
     y_num_col_dims_ = GetAttr<int>("y_num_col_dims", attrs);
     axis_ = GetAttr<int>("axis", attrs);
   }
-  RType *InputX() const { return input_x_->template getInner<RType, Dtype>(); }
+  RType *InputX() const { return input_x_; }
 
-  RType *InputY() const { return input_y_->template getInner<RType, Dtype>(); }
+  RType *InputY() const { return input_y_; }
 
-  RType *InputZ() const { return input_z_->template getInner<RType, Dtype>(); }
+  RType *InputZ() const { return input_z_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   const int &XNumColDims() const { return x_num_col_dims_; }
 
@@ -1899,24 +1799,23 @@ class FusionFcParam : public OpParam {
 
 #ifdef FUSION_FCRELU_OP
 template <typename DeviceType>
-using FusionFcReluParam = FusionFcParam<DeviceType>;
+using FusionFcReluParam = FusionFcParam;
 #endif
 
-template <typename Dtype>
-class FusionConvAddParam : public ConvParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+class FusionConvAddParam : public ConvParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionConvAddParam(const VariableNameMap &inputs,
                      const VariableNameMap &outputs, const AttributeMap &attrs,
                      Scope *scope)
-      : ConvParam<Dtype>(inputs, outputs, attrs, scope) {
+      : ConvParam(inputs, outputs, attrs, scope) {
     bias_ = OpParam::InputYFrom<GType>(inputs, *scope);
     axis_ = OpParam::GetAttr<int>("axis", attrs);
     this->output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
-  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
+  RType *Bias() const { return bias_; }
 
   const int &Axis() const { return axis_; }
 
@@ -1925,41 +1824,40 @@ class FusionConvAddParam : public ConvParam<Dtype> {
   int axis_;
 };
 
-template <typename Dtype>
-Print &operator<<(Print &printer, const FusionConvAddParam<Dtype> &conv_param);
+Print &operator<<(Print &printer, const FusionConvAddParam &conv_param);
 
 #ifdef FUSION_CONVADDRELU_OP
 template <typename DeviceType>
-class FusionConvAddReluParam : public FusionConvAddParam<DeviceType> {
+class FusionConvAddReluParam : public FusionConvAddParam {
  public:
   FusionConvAddReluParam(const VariableNameMap &inputs,
                          const VariableNameMap &outputs,
                          const AttributeMap &attrs, Scope *scope)
-      : FusionConvAddParam<DeviceType>(inputs, outputs, attrs, scope) {}
+      : FusionConvAddParam(inputs, outputs, attrs, scope) {}
 };
 #endif
 
 #ifdef FUSION_CONVADDPRELU_OP
-template <typename Dtype>
-class FusionConvAddPReluParam : public ConvParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionConvAddPReluParam : public ConvParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionConvAddPReluParam(const VariableNameMap &inputs,
                           const VariableNameMap &outputs,
                           const AttributeMap &attrs, Scope *scope)
-      : ConvParam<Dtype>(inputs, outputs, attrs, scope) {
+      : ConvParam(inputs, outputs, attrs, scope) {
     alpha_ = OpParam::InputAlphaFrom<GType>(inputs, *scope);
     mode_ = OpParam::GetStringAttr("mode", attrs);
-    framework::DDim dims = alpha_->dims();
+    //    framework::DDim dims = alpha_->dims();
     bias_ = OpParam::InputYFrom<GType>(inputs, *scope);
     axis_ = OpParam::GetAttr<int>("axis", attrs);
     this->output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
   const RType *InputAlpha() const { return alpha_; }
   const std::string &Mode() const { return mode_; }
-  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
+  RType *Bias() const { return bias_; }
   const int &Axis() const { return axis_; }
 
  protected:
@@ -1971,20 +1869,19 @@ class FusionConvAddPReluParam : public ConvParam<Dtype> {
 #endif
 
 #ifdef FUSION_CONVADDADDPRELU_OP
-template <typename Dtype>
-class FusionConvAddAddPReluParam : public ConvParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionConvAddAddPReluParam : public ConvParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionConvAddAddPReluParam(const VariableNameMap &inputs,
                              const VariableNameMap &outputs,
                              const AttributeMap &attrs, Scope *scope)
-      : ConvParam<Dtype>(inputs, outputs, attrs, scope) {
+      : ConvParam(inputs, outputs, attrs, scope) {
     bias1_ = OpParam::InputYFrom1<GType>(inputs, *scope);
     alpha_ = OpParam::InputAlphaFrom<GType>(inputs, *scope);
     mode_ = OpParam::GetStringAttr("mode", attrs);
-    framework::DDim dims = alpha_->dims();
     bias_ = OpParam::InputYFrom<GType>(inputs, *scope);
     axis_ = OpParam::GetAttr<int>("axis", attrs);
     keyOutput_ = OpParam::Getkey("addOut", inputs, 0);
@@ -2001,7 +1898,7 @@ class FusionConvAddAddPReluParam : public ConvParam<Dtype> {
   const std::string &Mode() const { return mode_; }
   const RType *Bias1() const { return bias1_; }
 
-  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
+  RType *Bias() const { return bias_; }
 
   const int &Axis() const { return axis_; }
 
@@ -2018,16 +1915,16 @@ class FusionConvAddAddPReluParam : public ConvParam<Dtype> {
 #endif
 
 #ifdef FUSION_CONVADDBNRELU_OP
-template <typename Dtype>
-class FusionConvAddBNReluParam : public ConvParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionConvAddBNReluParam : public ConvParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionConvAddBNReluParam(const VariableNameMap &inputs,
                            const VariableNameMap &outputs,
                            const AttributeMap &attrs, Scope *scope)
-      : ConvParam<Dtype>(inputs, outputs, attrs, scope) {
+      : ConvParam(inputs, outputs, attrs, scope) {
     bias_ = OpParam::InputYFrom<GType>(inputs, *scope);
     axis_ = OpParam::GetAttr<int>("axis", attrs);
     input_bias_ = OpParam::InputBiasFrom<GType>(inputs, *scope);
@@ -2038,25 +1935,17 @@ class FusionConvAddBNReluParam : public ConvParam<Dtype> {
     momentum_ = OpParam::GetAttr<float>("momentum", attrs);
     this->output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
-  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
+  RType *Bias() const { return bias_; }
 
   const int &Axis() const { return axis_; }
 
-  const RType *InputBias() const {
-    return input_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const {
-    return input_mean_->template getInner<RType, Dtype>();
-  }
+  const RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const {
-    return input_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const {
-    return input_variance_->template getInner<RType, Dtype>();
-  }
+  const RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2065,13 +1954,9 @@ class FusionConvAddBNReluParam : public ConvParam<Dtype> {
   void SetNewScale(GType *new_scale) { new_scale_ = new_scale; }
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const {
-    return new_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const {
-    return new_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *NewBias() const { return new_bias_; }
 
  protected:
   GType *bias_;
@@ -2088,16 +1973,16 @@ class FusionConvAddBNReluParam : public ConvParam<Dtype> {
 #endif
 
 #ifdef FUSION_CONVBNADDRELU_OP
-template <typename Dtype>
-class FusionConvBNAddReluParam : public ConvParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionConvBNAddReluParam : public ConvParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionConvBNAddReluParam(const VariableNameMap &inputs,
                            const VariableNameMap &outputs,
                            const AttributeMap &attrs, Scope *scope)
-      : ConvParam<Dtype>(inputs, outputs, attrs, scope) {
+      : ConvParam(inputs, outputs, attrs, scope) {
     bias_ = OpParam::InputYFrom<GType>(inputs, *scope);
     axis_ = OpParam::GetAttr<int>("axis", attrs);
     input_bias_ = OpParam::InputBiasFrom<GType>(inputs, *scope);
@@ -2116,25 +2001,17 @@ class FusionConvBNAddReluParam : public ConvParam<Dtype> {
     }
     this->output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
-  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
+  RType *Bias() const { return bias_; }
 
   const int &Axis() const { return axis_; }
 
-  const RType *InputBias() const {
-    return input_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const {
-    return input_mean_->template getInner<RType, Dtype>();
-  }
+  const RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const {
-    return input_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const {
-    return input_variance_->template getInner<RType, Dtype>();
-  }
+  const RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2144,13 +2021,9 @@ class FusionConvBNAddReluParam : public ConvParam<Dtype> {
 
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const {
-    return new_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const {
-    return new_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *NewBias() const { return new_bias_; }
 
  protected:
   GType *bias_;
@@ -2170,16 +2043,16 @@ class FusionConvBNAddReluParam : public ConvParam<Dtype> {
 #endif
 
 #ifdef FUSION_CONVBN_OP
-template <typename Dtype>
-class FusionConvBNParam : public ConvParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionConvBNParam : public ConvParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionConvBNParam(const VariableNameMap &inputs,
                     const VariableNameMap &outputs, const AttributeMap &attrs,
                     Scope *scope)
-      : ConvParam<Dtype>(inputs, outputs, attrs, scope) {
+      : ConvParam(inputs, outputs, attrs, scope) {
     input_bias_ = OpParam::InputBiasFrom<GType>(inputs, *scope);
     input_mean_ = OpParam::InputMeanFrom<GType>(inputs, *scope);
     input_scale_ = OpParam::InputScaleFrom<GType>(inputs, *scope);
@@ -2189,21 +2062,13 @@ class FusionConvBNParam : public ConvParam<Dtype> {
     this->output_ = OpParam::OutputYFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputBias() const {
-    return input_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const {
-    return input_mean_->template getInner<RType, Dtype>();
-  }
+  const RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const {
-    return input_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const {
-    return input_variance_->template getInner<RType, Dtype>();
-  }
+  const RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2213,13 +2078,9 @@ class FusionConvBNParam : public ConvParam<Dtype> {
 
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const {
-    return new_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const {
-    return new_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *NewBias() const { return new_bias_; }
 
  protected:
   GType *input_bias_;
@@ -2234,16 +2095,16 @@ class FusionConvBNParam : public ConvParam<Dtype> {
 #endif
 
 #ifdef FUSION_CONVADDBN_OP
-template <typename Dtype>
-class FusionConvAddBNParam : public ConvParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionConvAddBNParam : public ConvParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionConvAddBNParam(const VariableNameMap &inputs,
                        const VariableNameMap &outputs,
                        const AttributeMap &attrs, Scope *scope)
-      : ConvParam<Dtype>(inputs, outputs, attrs, scope) {
+      : ConvParam(inputs, outputs, attrs, scope) {
     bias_ = OpParam::InputYFrom<GType>(inputs, *scope);
     axis_ = OpParam::GetAttr<int>("axis", attrs);
     input_bias_ = OpParam::InputBiasFrom<GType>(inputs, *scope);
@@ -2254,25 +2115,17 @@ class FusionConvAddBNParam : public ConvParam<Dtype> {
     momentum_ = OpParam::GetAttr<float>("momentum", attrs);
     this->output_ = OpParam::OutputYFrom<GType>(outputs, *scope);
   }
-  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
+  RType *Bias() const { return bias_; }
 
   const int &Axis() const { return axis_; }
 
-  const RType *InputBias() const {
-    return input_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const {
-    return input_mean_->template getInner<RType, Dtype>();
-  }
+  const RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const {
-    return input_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const {
-    return input_variance_->template getInner<RType, Dtype>();
-  }
+  const RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2282,13 +2135,9 @@ class FusionConvAddBNParam : public ConvParam<Dtype> {
 
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const {
-    return new_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const {
-    return new_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *NewBias() const { return new_bias_; }
 
  protected:
   GType *bias_;
@@ -2305,16 +2154,16 @@ class FusionConvAddBNParam : public ConvParam<Dtype> {
 #endif
 
 #ifdef FUSION_DWCONVBNRELU_OP
-template <typename Dtype>
-class FusionDWConvBNReluParam : public ConvParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionDWConvBNReluParam : public ConvParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionDWConvBNReluParam(const VariableNameMap &inputs,
                           const VariableNameMap &outputs,
                           const AttributeMap &attrs, Scope *scope)
-      : ConvParam<Dtype>(inputs, outputs, attrs, scope) {
+      : ConvParam(inputs, outputs, attrs, scope) {
     input_bias_ = OpParam::InputBiasFrom<GType>(inputs, *scope);
     input_mean_ = OpParam::InputMeanFrom<GType>(inputs, *scope);
     input_scale_ = OpParam::InputScaleFrom<GType>(inputs, *scope);
@@ -2324,21 +2173,13 @@ class FusionDWConvBNReluParam : public ConvParam<Dtype> {
     this->output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputBias() const {
-    return input_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const {
-    return input_mean_->template getInner<RType, Dtype>();
-  }
+  const RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const {
-    return input_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const {
-    return input_variance_->template getInner<RType, Dtype>();
-  }
+  const RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2348,13 +2189,9 @@ class FusionDWConvBNReluParam : public ConvParam<Dtype> {
 
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const {
-    return new_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const {
-    return new_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *NewBias() const { return new_bias_; }
 
  protected:
   GType *input_bias_;
@@ -2370,16 +2207,16 @@ class FusionDWConvBNReluParam : public ConvParam<Dtype> {
 #endif
 
 #ifdef FUSION_CONVBNRELU_OP
-template <typename Dtype>
-class FusionConvBNReluParam : public ConvParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionConvBNReluParam : public ConvParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionConvBNReluParam(const VariableNameMap &inputs,
                         const VariableNameMap &outputs,
                         const AttributeMap &attrs, Scope *scope)
-      : ConvParam<Dtype>(inputs, outputs, attrs, scope) {
+      : ConvParam(inputs, outputs, attrs, scope) {
     input_bias_ = OpParam::InputBiasFrom<GType>(inputs, *scope);
     input_mean_ = OpParam::InputMeanFrom<GType>(inputs, *scope);
     input_scale_ = OpParam::InputScaleFrom<GType>(inputs, *scope);
@@ -2389,21 +2226,13 @@ class FusionConvBNReluParam : public ConvParam<Dtype> {
     this->output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputBias() const {
-    return input_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const {
-    return input_mean_->template getInner<RType, Dtype>();
-  }
+  const RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const {
-    return input_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const {
-    return input_variance_->template getInner<RType, Dtype>();
-  }
+  const RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2413,13 +2242,9 @@ class FusionConvBNReluParam : public ConvParam<Dtype> {
 
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const {
-    return new_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const {
-    return new_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *NewBias() const { return new_bias_; }
 
  protected:
   GType *input_bias_;
@@ -2434,10 +2259,10 @@ class FusionConvBNReluParam : public ConvParam<Dtype> {
 #endif
 
 #ifdef IM2SEQUENCE_OP
-template <typename Dtype>
+
 class Im2SequenceParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   Im2SequenceParam(const VariableNameMap &inputs,
@@ -2451,11 +2276,9 @@ class Im2SequenceParam : public OpParam {
     paddings_ = GetAttr<vector<int>>("paddings", attrs);
   }
 
-  const RType *Input() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *Input() const { return input_x_; }
 
-  RType *Output() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Output() const { return out_; }
 
   const vector<int> &Kernels() const { return kernels_; }
 
@@ -2473,10 +2296,10 @@ class Im2SequenceParam : public OpParam {
 #endif
 
 #ifdef DROPOUT_OP
-template <typename Dtype>
+
 class DropoutParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   DropoutParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -2488,11 +2311,9 @@ class DropoutParam : public OpParam {
     dropout_prob_ = GetAttr<float>("dropout_prob", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
 
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
 
   float DropoutProb() const { return dropout_prob_; }
 
@@ -2503,10 +2324,9 @@ class DropoutParam : public OpParam {
 };
 #endif
 
-template <typename Dtype>
 class ConvTransposeParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   ConvTransposeParam(const VariableNameMap &inputs,
@@ -2525,13 +2345,11 @@ class ConvTransposeParam : public OpParam {
     groups = GetAttr<int>("groups", attrs);
   }
 
-  const RType *Input() const {
-    return input_->template getInner<RType, Dtype>();
-  }
+  const RType *Input() const { return input_; }
 
   const RType *Filter() const { return filter_; }
 
-  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
+  RType *Output() const { return output_; }
 
   const vector<int> &Strides() const { return strides_; }
 
@@ -2579,25 +2397,25 @@ class ConvTransposeParam : public OpParam {
 };
 
 #ifdef FUSION_DECONVADD_OP
-template <typename Dtype>
-class FusionDeconvAddParam : public ConvTransposeParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionDeconvAddParam : public ConvTransposeParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionDeconvAddParam(const VariableNameMap &inputs,
                        const VariableNameMap &outputs,
                        const AttributeMap &attrs, Scope *scope)
-      : ConvTransposeParam<Dtype>(inputs, outputs, attrs, scope) {
+      : ConvTransposeParam(inputs, outputs, attrs, scope) {
     bias_ = OpParam::InputYFrom<GType>(inputs, *scope);
     axis_ = OpParam::GetAttr<int>("axis", attrs);
     output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
-  RType *Bias() const { return bias_->template getInner<RType, Dtype>(); }
+  RType *Bias() const { return bias_; }
 
   const int &Axis() const { return axis_; }
 
-  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
+  RType *Output() const { return output_; }
 
  protected:
   GType *bias_;
@@ -2607,20 +2425,20 @@ class FusionDeconvAddParam : public ConvTransposeParam<Dtype> {
 #endif
 
 #ifdef FUSION_DECONVADDRELU_OP
-template <typename Dtype>
-using FusionDeconvAddReluParam = FusionDeconvAddParam<Dtype>;
+
+using FusionDeconvAddReluParam = FusionDeconvAddParam;
 #endif
 #ifdef FUSION_DECONVADDBN_OP
-template <typename Dtype>
-class FusionDeconvAddBNParam : public ConvTransposeParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionDeconvAddBNParam : public ConvTransposeParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionDeconvAddBNParam(const VariableNameMap &inputs,
                          const VariableNameMap &outputs,
                          const AttributeMap &attrs, Scope *scope)
-      : ConvTransposeParam<Dtype>(inputs, outputs, attrs, scope) {
+      : ConvTransposeParam(inputs, outputs, attrs, scope) {
     output_ = OpParam::OutFrom<GType>(outputs, *scope);
     input_bias_ = OpParam::InputBiasFrom<GType>(inputs, *scope);
     input_mean_ = OpParam::InputMeanFrom<GType>(inputs, *scope);
@@ -2630,23 +2448,15 @@ class FusionDeconvAddBNParam : public ConvTransposeParam<Dtype> {
     momentum_ = OpParam::GetAttr<float>("momentum", attrs);
     //    is_test_ = OpParam::GetAttr<bool>("is_test", attrs);
   }
-  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
+  RType *Output() const { return output_; }
 
-  const RType *InputBias() const {
-    return input_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const {
-    return input_mean_->template getInner<RType, Dtype>();
-  }
+  const RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const {
-    return input_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const {
-    return input_variance_->template getInner<RType, Dtype>();
-  }
+  const RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2658,13 +2468,9 @@ class FusionDeconvAddBNParam : public ConvTransposeParam<Dtype> {
 
   void SetNewBias(RType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const {
-    return new_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const {
-    return new_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *NewBias() const { return new_bias_; }
 
  protected:
   RType *output_;
@@ -2680,16 +2486,16 @@ class FusionDeconvAddBNParam : public ConvTransposeParam<Dtype> {
 };
 #endif
 #ifdef FUSION_DECONVBNRELU_OP
-template <typename Dtype>
-class FusionDeconvBNReluParam : public ConvTransposeParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionDeconvBNReluParam : public ConvTransposeParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionDeconvBNReluParam(const VariableNameMap &inputs,
                           const VariableNameMap &outputs,
                           const AttributeMap &attrs, Scope *scope)
-      : ConvTransposeParam<Dtype>(inputs, outputs, attrs, scope) {
+      : ConvTransposeParam(inputs, outputs, attrs, scope) {
     output_ = OpParam::OutFrom<GType>(outputs, *scope);
     input_bias_ = OpParam::InputBiasFrom<GType>(inputs, *scope);
     input_mean_ = OpParam::InputMeanFrom<GType>(inputs, *scope);
@@ -2698,23 +2504,15 @@ class FusionDeconvBNReluParam : public ConvTransposeParam<Dtype> {
     epsilon_ = OpParam::GetAttr<float>("epsilon", attrs);
     momentum_ = OpParam::GetAttr<float>("momentum", attrs);
   }
-  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
+  RType *Output() const { return output_; }
 
-  const RType *InputBias() const {
-    return input_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const {
-    return input_mean_->template getInner<RType, Dtype>();
-  }
+  const RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const {
-    return input_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const {
-    return input_variance_->template getInner<RType, Dtype>();
-  }
+  const RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2726,13 +2524,9 @@ class FusionDeconvBNReluParam : public ConvTransposeParam<Dtype> {
 
   void SetNewBias(RType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const {
-    return new_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const {
-    return new_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *NewBias() const { return new_bias_; }
 
  protected:
   RType *output_;
@@ -2748,16 +2542,16 @@ class FusionDeconvBNReluParam : public ConvTransposeParam<Dtype> {
 };
 #endif
 #ifdef FUSION_DECONVADDBNRELU_OP
-template <typename Dtype>
-class FusionDeconvAddBNReluParam : public ConvTransposeParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionDeconvAddBNReluParam : public ConvTransposeParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionDeconvAddBNReluParam(const VariableNameMap &inputs,
                              const VariableNameMap &outputs,
                              const AttributeMap &attrs, Scope *scope)
-      : ConvTransposeParam<Dtype>(inputs, outputs, attrs, scope) {
+      : ConvTransposeParam(inputs, outputs, attrs, scope) {
     output_ = OpParam::OutFrom<GType>(outputs, *scope);
     input_bias_ = OpParam::InputBiasFrom<GType>(inputs, *scope);
     input_mean_ = OpParam::InputMeanFrom<GType>(inputs, *scope);
@@ -2767,23 +2561,15 @@ class FusionDeconvAddBNReluParam : public ConvTransposeParam<Dtype> {
     momentum_ = OpParam::GetAttr<float>("momentum", attrs);
     //    is_test_ = OpParam::GetAttr<bool>("is_test", attrs);
   }
-  RType *Output() const { return output_->template getInner<RType, Dtype>(); }
+  RType *Output() const { return output_; }
 
-  const RType *InputBias() const {
-    return input_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const {
-    return input_mean_->template getInner<RType, Dtype>();
-  }
+  const RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const {
-    return input_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const {
-    return input_variance_->template getInner<RType, Dtype>();
-  }
+  const RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2795,13 +2581,9 @@ class FusionDeconvAddBNReluParam : public ConvTransposeParam<Dtype> {
 
   void SetNewBias(RType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const {
-    return new_scale_->template getInner<RType, Dtype>();
-  }
+  const RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const {
-    return new_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *NewBias() const { return new_bias_; }
 
  protected:
   RType *output_;
@@ -2818,15 +2600,15 @@ class FusionDeconvAddBNReluParam : public ConvTransposeParam<Dtype> {
 #endif
 
 #ifdef FUSION_DECONVRELU_OP
-template <typename Dtype>
-using FusionDeconvReluParam = ConvTransposeParam<Dtype>;
+
+using FusionDeconvReluParam = ConvTransposeParam;
 #endif
 
 #ifdef GRU_OP
-template <typename Dtype>
+
 class GruParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   /**
@@ -2856,9 +2638,7 @@ class GruParam : public OpParam {
   const RType *InputInput() const { return input_input_; }
   const RType *InputWeight() const { return input_weight_; }
   const RType *InputH0() const { return input_h0_; }
-  const RType *InputBias() const {
-    return input_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *InputBias() const { return input_bias_; }
   const std::string &Activation() const { return activation_; }
   const std::string &GateActivation() const { return gate_activation_; }
   const bool &IsReverse() const { return is_reverse_; }
@@ -2887,10 +2667,10 @@ class GruParam : public OpParam {
 #endif
 
 #ifdef GRU_UNIT_OP
-template <typename Dtype>
+
 class GruUnitParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   GruUnitParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -2911,9 +2691,7 @@ class GruUnitParam : public OpParam {
   const RType *InputInput() const { return input_input_; }
   const RType *InputWeight() const { return input_weight_; }
   const RType *InputHiddenPrev() const { return input_hidden_prev_; }
-  const RType *InputBias() const {
-    return input_bias_->template getInner<RType, Dtype>();
-  }
+  const RType *InputBias() const { return input_bias_; }
   const int &Activation() const { return activation_; }
   const int &GateActivation() const { return gate_activation_; }
 
@@ -2936,10 +2714,10 @@ class GruUnitParam : public OpParam {
 #endif
 
 #ifdef FLATTEN_OP
-template <typename Dtype>
+
 class FlattenParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FlattenParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -2949,10 +2727,8 @@ class FlattenParam : public OpParam {
     out_ = OutFrom<GType>(outputs, *scope);
     axis = GetAttr<int>("axis", attrs);
   }
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  const RType *InputX() const { return input_x_; }
+  RType *Out() const { return out_; }
   const int &Axis() const { return axis; }
 
  private:
@@ -2963,10 +2739,10 @@ class FlattenParam : public OpParam {
 #endif
 
 #ifdef SPLIT_OP
-template <typename Dtype>
+
 class SplitParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   SplitParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -2982,9 +2758,7 @@ class SplitParam : public OpParam {
     //      out_ts_.push_back(*scope.FindVar(outs_[i])->GetMutable());
     //    }
   }
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
   std::vector<GType *> Outs() const { return outs_; }
   int Axis() const { return axis; }
   int Num() const { return num; }
@@ -3011,10 +2785,10 @@ class SplitParam : public OpParam {
 #endif
 
 #ifdef BILINEAR_INTERP_OP
-template <typename Dtype>
+
 class BilinearInterpParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   BilinearInterpParam(const VariableNameMap &inputs,
@@ -3027,11 +2801,9 @@ class BilinearInterpParam : public OpParam {
     out_h_ = GetAttr<int>("out_h", attrs);
     out_w_ = GetAttr<int>("out_w", attrs);
   }
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
+  const RType *InputX() const { return input_x_; }
   const RType *InputOutPutSize() const { return input_outsize_; }
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  RType *Out() const { return out_; }
   int OutH() const { return out_h_; }
   int OutW() const { return out_w_; }
 
@@ -3045,10 +2817,10 @@ class BilinearInterpParam : public OpParam {
 #endif
 
 #ifdef SHAPE_OP
-template <typename Dtype>
+
 class ShapeParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   ShapeParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -3057,10 +2829,8 @@ class ShapeParam : public OpParam {
     input_ = InputFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *Input() const {
-    return input_->template getInner<RType, Dtype>();
-  }
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  const RType *Input() const { return input_; }
+  RType *Out() const { return out_; }
 
  private:
   GType *input_;
@@ -3069,10 +2839,10 @@ class ShapeParam : public OpParam {
 #endif
 
 #ifdef TOP_K_OP
-template <typename Dtype>
+
 class TopKParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   TopKParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -3093,10 +2863,10 @@ class TopKParam : public OpParam {
 #endif  // TOP_K_OP
 
 #ifdef CAST_OP
-template <typename Dtype>
+
 class CastParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   CastParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -3117,10 +2887,10 @@ class CastParam : public OpParam {
 #endif  // CAST_OP
 
 #ifdef QUANT_OP
-template <typename Dtype>
+
 class QuantizeParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   QuantizeParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -3159,10 +2929,10 @@ class QuantizeParam : public OpParam {
 #endif
 
 #ifdef DEQUANT_OP
-template <typename Dtype>
+
 class DequantizeParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   DequantizeParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -3194,16 +2964,16 @@ class DequantizeParam : public OpParam {
     defined(FUSION_DEQUANT_BN_RELU_OP) ||                                 \
     defined(FUSION_DEQUANT_ADD_BN_QUANT_OP) ||                            \
     defined(FUSION_DEQUANT_ADD_BN_RELU_QUANT_OP)
-template <typename Dtype>
-class FusionDequantBNParam : public DequantizeParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionDequantBNParam : public DequantizeParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionDequantBNParam(const VariableNameMap &inputs,
                        const VariableNameMap &outputs,
                        const AttributeMap &attrs, Scope *scope)
-      : DequantizeParam<Dtype>(inputs, outputs, attrs, scope) {
+      : DequantizeParam(inputs, outputs, attrs, scope) {
     // batch norm params
     bn_mean_ = OpParam::GetVarValue<GType>("BNMean", inputs, *scope);
     bn_variance_ = OpParam::GetVarValue<GType>("BNVariance", inputs, *scope);
@@ -3226,16 +2996,16 @@ class FusionDequantBNParam : public DequantizeParam<Dtype> {
     defined(FUSION_DEQUANT_ADD_BN_OP) ||       \
     defined(FUSION_DEQUANT_ADD_BN_QUANT_OP) || \
     defined(FUSION_DEQUANT_ADD_BN_RELU_QUANT_OP)
-template <typename Dtype>
-class FusionDequantAddBNParam : public FusionDequantBNParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionDequantAddBNParam : public FusionDequantBNParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionDequantAddBNParam(const VariableNameMap &inputs,
                           const VariableNameMap &outputs,
                           const AttributeMap &attrs, Scope *scope)
-      : FusionDequantBNParam<Dtype>(inputs, outputs, attrs, scope) {
+      : FusionDequantBNParam(inputs, outputs, attrs, scope) {
     // element wise add params
     axis_ = OpParam::GetAttr<int>("axis", attrs);
     bias_ = OpParam::InputYFrom<GType>(inputs, *scope);
@@ -3249,16 +3019,16 @@ class FusionDequantAddBNParam : public FusionDequantBNParam<Dtype> {
 #endif
 
 #ifdef FUSION_DEQUANT_ADD_BN_QUANT_OP
-template <typename Dtype>
-class FusionDequantAddBNQuantParam : public FusionDequantAddBNParam<Dtype> {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+
+class FusionDequantAddBNQuantParam : public FusionDequantAddBNParam {
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   FusionDequantAddBNQuantParam(const VariableNameMap &inputs,
                                const VariableNameMap &outputs,
                                const AttributeMap &attrs, Scope *scope)
-      : FusionDequantAddBNParam<Dtype>(inputs, outputs, attrs, scope) {
+      : FusionDequantAddBNParam(inputs, outputs, attrs, scope) {
     // scale output
     online_scale_ = OpParam::GetVarValue<GType>("OutScale", outputs, *scope);
     // offline
@@ -3285,10 +3055,10 @@ class FusionDequantAddBNQuantParam : public FusionDequantAddBNParam<Dtype> {
 #endif
 
 #ifdef SEQUENCE_EXPAND_OP
-template <typename Dtype>
+
 class SequenceExpandParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   SequenceExpandParam(const VariableNameMap &inputs,
@@ -3313,10 +3083,10 @@ class SequenceExpandParam : public OpParam {
 #endif  // SEQUENCE_EXPAND_OP
 
 #ifdef SEQUENCE_POOL_OP
-template <typename Dtype>
+
 class SequencePoolParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   SequencePoolParam(const VariableNameMap &inputs,
@@ -3339,10 +3109,10 @@ class SequencePoolParam : public OpParam {
 #endif  // SEQUENCE_EXPAND_OP
 
 #ifdef LOD_RESET_OP
-template <typename Dtype>
+
 class LodResetParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   LodResetParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -3367,10 +3137,10 @@ class LodResetParam : public OpParam {
 #endif  // LOD_RESET_OP
 
 #ifdef LESS_THAN_OP
-template <typename Dtype>
+
 class CompareParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   CompareParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -3391,10 +3161,10 @@ class CompareParam : public OpParam {
 #endif  // LESS_THAN_OP
 
 #if defined(LOGICAL_AND_OP) || defined(LOGICAL_OR_OP) || defined(LOGICAL_XOR_OP)
-template <typename Dtype>
+
 class LogicalBinaryParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   LogicalBinaryParam(const VariableNameMap &inputs,
@@ -3406,13 +3176,9 @@ class LogicalBinaryParam : public OpParam {
     output_ = OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
-  const RType *InputY() const {
-    return input_y_->template getInner<RType, Dtype>();
-  }
-  RType *Out() const { return output_->template getInner<RType, Dtype>(); }
+  const RType *InputX() const { return input_x_; }
+  const RType *InputY() const { return input_y_; }
+  RType *Out() const { return output_; }
 
  public:
   GType *input_x_;
@@ -3422,10 +3188,10 @@ class LogicalBinaryParam : public OpParam {
 #endif  // LOGICAL_AND_OP LOGICAL_OR_OP LOGICAL_XOR_OP
 
 #ifdef LOGICAL_NOT_OP
-template <typename Dtype>
+
 class LogicalUnaryParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   LogicalUnaryParam(const VariableNameMap &inputs,
@@ -3436,10 +3202,8 @@ class LogicalUnaryParam : public OpParam {
     output_ = OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
-  RType *Out() const { return output_->template getInner<RType, Dtype>(); }
+  const RType *InputX() const { return input_x_; }
+  RType *Out() const { return output_; }
 
  public:
   GType *input_x_;
@@ -3448,10 +3212,10 @@ class LogicalUnaryParam : public OpParam {
 #endif  // LOGICAL_NOT_OP
 
 #ifdef WRITE_TO_ARRAY_OP
-template <typename Dtype>
+
 class WriteToArrayParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   WriteToArrayParam(const VariableNameMap &inputs,
@@ -3471,10 +3235,10 @@ class WriteToArrayParam : public OpParam {
 #endif
 
 #ifdef READ_FROM_ARRAY_OP
-template <typename Dtype>
+
 class ReadFromArrayParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   ReadFromArrayParam(const VariableNameMap &inputs,
@@ -3494,10 +3258,10 @@ class ReadFromArrayParam : public OpParam {
 #endif
 
 #ifdef IS_EMPTY_OP
-template <typename Dtype>
+
 class IsEmptyParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   IsEmptyParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -3507,10 +3271,8 @@ class IsEmptyParam : public OpParam {
     output_ = OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
-  RType *Out() const { return output_->template getInner<RType, Dtype>(); }
+  const RType *InputX() const { return input_x_; }
+  RType *Out() const { return output_; }
 
  public:
   GType *input_x_;
@@ -3519,10 +3281,10 @@ class IsEmptyParam : public OpParam {
 #endif  // IS_EMPTY_OP
 
 #ifdef INCREMENT_OP
-template <typename Dtype>
+
 class IncrementParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   IncrementParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -3533,10 +3295,8 @@ class IncrementParam : public OpParam {
     step_ = OpParam::GetAttr<float>("step", attrs);
   }
 
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
-  RType *Out() const { return output_->template getInner<RType, Dtype>(); }
+  const RType *InputX() const { return input_x_; }
+  RType *Out() const { return output_; }
   float Step() const { return step_; }
 
  public:
@@ -3546,10 +3306,10 @@ class IncrementParam : public OpParam {
 };
 #endif  // INCREMENT_OP
 #ifdef PAD2D_OP
-template <typename Dtype>
+
 class Pad2dParam : public OpParam {
-  typedef typename DtypeTensorTrait<Dtype>::gtype GType;
-  typedef typename DtypeTensorTrait<Dtype>::rtype RType;
+  typedef typename DtypeTensorTrait::gtype GType;
+  typedef typename DtypeTensorTrait::rtype RType;
 
  public:
   Pad2dParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -3558,10 +3318,8 @@ class Pad2dParam : public OpParam {
     input_x_ = InputXFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputX() const {
-    return input_x_->template getInner<RType, Dtype>();
-  }
-  RType *Out() const { return out_->template getInner<RType, Dtype>(); }
+  const RType *InputX() const { return input_x_; }
+  RType *Out() const { return out_; }
 
  private:
   RType *input_x_;

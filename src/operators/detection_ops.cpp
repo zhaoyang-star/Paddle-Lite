@@ -19,8 +19,8 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef ANCHOR_GENERATOR_OP
-template <typename DeviceType, typename T>
-void AnchorGeneratorOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void AnchorGeneratorOp<T>::InferShape() const {
   const auto &input_dims = this->param_.input_->dims();
   // DLOG << "AnchorGenerator input dim =" << input_dims.size();
   PADDLE_MOBILE_ENFORCE(input_dims.size() == 4, "The layout of input is NCHW.");
@@ -40,16 +40,16 @@ void AnchorGeneratorOp<DeviceType, T>::InferShape() const {
 #endif
 
 #ifdef PROPOSAL_OP
-template <typename DeviceType, typename T>
-void ProposalOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void ProposalOp<T>::InferShape() const {
   this->param_.rpn_rois_->Resize(framework::make_ddim({-1, 4}));
   this->param_.rpn_probs_->Resize(framework::make_ddim({-1, 1}));
 }
 #endif
 
 #ifdef PSROI_POOL_OP
-template <typename DeviceType, typename T>
-void PSRoiPoolOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void PSRoiPoolOp<T>::InferShape() const {
   const auto &rois_dims = this->param_.input_rois_->dims();
   const int pooled_height = this->param_.pooled_height_;
   const int pooled_width = this->param_.pooled_width_;
@@ -66,8 +66,8 @@ void PSRoiPoolOp<DeviceType, T>::InferShape() const {
 #endif
 
 #ifdef ROIALIGN_POOL_OP
-template <typename DeviceType, typename T>
-void RoiAlignPoolOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void RoiAlignPoolOp<T>::InferShape() const {
   const auto &rois_dims = this->param_.input_rois_->dims();
   const int pooled_height = this->param_.pooled_height_;
   const int pooled_width = this->param_.pooled_width_;
@@ -83,8 +83,8 @@ void RoiAlignPoolOp<DeviceType, T>::InferShape() const {
 #endif
 
 #ifdef ROI_PERSPECTIVE_OP
-template <typename DeviceType, typename T>
-void RoiPerspectiveOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void RoiPerspectiveOp<T>::InferShape() const {
   const auto &input_dims = this->param_.input_x_->dims();
   const auto &rois_dims = this->param_.input_rois_->dims();
   const int transformed_height = this->param_.transformed_height_;
@@ -102,18 +102,18 @@ void RoiPerspectiveOp<DeviceType, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
+
 #ifdef ANCHOR_GENERATOR_OP
-REGISTER_OPERATOR_CPU(anchor_generator, ops::AnchorGeneratorOp);
+REGISTER_OPERATOR(anchor_generator, ops::AnchorGeneratorOp);
 #endif
 #ifdef PROPOSAL_OP
-REGISTER_OPERATOR_CPU(generate_proposals, ops::ProposalOp);
+REGISTER_OPERATOR(generate_proposals, ops::ProposalOp);
 #endif
 #ifdef PSROI_POOL_OP
-REGISTER_OPERATOR_CPU(psroi_pool, ops::PSRoiPoolOp);
+REGISTER_OPERATOR(psroi_pool, ops::PSRoiPoolOp);
 #endif
 #ifdef ROI_PERSPECTIVE_OP
-REGISTER_OPERATOR_CPU(roi_perspective_transform, ops::RoiPerspectiveOp);
+REGISTER_OPERATOR(roi_perspective_transform, ops::RoiPerspectiveOp);
 #endif
 #endif
 

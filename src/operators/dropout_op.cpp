@@ -17,8 +17,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void DropoutOp<Dtype, T>::InferShape() const {
+template <typename T>
+void DropoutOp<T>::InferShape() const {
   auto input_dims = this->param_.InputX()->dims();
   this->param_.Out()->Resize(input_dims);
 }
@@ -27,8 +27,8 @@ void DropoutOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(dropout, ops::DropoutOp);
+
+REGISTER_OPERATOR(dropout, ops::DropoutOp);
 #endif
 #ifdef PADDLE_MOBILE_CL
 REGISTER_OPERATOR_CL(dropout, ops::DropoutOp);

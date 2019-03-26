@@ -23,11 +23,11 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef PRIORBOX_OP
-DECLARE_OPERATOR(PriorBox, PriorBoxParam, PriorBoxKernel);
+DECLARE_OPERATOR(PriorBox);
 #endif
 
 #ifdef DENSITY_PRIORBOX_OP
-DECLARE_OPERATOR(DensityPriorBox, DensityPriorBoxParam, DensityPriorBoxKernel);
+DECLARE_OPERATOR(DensityPriorBox);
 #endif
 
 }  // namespace operators

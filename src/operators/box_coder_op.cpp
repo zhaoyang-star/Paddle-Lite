@@ -19,8 +19,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void BoxCoderOp<Dtype, T>::InferShape() const {
+template <typename T>
+void BoxCoderOp<T>::InferShape() const {
   auto input_priorbox_dims = this->param_.InputPriorBox()->dims();
   auto input_priorboxvar_dims = this->param_.InputPriorBoxVar()->dims();
   auto input_targetbox_dims = this->param_.InputTargetBox()->dims();
@@ -52,13 +52,12 @@ void BoxCoderOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(box_coder, ops::BoxCoderOp);
+
+REGISTER_OPERATOR(box_coder, ops::BoxCoderOp);
 #endif
 #ifdef PADDLE_MOBILE_CL
 REGISTER_OPERATOR_CL(box_coder, ops::BoxCoderOp);
 #endif
-#ifdef PADDLE_MOBILE_FPGA
-#endif
+
 
 #endif

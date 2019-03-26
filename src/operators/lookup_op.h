@@ -26,7 +26,7 @@ namespace operators {
 
 using paddle_mobile::framework::Tensor;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class LookupOp : public framework::OperatorWithKernel<
                      DeviceType, LookupParam<DeviceType>,
                      operators::LookupKernel<DeviceType, T>> {

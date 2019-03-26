@@ -23,7 +23,7 @@ namespace operators {
 
 using namespace framework;
 
-/*template <typename DeviceType, typename T>
+/*template <typename T>
 class ConcatKernel
     : public framework::OpKernelBase<DeviceType, ConcatParam<DeviceType>> {
  public:

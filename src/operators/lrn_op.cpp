@@ -19,8 +19,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void LrnOp<Dtype, T>::InferShape() const {
+template <typename T>
+void LrnOp<T>::InferShape() const {
   auto x_dims = this->param_.InputX()->dims();
   this->param_.Out()->Resize(x_dims);
 }
@@ -29,11 +29,8 @@ void LrnOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(lrn, ops::LrnOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(lrn, ops::LrnOp);
-#endif
+
+REGISTER_OPERATOR(lrn, ops::LrnOp);
+
 
 #endif

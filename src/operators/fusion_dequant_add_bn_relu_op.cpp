@@ -19,8 +19,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void FusionDequantAddBNReluOp<Dtype, T>::InferShape() const {
+template <typename T>
+void FusionDequantAddBNReluOp<T>::InferShape() const {
   const auto& input_dims = this->param_.input_->dims();
   this->param_.output_->Resize(input_dims);
 }
@@ -32,8 +32,8 @@ namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_dequant_add_bn_relu,
                         ops::FusionDequantAddBNReluMatcher);
 
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(fusion_dequant_add_bn_relu,
+
+REGISTER_OPERATOR(fusion_dequant_add_bn_relu,
                       ops::FusionDequantAddBNReluOp);
 #endif
 

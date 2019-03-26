@@ -41,7 +41,7 @@ class FusionDeconvAddMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_DECONV_ADD; }
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FusionDeconvAddOp : public framework::OperatorWithKernel<
                               DeviceType, FusionDeconvAddParam<DeviceType>,
                               operators::DeconvAddKernel<DeviceType, T>> {

@@ -24,7 +24,7 @@ namespace operators {
 
 /*using framework::OpKernelBase;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class ConvTransposeKernel
     : public OpKernelBase<DeviceType, ConvTransposeParam<DeviceType>> {
  public:

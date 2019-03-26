@@ -21,7 +21,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 namespace math {
-template <typename DeviceType, typename T>
+template <typename T>
 class CopyMatrixRowsFunctor {
  public:
   // If is_src_index is true,
@@ -33,7 +33,7 @@ class CopyMatrixRowsFunctor {
                   framework::Tensor* dst, bool is_src_index);
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 class LoDTensor2BatchFunctor {
   // Calculate the length of each sequence and
   // sort sequence index by the length.
@@ -147,7 +147,7 @@ class LoDTensor2BatchFunctor {
   }
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 class Batch2LoDTensorFunctor {
  public:
   void operator()(const framework::LoDTensor& batch,

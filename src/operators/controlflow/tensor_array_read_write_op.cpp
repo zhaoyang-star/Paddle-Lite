@@ -18,13 +18,13 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef WRITE_TO_ARRAY_OP
-template <typename Dtype, typename T>
-void WriteToArrayOp<Dtype, T>::InferShape() const {}
+template <typename T>
+void WriteToArrayOp<T>::InferShape() const {}
 #endif  // WRITE_TO_ARRAY_OP
 
 #ifdef READ_FROM_ARRAY_OP
-template <typename Dtype, typename T>
-void ReadFromArrayOp<Dtype, T>::InferShape() const {}
+template <typename T>
+void ReadFromArrayOp<T>::InferShape() const {}
 #endif  // READ_FROM_ARRAY_OP
 
 }  // namespace operators
@@ -32,12 +32,12 @@ void ReadFromArrayOp<Dtype, T>::InferShape() const {}
 
 namespace ops = paddle_mobile::operators;
 
-#ifdef PADDLE_MOBILE_CPU
+
 #ifdef WRITE_TO_ARRAY_OP
-REGISTER_OPERATOR_CPU(write_to_array, ops::WriteToArrayOp);
+REGISTER_OPERATOR(write_to_array, ops::WriteToArrayOp);
 #endif  // WRITE_TO_ARRAY_OP
 
 #ifdef READ_FROM_ARRAY_OP
-REGISTER_OPERATOR_CPU(read_from_array, ops::ReadFromArrayOp);
+REGISTER_OPERATOR(read_from_array, ops::ReadFromArrayOp);
 #endif  // READ_FROM_ARRAY_OP
 #endif

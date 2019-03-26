@@ -21,8 +21,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void ConcatOp<Dtype, T>::InferShape() const {
+template <typename T>
+void ConcatOp<T>::InferShape() const {
   auto inputs = this->param_.Inputs();
   const size_t n = inputs.size();
 
@@ -63,15 +63,7 @@ void ConcatOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(concat, ops::ConcatOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(concat, ops::ConcatOp);
-#endif
+REGISTER_OPERATOR(concat, ops::ConcatOp)
 
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(concat, ops::ConcatOp);
-#endif
 
 #endif

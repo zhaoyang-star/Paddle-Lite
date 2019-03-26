@@ -19,8 +19,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void ElementwiseSubOp<Dtype, T>::InferShape() const {
+template <typename T>
+void ElementwiseSubOp<T>::InferShape() const {
   auto x_dim = this->param_.InputX()->dims();
   this->param_.Out()->Resize(x_dim);
 }
@@ -29,10 +29,9 @@ void ElementwiseSubOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(elementwise_sub, ops::ElementwiseSubOp);
+
+REGISTER_OPERATOR(elementwise_sub, ops::ElementwiseSubOp);
 #endif
-#ifdef PADDLE_MOBILE_FPGA
-#endif
+
 
 #endif

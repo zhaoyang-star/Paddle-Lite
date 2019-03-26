@@ -27,7 +27,7 @@ namespace operators {
 
 using paddle_mobile::framework::Tensor;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class Transpose2Op : public framework::OperatorWithKernel<
                          DeviceType, Transpose2Param<DeviceType>,
                          operators::Transpose2Kernel<DeviceType, T>> {

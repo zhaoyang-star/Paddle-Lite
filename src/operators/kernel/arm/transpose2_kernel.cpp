@@ -34,7 +34,6 @@ bool IsShuffleChannel(const std::vector<int> &axis) {
   return is_shuffle_channel;
 }
 
-template <typename Dtype>
 void ShuffleChannelCompute(const Transpose2Param<CPU> &param) {
   const std::vector<int> &axis = param.Axis();
   const Tensor *input = param.InputX();
@@ -63,7 +62,6 @@ void ShuffleChannelCompute(const Transpose2Param<CPU> &param) {
   }
 }
 
-template <typename Dtype>
 void Transpose2Compute(const Transpose2Param<CPU> &param) {
   const std::vector<int> &axis = param.Axis();
   const Tensor *input = param.InputX();

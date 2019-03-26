@@ -18,8 +18,8 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-template <typename DeviceType, typename T>
-void BilinearOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void BilinearInterpOp<T>::InferShape() const {
   PADDLE_MOBILE_ENFORCE(this->param_.InputX() != nullptr,
                         "Input(X) of BilinearInterOp should not be null.");
   PADDLE_MOBILE_ENFORCE(this->param_.Out() != nullptr,
@@ -45,11 +45,8 @@ void BilinearOp<DeviceType, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(bilinear_interp, ops::BilinearOp);
-#endif
+REGISTER_OPERATOR(bilinear_interp, ops::BilinearInterpOp);
 
-#ifdef PADDLE_MOBILE_FPGA
-#endif
+
 
 #endif

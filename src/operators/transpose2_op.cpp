@@ -21,8 +21,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void Transpose2Op<Dtype, T>::InferShape() const {
+template <typename T>
+void Transpose2Op<T>::InferShape() const {
   auto input_x_dims = this->param_.InputX()->dims();
   auto axis = this->param_.Axis();
 
@@ -57,11 +57,8 @@ void Transpose2Op<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(transpose2, ops::Transpose2Op);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(transpose2, ops::Transpose2Op);
-#endif
+
+REGISTER_OPERATOR(transpose2, ops::Transpose2Op);
+
 
 #endif  // TRANSPOSE_OP

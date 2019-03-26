@@ -19,8 +19,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void FusionFcOp<Dtype, T>::InferShape() const {
+template <typename T>
+void FusionFcOp<T>::InferShape() const {
   auto x_dims = this->param_.InputX()->dims();
   auto y_dims = this->param_.InputY()->dims();
   int x_num_col_dims = this->param_.XNumColDims();
@@ -57,14 +57,8 @@ void FusionFcOp<Dtype, T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_fc, ops::FusionFcMatcher);
 
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(fusion_fc, ops::FusionFcOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(fusion_fc, ops::FusionFcOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(fusion_fc, ops::FusionFcOp);
-#endif
+
+REGISTER_OPERATOR(fusion_fc, ops::FusionFcOp);
+
 
 #endif  // FUSION_FC_OP

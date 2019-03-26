@@ -24,7 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+template <typename T>
 class SequenceExpandOp : public framework::OperatorWithKernel<
                              DeviceType, SequenceExpandParam<DeviceType>,
                              operators::SequenceExpandKernel<DeviceType, T>> {

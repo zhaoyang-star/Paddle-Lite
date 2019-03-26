@@ -23,7 +23,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+template <typename T>
 class DepthwiseConvOp : public framework::OperatorWithKernel<
                             DeviceType, ConvParam<DeviceType>,
                             operators::ConvKernel<DeviceType, T>> {

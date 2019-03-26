@@ -18,8 +18,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void MultiClassNMSOp<Dtype, T>::InferShape() const {
+template <typename T>
+void MultiClassNMSOp<T>::InferShape() const {
   auto input_bboxes_dims = this->param_.InputBBoxes()->dims();
   auto input_scores_dims = this->param_.InputScores()->dims();
   if (input_scores_dims.size() != 3) {
@@ -40,11 +40,8 @@ void MultiClassNMSOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(multiclass_nms, ops::MultiClassNMSOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(multiclass_nms, ops::MultiClassNMSOp);
-#endif
+
+REGISTER_OPERATOR(multiclass_nms, ops::MultiClassNMSOp);
+
 
 #endif

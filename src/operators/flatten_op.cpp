@@ -19,8 +19,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
-void FlattenOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void FlattenOp<T>::InferShape() const {
   PADDLE_MOBILE_ENFORCE(this->param_.InputX() != nullptr,
                         "Input (X) of Flatten op should not be null.");
   PADDLE_MOBILE_ENFORCE(this->param_.Out() != nullptr,
@@ -50,10 +50,9 @@ void FlattenOp<DeviceType, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(flatten, ops::FlattenOp);
+
+REGISTER_OPERATOR(flatten, ops::FlattenOp);
 #endif
-#ifdef PADDLE_MOBILE_FPGA
-#endif
+
 
 #endif

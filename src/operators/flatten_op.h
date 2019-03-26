@@ -42,7 +42,7 @@ inline std::vector<int32_t> GetOutputShape(const int axis,
 }
 using paddle_mobile::framework::Tensor;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FlattenOp : public framework::OperatorWithKernel<
                       DeviceType, FlattenParam<DeviceType>,
                       operators::FlattenKernel<DeviceType, T>> {

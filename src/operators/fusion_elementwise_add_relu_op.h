@@ -42,7 +42,7 @@ class FusioneElementwiseAddReluMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_ELEMENTWISE_ADD_RELU; }
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FusionElementwiseAddReluOp
     : public framework::OperatorWithKernel<
           DeviceType, ElementwiseAddReluParam<DeviceType>,

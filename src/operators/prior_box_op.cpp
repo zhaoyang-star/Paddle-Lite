@@ -19,8 +19,8 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef PRIORBOX_OP
-template <typename Dtype, typename T>
-void PriorBoxOp<Dtype, T>::InferShape() const {
+template <typename T>
+void PriorBoxOp<T>::InferShape() const {
   auto input_dims = this->param_.Input()->dims();
   auto input_image_dims = this->param_.InputImage()->dims();
   auto min_sizes = this->param_.MinSizes();
@@ -47,8 +47,8 @@ void PriorBoxOp<Dtype, T>::InferShape() const {
 #endif  // PRIORBOX_OP
 
 #ifdef DENSITY_PRIORBOX_OP
-template <typename Dtype, typename T>
-void DensityPriorBoxOp<Dtype, T>::InferShape() const {
+template <typename T>
+void DensityPriorBoxOp<T>::InferShape() const {
   auto input_dims = this->param_.Input()->dims();
   auto input_image_dims = this->param_.InputImage()->dims();
 
@@ -82,17 +82,13 @@ void DensityPriorBoxOp<Dtype, T>::InferShape() const {
 
 namespace ops = paddle_mobile::operators;
 
-#ifdef PADDLE_MOBILE_CPU
-#ifdef PRIORBOX_OP
-REGISTER_OPERATOR_CPU(prior_box, ops::PriorBoxOp);
-#endif  // PRIORBOX_OP
-#ifdef DENSITY_PRIORBOX_OP
-REGISTER_OPERATOR_CPU(density_prior_box, ops::DensityPriorBoxOp);
-#endif  // DENSITY_PRIORBOX_OP
-#endif  // PADDLE_MOBILE_CPU
 
-#ifdef PADDLE_MOBILE_CL
 #ifdef PRIORBOX_OP
-REGISTER_OPERATOR_CL(prior_box, ops::PriorBoxOp);
+REGISTER_OPERATOR(prior_box, ops::PriorBoxOp);
 #endif  // PRIORBOX_OP
-#endif  // PADDLE_MOBILE_CL
+
+#ifdef DENSITY_PRIORBOX_OP
+REGISTER_OPERATOR(density_prior_box, ops::DensityPriorBoxOp);
+#endif  // DENSITY_PRIORBOX_OP
+
+

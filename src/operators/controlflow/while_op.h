@@ -23,7 +23,9 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef WHILE_OP
-DECLARE_OPERATOR(While, WhileParam, WhileKernel);
+// DECLARE_OPERATOR(While, WhileParam, WhileKernel);
+DECLARE_OPERATOR_ALL(While);
+
 #endif  // WHILE_OP
 
 }  // namespace operators

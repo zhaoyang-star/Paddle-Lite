@@ -33,8 +33,8 @@ int PoolOutputSize(int input_size, int filter_size, int padding, int stride,
   }
   return output_size;
 }
-template <typename DeviceType, typename T>
-void PoolOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void PoolOp<T>::InferShape() const {
   auto in_x_dims = this->param_.Input()->dims();
   std::vector<int> ksize = this->param_.Ksize();
   std::vector<int> paddings = this->param_.Paddings();
@@ -60,14 +60,8 @@ void PoolOp<DeviceType, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(pool2d, ops::PoolOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(pool2d, ops::PoolOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(pool2d, ops::PoolOp);
-#endif
+
+REGISTER_OPERATOR(pool2d, ops::PoolOp);
+
 
 #endif

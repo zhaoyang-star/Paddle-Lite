@@ -21,8 +21,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void IncrementOp<Dtype, T>::InferShape() const {
+template <typename T>
+void IncrementOp<T>::InferShape() const {
   auto input = this->param_.InputX();
   auto out = this->param_.Out();
   PADDLE_MOBILE_ENFORCE(input->numel() == 1, "input's numel should be 1");
@@ -34,14 +34,8 @@ void IncrementOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(increment, ops::IncrementOp);
-#endif
 
-#ifdef PADDLE_MOBILE_FPGA
-#endif
+REGISTER_OPERATOR(increment, ops::IncrementOp);
 
-#ifdef PADDLE_MOBILE_CL
-#endif
 
 #endif

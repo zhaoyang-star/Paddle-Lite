@@ -19,8 +19,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void SliceOp<Dtype, T>::InferShape() const {
+template <typename T>
+void SliceOp<T>::InferShape() const {
   /// todo: add InputShape() detection.
 }
 
@@ -28,10 +28,7 @@ void SliceOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(slice, ops::SliceOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(slice, ops::SliceOp);
-#endif
+
+REGISTER_OPERATOR(slice, ops::SliceOp);
+
 #endif

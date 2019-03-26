@@ -20,13 +20,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool PriorBoxKernelGpu<float>::Init(PriorBoxParam<GPU_CL> *param) {
+bool PriorBoxKernelGpu<float>::Init(PriorBoxParam *param) {
   this->cl_helper_.AddKernel("prior_box", "prior_box_kernel.cl");
   return true;
 }
 
 template <>
-void PriorBoxKernelGpu<float>::Compute(const PriorBoxParam<GPU_CL> &param) {
+void PriorBoxKernelGpu<float>::Compute(const PriorBoxParam &param) {
   const auto *input_ = param.Input();
   const auto &input_dims = input_->dims();
 

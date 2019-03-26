@@ -24,7 +24,7 @@ namespace operators {
 
 /*using framework::OpKernelBase;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class DeconvAddBNKernel
     : public OpKernelBase<DeviceType, FusionDeconvAddBNParam<DeviceType>> {
  public:

@@ -18,8 +18,8 @@ namespace paddle_mobile {
 namespace operators {
 
 #define DEFINE_ACTIVATION_INFERSHAPE(OpName)                \
-  template <typename Dtype, typename T>                     \
-  void OpName##Op<Dtype, T>::InferShape() const {           \
+  template <typename T>                                     \
+  void OpName##Op<T>::InferShape() const {                  \
     const auto &input_dims = this->param_.InputX()->dims(); \
     this->param_.Out()->Resize(input_dims);                 \
   }
@@ -32,9 +32,6 @@ DEFINE_ACTIVATION_INFERSHAPE(Relu6);
 #ifdef SIGMOID_OP
 DEFINE_ACTIVATION_INFERSHAPE(Sigmoid);
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(sigmoid, ops::SigmoidOp);
-#endif
 #endif  // SIGMOID_OP
 
 #ifdef TANH_OP
@@ -50,36 +47,18 @@ DEFINE_ACTIVATION_INFERSHAPE(Log);
 
 namespace ops = paddle_mobile::operators;
 #ifdef RELU_OP
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(relu, ops::ReluOp);
-REGISTER_OPERATOR_CPU(relu6, ops::Relu6Op);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(relu, ops::ReluOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(relu, ops::ReluOp);
-#endif
+REGISTER_OPERATOR(relu, ops::ReluOp);
+REGISTER_OPERATOR(relu6, ops::Relu6Op);
 #endif  // RELU_OP
 
 #ifdef SIGMOID_OP
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(sigmoid, ops::SigmoidOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(sigmoid, ops::SigmoidOp);
-#endif
+REGISTER_OPERATOR(sigmoid, ops::SigmoidOp);
 #endif  // SIGMOID_OP
 
 #ifdef TANH_OP
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(tanh, ops::TanhOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(tanh, ops::TanhOp);
-#endif
+REGISTER_OPERATOR(tanh, ops::TanhOp);
 #endif  // TANH_OP
 
 #ifdef LOG_OP
-REGISTER_OPERATOR_CPU(log, ops::LogOp);
+REGISTER_OPERATOR(log, ops::LogOp);
 #endif  // LOG_OP

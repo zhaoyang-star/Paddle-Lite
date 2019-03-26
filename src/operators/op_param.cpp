@@ -18,7 +18,7 @@ namespace operators {
 
 #ifdef CONV_OP
 template <>
-Print &operator<<(Print &printer, const ConvParam<CPU> &conv_param) {
+Print &operator<<(Print &printer, const ConvParam &conv_param) {
   printer << "parameter of conv: "
           << "\n";
   printer << "  stride: "
@@ -39,38 +39,32 @@ Print &operator<<(Print &printer, const ConvParam<CPU> &conv_param) {
   return printer;
 }
 
-template class ConvParam<CPU>;
-template class ConvParam<FPGA>;
+
 #endif
 
 #ifdef ELEMENTWISEADD_OP
-template class ElementwiseAddParam<CPU>;
-template class ElementwiseAddParam<FPGA>;
+
 #endif
 
 #ifdef ELEMENTWISEMUL_OP
-template class ElementwiseMulParam<CPU>;
-template class ElementwiseMulParam<FPGA>;
+
 #endif
 
 #ifdef MUL_OP
-template class MulParam<CPU>;
-template class MulParam<FPGA>;
+
 #endif
 
 #ifdef CONCAT_OP
-template class ConcatParam<CPU>;
-template class ConcatParam<FPGA>;
+
 #endif
 
 #ifdef LRN_OP
-template class LrnParam<CPU>;
-template class LrnParam<FPGA>;
+
 #endif
 
 #ifdef FUSION_CONVADD_OP
 
-Print &operator<<(Print &printer, const FusionConvAddParam<CPU> &conv_param) {
+Print &operator<<(Print &printer, const FusionConvAddParam &conv_param) {
   printer << "parameter of conv_add: "
           << "\n";
   printer << "  stride: "

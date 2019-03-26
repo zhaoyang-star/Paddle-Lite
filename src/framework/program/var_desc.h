@@ -67,8 +67,8 @@ class VarDesc {
   bool Persistable() const { return persistable_; }
 
   const TensorDesc &Tensor_desc() const { return tensor_desc_; }
-  const ComputeType &GetComputeType() const { return compute_type_; }
-  const void SetComputeType(ComputeType &compute_type) {
+  const RunTimeType &GetComputeType() const { return compute_type_; }
+  const void SetComputeType(RunTimeType &compute_type) {
     compute_type_ = compute_type;
   }
 
@@ -76,7 +76,7 @@ class VarDesc {
   std::string name_;
   bool persistable_;
 
-  ComputeType compute_type_;
+  RunTimeType compute_type_;
   TensorDesc tensor_desc_;
   VarType_Type type_;
   VarType_Type data_type_;

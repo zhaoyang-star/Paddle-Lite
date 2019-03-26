@@ -21,7 +21,7 @@ namespace paddle_mobile {
 namespace operators {
 
 /*
-template <typename DeviceType, typename T>
+template <typename T>
 class FeedKernel
     : public framework::OpKernelBase<DeviceType, FeedParam<DeviceType>> {
  public:

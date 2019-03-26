@@ -24,7 +24,7 @@ namespace operators {
 
 /*using framework::OpKernelBase;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class TanhKernel : public OpKernelBase<DeviceType, TanhParam<DeviceType>> {
  public:
   void Compute(const TanhParam<DeviceType>& param);

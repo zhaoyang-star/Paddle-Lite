@@ -20,8 +20,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void Reshape2Op<Dtype, T>::InferShape() const {
+template <typename T>
+void Reshape2Op<T>::InferShape() const {
   auto &shape = this->param_.Shape();
   auto input_x_dims = this->param_.InputX()->dims();
   auto out_dims = ValidateShape(shape, input_x_dims);
@@ -37,11 +37,8 @@ void Reshape2Op<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(reshape2, ops::Reshape2Op);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(reshape2, ops::Reshape2Op);
-#endif
+
+REGISTER_OPERATOR(reshape2, ops::Reshape2Op);
+
 
 #endif

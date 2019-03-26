@@ -25,7 +25,6 @@ namespace operators {
 #define GET_VAR_AS_LOD_TENSOR(name, name_dict, scope) \
   OpParam::GetVarValue<framework::LoDTensor>(name, name_dict, scope)
 
-template <typename Dtype>
 class OnehotParam : public OpParam {
  public:
   OnehotParam(const VariableNameMap &inputs, const VariableNameMap &outputs,

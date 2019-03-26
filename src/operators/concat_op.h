@@ -22,23 +22,7 @@ limitations under the License. */
 #include "operators/op_param.h"
 namespace paddle_mobile {
 namespace operators {
-using std::string;
-template <typename DeviceType, typename T>
-class ConcatOp : public framework::OperatorWithKernel<
-                     DeviceType, ConcatParam<DeviceType>,
-                     operators::ConcatKernel<DeviceType, T>> {
- public:
-  ConcatOp(const string &type, const VariableNameMap &inputs,
-           const VariableNameMap &outputs, const framework::AttributeMap &attrs,
-           framework::Scope *scope)
-      : framework::OperatorWithKernel<DeviceType, ConcatParam<DeviceType>,
-                                      operators::ConcatKernel<DeviceType, T>>(
-            type, inputs, outputs, attrs, scope) {}
-  void InferShape() const override;
-
- protected:
-};
-
+DECLARE_OPERATOR(Concat);
 }  // namespace operators
 }  // namespace paddle_mobile
 

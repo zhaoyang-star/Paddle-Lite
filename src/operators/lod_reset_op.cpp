@@ -19,8 +19,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void LodResetOp<Dtype, T>::InferShape() const {
+template <typename T>
+void LodResetOp<T>::InferShape() const {
   const auto &input_dims = this->param_.input_x_->dims();
   this->param_.output_->Resize(input_dims);
 }
@@ -29,8 +29,7 @@ void LodResetOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(lod_reset, ops::LodResetOp);
-#endif
+
+REGISTER_OPERATOR(lod_reset, ops::LodResetOp);
 
 #endif  // LOD_RESET_OP

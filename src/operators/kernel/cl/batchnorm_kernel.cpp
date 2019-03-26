@@ -21,9 +21,9 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool BatchNormKernelGpu<float>::Init(BatchNormParam<GPU_CL> *param) {
+bool BatchNormKernelGpu<float>::Init(BatchNormParam *param) {
   this->cl_helper_.AddKernel("batchnorm", "batchnorm_kernel.cl");
-  const framework::CLImage *mean = param->InputMean();
+  framework::CLImage *mean = param->InputMean();
   const framework::CLImage *variance = param->InputVariance();
   const framework::CLImage *scale = param->InputScale();
   const framework::CLImage *bias = param->InputBias();
@@ -72,14 +72,14 @@ bool BatchNormKernelGpu<float>::Init(BatchNormParam<GPU_CL> *param) {
 }
 
 template <>
-void BatchNormKernelGpu<float>::Compute(const BatchNormParam<GPU_CL> &param) {
+void BatchNormKernelGpu<float>::Compute(const BatchNormParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.OutputY());
 
-  auto input = param.InputX()->GetCLImage();
-  auto out = param.OutputY()->GetCLImage();
-  auto new_scale = param.NewScale()->GetCLImage();
-  auto new_bias = param.NewBias()->GetCLImage();
+  auto input = param.InputX();
+  auto out = param.OutputY();
+  auto new_scale = param.NewScale();
+  auto new_bias = param.NewBias();
   const int out_width = default_work_size[1];
   DLOG << *param.InputX();
   DLOG << *param.NewBias();

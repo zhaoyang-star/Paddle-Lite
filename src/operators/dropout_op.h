@@ -27,7 +27,7 @@ namespace operators {
 
 using paddle_mobile::framework::Tensor;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class DropoutOp : public framework::OperatorWithKernel<
                       DeviceType, DropoutParam<DeviceType>,
                       operators::DropoutKernel<DeviceType, T>> {

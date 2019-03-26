@@ -21,8 +21,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void IsEmptyOp<Dtype, T>::InferShape() const {
+template <typename T>
+void IsEmptyOp<T>::InferShape() const {
   auto out = this->param_.Out();
   out->Resize({1});
 }
@@ -31,14 +31,11 @@ void IsEmptyOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(is_empty, ops::IsEmptyOp);
-#endif
 
-#ifdef PADDLE_MOBILE_FPGA
-#endif
+REGISTER_OPERATOR(is_empty, ops::IsEmptyOp);
 
-#ifdef PADDLE_MOBILE_CL
-#endif
+
+
+
 
 #endif

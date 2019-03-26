@@ -18,8 +18,8 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef LESS_THAN_OP
-template <typename Dtype, typename T>
-void LessThanOp<Dtype, T>::InferShape() const {
+template <typename T>
+void LessThanOp<T>::InferShape() const {
   const auto &input_dims = this->param_.input_x_->dims();
   this->param_.output_->Resize(input_dims);
 }
@@ -30,5 +30,5 @@ void LessThanOp<Dtype, T>::InferShape() const {
 
 namespace ops = paddle_mobile::operators;
 #ifdef LESS_THAN_OP
-REGISTER_OPERATOR_CPU(less_than, ops::LessThanOp);
+REGISTER_OPERATOR(less_than, ops::LessThanOp);
 #endif  // LESS_THAN_OP

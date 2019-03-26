@@ -23,7 +23,7 @@ namespace operators {}
 namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_deconv_add_bn_relu,
                         ops::FusionDeconvAddBNReluMatcher);
-#ifdef PADDLE_MOBILE_CPU
+
 #endif
 
 #ifdef PADDLE_MOBILE_FPGA

@@ -24,7 +24,7 @@ namespace operators {
 
 using std::string;
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FeedOp
     : public framework::OperatorWithKernel<DeviceType, FeedParam<DeviceType>,
                                            FeedKernel<DeviceType, T>> {

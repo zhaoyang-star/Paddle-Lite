@@ -24,7 +24,7 @@ namespace paddle_mobile {
 namespace operators {
 
 /*
-template <typename DeviceType, typename T>
+template <typename T>
 class ElementwiseSubKernel
     : public framework::OpKernelBase<DeviceType,
                                      ElementwiseSubParam<DeviceType>> {

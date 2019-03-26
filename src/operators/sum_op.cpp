@@ -21,8 +21,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void SumOp<Dtype, T>::InferShape() const {
+template <typename T>
+void SumOp<T>::InferShape() const {
   auto inputs = this->param_.Inputs();
   const size_t n = inputs.size();
 
@@ -58,10 +58,8 @@ void SumOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(sum, ops::SumOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-#endif
+
+REGISTER_OPERATOR(sum, ops::SumOp);
+
 
 #endif

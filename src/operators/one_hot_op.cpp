@@ -21,8 +21,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void OnehotOp<Dtype, T>::InferShape() const {
+template <typename T>
+void OnehotOp<T>::InferShape() const {
   const auto &x_dims = this->param_.input_->dims();
   int depth = this->param_.depth_;
   framework::DDim out_dims(x_dims);
@@ -36,8 +36,7 @@ void OnehotOp<Dtype, T>::InferShape() const {
 
 namespace ops = paddle_mobile::operators;
 
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(one_hot, ops::OnehotOp);
-#endif
+
+REGISTER_OPERATOR(one_hot, ops::OnehotOp);
 
 #endif  // ONE_HOT_OP

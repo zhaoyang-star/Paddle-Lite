@@ -24,7 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
+template <typename T>
 class SequencePoolOp : public framework::OperatorWithKernel<
                            DeviceType, SequencePoolParam<DeviceType>,
                            operators::SequencePoolKernel<DeviceType, T>> {

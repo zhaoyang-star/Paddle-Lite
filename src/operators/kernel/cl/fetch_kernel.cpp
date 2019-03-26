@@ -21,7 +21,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool FetchKernelGpu<float>::Init(FetchParam<GPU_CL> *param) {
+bool FetchKernelGpu<float>::Init(FetchParam *param) {
   //  if (param->InputX()->dims().size() <= 2) {
   //    this->cl_helper_.AddKernel("fetch_2d", "fetch_kernel.cl");
   //  } else {
@@ -31,7 +31,7 @@ bool FetchKernelGpu<float>::Init(FetchParam<GPU_CL> *param) {
 }
 
 template <>
-void FetchKernelGpu<float>::Compute(const FetchParam<GPU_CL> &param) {
+void FetchKernelGpu<float>::Compute(const FetchParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.InputX());
 

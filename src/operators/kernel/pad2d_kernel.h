@@ -24,7 +24,6 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype>
 class Pad2DParam : public OpParam {
  public:
   Pad2DParam(const VariableNameMap &inputs, const VariableNameMap &outputs,

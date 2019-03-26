@@ -28,7 +28,7 @@ namespace operators {
 
 using framework::OpKernelBase;
 
-/*template <typename DeviceType, typename T>
+/*template <typename T>
 class ConvKernel : public OpKernelBase<DeviceType, ConvParam<DeviceType>> {
  public:
   void Compute(const ConvParam<DeviceType> &param);

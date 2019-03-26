@@ -18,8 +18,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void PolygonBoxTransformOp<Dtype, T>::InferShape() const {
+template <typename T>
+void PolygonBoxTransformOp<T>::InferShape() const {
   PADDLE_MOBILE_ENFORCE(this->param_.Input() != nullptr,
                         "Input (Input) of get_shape op should not be null.");
   PADDLE_MOBILE_ENFORCE(this->param_.Output() != nullptr,
@@ -38,8 +38,8 @@ void PolygonBoxTransformOp<Dtype, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(polygon_box_transform, ops::PolygonBoxTransformOp);
-#endif
+
+REGISTER_OPERATOR(polygon_box_transform, ops::PolygonBoxTransformOp);
+
 
 #endif

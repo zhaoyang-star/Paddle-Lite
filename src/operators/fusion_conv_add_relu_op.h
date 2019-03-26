@@ -43,7 +43,7 @@ class FusionConvAddReluOpMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_CONV_ADD_RELU; }
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FusionConvAddReluOp : public framework::OperatorWithKernel<
                                 DeviceType, FusionConvAddReluParam<DeviceType>,
                                 operators::ConvAddReluKernel<DeviceType, T>> {

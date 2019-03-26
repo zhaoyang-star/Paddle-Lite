@@ -20,7 +20,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool MultiClassNMSKernelGpu<float>::Init(MultiClassNMSParam<GPU_CL>* param) {
+bool MultiClassNMSKernelGpu<float>::Init(MultiClassNMSParam* param) {
   this->cl_helper_.AddKernel("fetch", "fetch_kernel.cl");
   this->cl_helper_.AddKernel("feed", "feed_kernel.cl");
   return true;
@@ -233,9 +233,9 @@ void MultiClassOutput(const framework::Tensor& scores,
 }
 
 template <typename P>
-void MultiClassNMSCompute(const MultiClassNMSParam<GPU_CL>& param,
-                          cl_context context, cl_command_queue commandQueue,
-                          cl_kernel kernel0, cl_kernel kernel1) {
+void MultiClassNMSCompute(const MultiClassNMSParam& param, cl_context context,
+                          cl_command_queue commandQueue, cl_kernel kernel0,
+                          cl_kernel kernel1) {
   auto* input_bboxes_image = param.InputBBoxes();
   auto& input_bboxes_dims = input_bboxes_image->dims();
   Tensor* input_bboxes = new Tensor();
@@ -323,8 +323,7 @@ void MultiClassNMSCompute(const MultiClassNMSParam<GPU_CL>& param,
   DLOG << "yangfei20";
 }
 template <>
-void MultiClassNMSKernelGpu<float>::Compute(
-    const MultiClassNMSParam<GPU_CL>& param) {
+void MultiClassNMSKernelGpu<float>::Compute(const MultiClassNMSParam& param) {
   auto kernel0 = this->cl_helper_.KernelAt(0);
   auto kernel1 = this->cl_helper_.KernelAt(1);
   MultiClassNMSCompute<float>(param, this->cl_helper_.CLContext(),

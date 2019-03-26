@@ -50,7 +50,7 @@ class FusionDequantBNMatcher : public framework::FusionOpMatcher {
 #endif  // FUSION_DEQUANT_BN_OP || FUSION_DEQUANT_BN_RELU_OP
 
 #ifdef FUSION_DEQUANT_BN_OP
-template <typename DeviceType, typename T>
+template <typename T>
 class FusionDequantBNOp : public framework::OperatorWithKernel<
                               DeviceType, FusionDequantBNParam<DeviceType>,
                               operators::FusionDequantBNKernel<DeviceType, T>> {
@@ -78,7 +78,7 @@ class FusionDequantBNReluMatcher : public FusionDequantBNMatcher {
   virtual std::string Type() { return G_OP_TYPE_FUSION_DEQUANT_BN_RELU; }
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FusionDequantBNReluOp
     : public framework::OperatorWithKernel<
           DeviceType, FusionDequantBNParam<DeviceType>,

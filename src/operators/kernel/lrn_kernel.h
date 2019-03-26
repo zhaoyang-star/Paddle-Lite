@@ -168,7 +168,7 @@ struct LRNFunctor {
   }
 };
 
-/*template <typename DeviceType, typename T>
+/*template <typename T>
 class LrnKernel
     : public framework::OpKernelBase<DeviceType, LrnParam<DeviceType>> {
  public:

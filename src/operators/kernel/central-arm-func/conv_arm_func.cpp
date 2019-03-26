@@ -47,7 +47,7 @@ bool IsExpand(const std::vector<int64_t> &filter_dim,
   return !(filter_1 && strides_1 && padding_0 && dilation_1);
 }
 
-#ifdef PADDLE_MOBILE_CPU
+
 template <typename Itype, typename Otype>
 void GemmConv(const ConvParam<CPU> &param) {
   const Tensor *input = param.Input();

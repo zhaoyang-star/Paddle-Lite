@@ -58,7 +58,7 @@ class FusionConvBNAddReluMatcher : public framework::FusionOpMatcher {
   }
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 class FusionConvBNAddReluOp
     : public framework::OperatorWithKernel<
           DeviceType, FusionConvBNAddReluParam<DeviceType>,

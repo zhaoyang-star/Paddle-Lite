@@ -23,8 +23,8 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-using std::string;
-template <typename DeviceType, typename T>
+/*using std::string;
+template <typename T>
 class BatchNormOp
     : public framework::OperatorWithKernel<DeviceType,
                                            BatchNormParam<DeviceType>,
@@ -40,7 +40,10 @@ class BatchNormOp
   void InferShape() const override;
 
  protected:
-};
+};*/
+
+// DECLARE_OPERATOR_WITH_PARAMS(BatchNorm, BatchNormParam);
+DECLARE_OPERATOR(BatchNorm);
 
 }  // namespace operators
 }  // namespace paddle_mobile

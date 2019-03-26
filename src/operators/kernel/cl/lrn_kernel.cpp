@@ -20,13 +20,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool LrnKernelGpu<float>::Init(LrnParam<GPU_CL> *param) {
+bool LrnKernelGpu<float>::Init(LrnParam *param) {
   this->cl_helper_.AddKernel("lrn", "lrn_kernel.cl");
   return true;
 }
 
 template <>
-void LrnKernelGpu<float>::Compute(const LrnParam<GPU_CL> &param) {
+void LrnKernelGpu<float>::Compute(const LrnParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.Out());
 

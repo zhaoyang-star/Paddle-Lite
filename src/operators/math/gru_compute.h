@@ -27,7 +27,7 @@ struct GRUMetaValue {
   T *prev_out_value;
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 struct GRUUnitFunctor {
   static void compute(GRUMetaValue<T> value, int frame_size, int batch_size,
                       const ActivationType active_node,

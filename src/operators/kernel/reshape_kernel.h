@@ -67,7 +67,7 @@ inline framework::DDim ValidateShape(const std::vector<int> shape,
   return framework::make_ddim(output_shape);
 }
 
-/*template <typename DeviceType, typename T>
+/*template <typename T>
 class ReshapeKernel
     : public framework::OpKernelBase<DeviceType, ReshapeParam<DeviceType>> {
  public:

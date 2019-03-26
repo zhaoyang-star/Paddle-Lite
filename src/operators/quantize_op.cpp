@@ -20,8 +20,8 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType, typename T>
-void QuantizeOp<DeviceType, T>::InferShape() const {
+template <typename T>
+void QuantizeOp<T>::InferShape() const {
   const auto &input_dims = this->param_.input_->dims();
   this->param_.output_->Resize(input_dims);
   auto scale_dims = framework::make_ddim(std::vector<int>{1});
@@ -32,8 +32,8 @@ void QuantizeOp<DeviceType, T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(quantize, ops::QuantizeOp);
-#endif
+
+REGISTER_OPERATOR(quantize, ops::QuantizeOp);
+
 
 #endif  // QUANT_OP
