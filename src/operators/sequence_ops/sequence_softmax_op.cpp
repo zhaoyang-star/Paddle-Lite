@@ -34,6 +34,4 @@ void SequenceSoftmaxOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(sequence_softmax, ops::SequenceSoftmaxOp);
-#endif
-
 #endif  // SEQUENCE_SOFTMAX_OP

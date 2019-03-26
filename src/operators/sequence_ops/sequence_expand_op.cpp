@@ -51,6 +51,6 @@ void SequenceExpandOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(sequence_expand, ops::SequenceExpandOp);
-#endif
+
 
 #endif  // SEQUENCE_EXPAND_OP

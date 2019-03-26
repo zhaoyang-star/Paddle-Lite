@@ -1827,7 +1827,6 @@ class FusionConvAddParam : public ConvParam {
 Print &operator<<(Print &printer, const FusionConvAddParam &conv_param);
 
 #ifdef FUSION_CONVADDRELU_OP
-template <typename DeviceType>
 class FusionConvAddReluParam : public FusionConvAddParam {
  public:
   FusionConvAddReluParam(const VariableNameMap &inputs,

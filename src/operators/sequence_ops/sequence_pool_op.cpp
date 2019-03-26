@@ -33,6 +33,6 @@ void SequencePoolOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(sequence_pool, ops::SequencePoolOp);
-#endif
+#
 
 #endif  // SEQUENCE_POOL_OP

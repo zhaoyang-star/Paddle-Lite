@@ -54,9 +54,5 @@ void BoxCoderOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(box_coder, ops::BoxCoderOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(box_coder, ops::BoxCoderOp);
-#endif
 
 #endif

@@ -39,4 +39,3 @@ REGISTER_OPERATOR(write_to_array, ops::WriteToArrayOp);
 #ifdef READ_FROM_ARRAY_OP
 REGISTER_OPERATOR(read_from_array, ops::ReadFromArrayOp);
 #endif  // READ_FROM_ARRAY_OP
-#endif

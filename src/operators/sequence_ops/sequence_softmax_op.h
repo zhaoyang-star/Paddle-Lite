@@ -24,7 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename T>
+/*template <typename T>
 class SequenceSoftmaxOp : public framework::OperatorWithKernel<
                               DeviceType, SoftmaxParam<DeviceType>,
                               operators::SequenceSoftmaxKernel<DeviceType, T>> {
@@ -39,7 +39,8 @@ class SequenceSoftmaxOp : public framework::OperatorWithKernel<
             type, inputs, outputs, attrs, scope) {}
   // inference output shape
   void InferShape() const override;
-};
+};*/
+DECLARE_OPERATOR_WITH_PARAMS(SequenceSoftmax,SoftmaxParam,SequenceSoftmaxKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

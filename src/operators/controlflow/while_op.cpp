@@ -31,5 +31,4 @@ namespace ops = paddle_mobile::operators;
 
 #ifdef WHILE_OP
 REGISTER_OPERATOR(while, ops::WhileOp);
-#endif  // WHILE_OP
 #endif

@@ -22,6 +22,7 @@ namespace operators {
 
 template <>
 bool BatchNormKernelGpu<float>::Init(BatchNormParam *param) {
+  this->InitCLHelper(scope->GetCLScpoe());
   this->cl_helper_.AddKernel("batchnorm", "batchnorm_kernel.cl");
   framework::CLImage *mean = param->InputMean();
   const framework::CLImage *variance = param->InputVariance();

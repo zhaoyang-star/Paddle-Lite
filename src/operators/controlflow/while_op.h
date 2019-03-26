@@ -24,7 +24,7 @@ namespace operators {
 
 #ifdef WHILE_OP
 // DECLARE_OPERATOR(While, WhileParam, WhileKernel);
-DECLARE_OPERATOR_ALL(While);
+DECLARE_OPERATOR(While);
 
 #endif  // WHILE_OP
 

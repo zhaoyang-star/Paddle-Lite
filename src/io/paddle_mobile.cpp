@@ -21,6 +21,7 @@ limitations under the License. */
 #ifdef PADDLE_MOBILE_CL
 #include <CL/cl.h>
 #include <mutex>
+#include <framework/executor_cpu_impl.h>
 #include "framework/cl/cl_engine.h"
 #include "framework/cl/cl_tensor.h"
 #endif
@@ -46,7 +47,7 @@ PMStatus PaddleMobile<Device, T>::Load(const std::string &dirname,
   }
 
   if (executor_.get() == nullptr) {
-    executor_ = std::make_shared<framework::ExecutorSpecificDevice<Device, T>>(
+    executor_ = std::make_shared<framework::ExecutorCpu< T>>(
         loader_->Load(dirname, optimize, quantification), config_, batch_size,
         optimize, lod_mode);
   } else {
@@ -70,7 +71,7 @@ PMStatus PaddleMobile<Device, T>::Load(const std::string &model_path,
   }
 
   if (executor_.get() == nullptr) {
-    executor_ = std::make_shared<framework::ExecutorSpecificDevice<Device, T>>(
+    executor_ = std::make_shared<framework::ExecutorCpu<T>>(
         loader_->Load(model_path, para_path, optimize, quantification), config_,
         batch_size, optimize, lod_mode);
   } else {
@@ -106,7 +107,7 @@ bool PaddleMobile<Device, T>::LoadCombinedMemory(
     LOG(kLOG_INFO) << "loader inited";
   }
   if (executor_.get() == nullptr) {
-    executor_ = std::make_shared<framework::ExecutorSpecificDevice<Device, T>>(
+    executor_ = std::make_shared<framework::ExecutorCpu< T>>(
         loader_->LoadCombinedMemory(model_len, model_buf, combined_params_len,
                                     combined_params_buf, optimize,
                                     quantification),

@@ -24,7 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename T>
+/*template <typename T>
 class SequenceExpandOp : public framework::OperatorWithKernel<
                              DeviceType, SequenceExpandParam<DeviceType>,
                              operators::SequenceExpandKernel<DeviceType, T>> {
@@ -39,7 +39,10 @@ class SequenceExpandOp : public framework::OperatorWithKernel<
             type, inputs, outputs, attrs, scope) {}
   // inference output shape
   void InferShape() const override;
-};
+};*/
+
+DECLARE_OPERATOR(SequenceExpand);
+
 
 }  // namespace operators
 }  // namespace paddle_mobile

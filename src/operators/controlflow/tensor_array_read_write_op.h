@@ -24,13 +24,13 @@ namespace operators {
 
 #ifdef WRITE_TO_ARRAY_OP
 // DECLARE_OPERATOR(WriteToArray, WriteToArrayParam, WriteToArrayKernel);
-DECLARE_OPERATOR_ALL(WriteToArray);
+DECLARE_OPERATOR(WriteToArray);
 
 #endif  // WRITE_TO_ARRAY_OP
 
 #ifdef READ_FROM_ARRAY_OP
 // DECLARE_OPERATOR(ReadFromArray, ReadFromArrayParam, ReadFromArrayKernel);
-DECLARE_OPERATOR_ALL(ReadFromArray);
+DECLARE_OPERATOR(ReadFromArray);
 
 #endif  // WRITE_TO_ARRAY_OP
 

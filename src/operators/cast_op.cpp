@@ -31,6 +31,5 @@ void CastOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(cast, ops::CastOp);
-#endif
 
 #endif  // CAST_OP
