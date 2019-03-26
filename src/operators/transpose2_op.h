@@ -25,7 +25,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using paddle_mobile::framework::Tensor;
+/*using paddle_mobile::framework::Tensor;
 
 template <typename T>
 class Transpose2Op : public framework::OperatorWithKernel<
@@ -44,7 +44,8 @@ class Transpose2Op : public framework::OperatorWithKernel<
       DeviceType, Transpose2Param<DeviceType>,
       operators::Transpose2Kernel<DeviceType, T>>::OperatorWithKernel;
   void InferShape() const override;
-};
+};*/
+DECLARE_OPERATOR(Transpose2);
 
 }  // namespace operators
 }  // namespace paddle_mobile

@@ -63,5 +63,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(pool2d, ops::PoolOp);
 
-
 #endif

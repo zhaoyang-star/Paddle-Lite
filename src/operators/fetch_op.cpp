@@ -29,11 +29,4 @@ void FetchOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(fetch, ops::FetchOp);
-#endif
 
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(fetch, ops::FetchOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(fetch, ops::FetchOp);
-#endif

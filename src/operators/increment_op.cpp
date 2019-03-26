@@ -37,5 +37,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(increment, ops::IncrementOp);
 
-
 #endif

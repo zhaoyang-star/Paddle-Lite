@@ -25,7 +25,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using paddle_mobile::framework::Tensor;
+/*using paddle_mobile::framework::Tensor;
 
 template <typename T>
 class DropoutOp : public framework::OperatorWithKernel<
@@ -41,7 +41,8 @@ class DropoutOp : public framework::OperatorWithKernel<
   void InferShape() const override;
 
  protected:
-};
+};*/
+DECLARE_OPERATOR(Dropout);
 
 }  // namespace operators
 }  // namespace paddle_mobile

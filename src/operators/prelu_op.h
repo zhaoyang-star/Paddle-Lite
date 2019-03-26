@@ -25,6 +25,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
+/*
 using paddle_mobile::framework::Tensor;
 
 template <typename T>
@@ -42,6 +43,8 @@ class PReluOp : public framework::OperatorWithKernel<
 
  protected:
 };
+*/
+DECLARE_OPERATOR(PRelu);
 
 }  // namespace operators
 }  // namespace paddle_mobile

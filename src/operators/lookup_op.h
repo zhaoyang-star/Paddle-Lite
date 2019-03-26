@@ -26,7 +26,7 @@ namespace operators {
 
 using paddle_mobile::framework::Tensor;
 
-template <typename T>
+/*template <typename T>
 class LookupOp : public framework::OperatorWithKernel<
                      DeviceType, LookupParam<DeviceType>,
                      operators::LookupKernel<DeviceType, T>> {
@@ -38,7 +38,9 @@ class LookupOp : public framework::OperatorWithKernel<
                                       operators::LookupKernel<DeviceType, T>>(
             type, inputs, outputs, attrs, scope) {}
   void InferShape() const override;
-};
+};*/
+
+DECLARE_OPERATOR(Lookup);
 
 }  // namespace operators
 }  // namespace paddle_mobile

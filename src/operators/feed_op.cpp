@@ -35,12 +35,4 @@ void FeedOp<T>::InferShape() const {
 
 namespace ops = paddle_mobile::operators;
 
-
 REGISTER_OPERATOR(feed, ops::FeedOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(feed, ops::FeedOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(feed, ops::FeedOp);
-#endif

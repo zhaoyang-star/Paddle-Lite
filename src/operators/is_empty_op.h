@@ -23,7 +23,7 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-using std::string;
+/*using std::string;
 template <typename T>
 class IsEmptyOp
     : public framework::OperatorWithKernel<DeviceType, IsEmptyParam<DeviceType>,
@@ -39,7 +39,8 @@ class IsEmptyOp
   void InferShape() const override;
 
  protected:
-};
+};*/
+DECLARE_OPERATOR(IsEmpty);
 
 }  // namespace operators
 }  // namespace paddle_mobile

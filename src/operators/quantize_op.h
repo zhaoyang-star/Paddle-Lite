@@ -24,7 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename T>
+/*template <typename T>
 class QuantizeOp : public framework::OperatorWithKernel<
                        DeviceType, QuantizeParam<DeviceType>,
                        operators::QuantizeKernel<DeviceType, T>> {
@@ -37,7 +37,9 @@ class QuantizeOp : public framework::OperatorWithKernel<
             type, inputs, outputs, attrs, scope) {}
   // inference output shape
   void InferShape() const override;
-};
+};*/
+
+DECLARE_OPERATOR(Quantize);
 
 }  // namespace operators
 }  // namespace paddle_mobile

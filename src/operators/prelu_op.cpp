@@ -36,5 +36,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(prelu, ops::PReluOp);
 
-
 #endif

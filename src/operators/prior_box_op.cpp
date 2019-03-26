@@ -82,7 +82,6 @@ void DensityPriorBoxOp<T>::InferShape() const {
 
 namespace ops = paddle_mobile::operators;
 
-
 #ifdef PRIORBOX_OP
 REGISTER_OPERATOR(prior_box, ops::PriorBoxOp);
 #endif  // PRIORBOX_OP
@@ -90,5 +89,3 @@ REGISTER_OPERATOR(prior_box, ops::PriorBoxOp);
 #ifdef DENSITY_PRIORBOX_OP
 REGISTER_OPERATOR(density_prior_box, ops::DensityPriorBoxOp);
 #endif  // DENSITY_PRIORBOX_OP
-
-

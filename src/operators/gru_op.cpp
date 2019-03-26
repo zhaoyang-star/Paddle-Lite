@@ -60,6 +60,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(gru, ops::GruOp);
 
-
-
 #endif

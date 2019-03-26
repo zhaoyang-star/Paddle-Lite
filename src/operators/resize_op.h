@@ -25,7 +25,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using paddle_mobile::framework::Tensor;
+/*using paddle_mobile::framework::Tensor;
 
 template <typename T>
 class ResizeOp : public framework::OperatorWithKernel<
@@ -41,7 +41,10 @@ class ResizeOp : public framework::OperatorWithKernel<
   void InferShape() const override;
 
  protected:
-};
+};*/
+
+DECLARE_OPERATOR(Resize);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

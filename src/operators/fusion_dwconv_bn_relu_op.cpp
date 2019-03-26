@@ -51,9 +51,6 @@ void FusionDWConvBNReluOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_dwconv_bn_relu, ops::FusionDWConvBNReluMatcher);
 
-
 REGISTER_OPERATOR(fusion_dwconv_bn_relu, ops::FusionDWConvBNReluOp);
-
-
 
 #endif

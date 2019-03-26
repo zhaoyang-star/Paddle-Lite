@@ -205,36 +205,53 @@ class FusionOpMatcher {
   framework::OperatorWithKernels<T, OpParam>::kernels.insert( \
       KernelType, kernel##DeviceName##_);
 
-#define REGIST_KERNEL_TYPE(OpName, DeviceName) \
-  OpName##Kernel##DeviceName<T> kernel##DeviceName##_;
+#define REGIST_KERNEL_TYPE(OpName, DeviceName, KernelNamePrifix) \
+  KernelNamePrifix##DeviceName<T> kernel##DeviceName##_;
 
 #ifdef PADDLE_MOBILE_CPU
-#define REGIST_KERNEL_CPU(OpName) REGIST_KERNEL_TYPE(OpName, Cpu);
+#define REGIST_KERNEL_CPU_WITH_KERNEL_PREFIX(OpName, KernelNamePrifix) \
+  REGIST_KERNEL_TYPE(OpName, Cpu, KernelNamePrifix);
+#define REGIST_KERNEL_CPU(OpName) \
+  REGIST_KERNEL_CPU_WITH_KERNEL_PREFIX(OpName, OpName##Kernel);
+
 #define INIT_KERNEKS_CPU(OpName, OpParam) \
   INIT_KERNEKS(OpName, OpParam, TYPE_CPU, Cpu);
 #else
 #define REGIST_KERNEL_CPU(OpName) ;
 #define INIT_KERNEKS_CPU(OpName, OpParam) ;
+#define REGIST_KERNEL_CPU_WITH_KERNEL_PREFIX(OpName, KernelNamePrifix) ;
 #endif
 #ifdef PADDLE_MOBILE_CL
-#define REGIST_KERNEL_GPU(OpName) REGIST_KERNEL_TYPE(OpName, Gpu);
+
+#define REGIST_KERNEL_GPU_WITH_KERNEL_PREFIX(OpName, KernelNamePrifix) \
+  REGIST_KERNEL_TYPE(OpName, Gpu, KernelNamePrifix);
+
+#define REGIST_KERNEL_GPU(OpName) \
+  REGIST_KERNEL_GPU_WITH_KERNEL_PREFIX(OpName, OpName##Kernel);
+
 #define INIT_KERNEKS_GPU(OpName, OpParam) \
   INIT_KERNEKS(OpName, OpParam, TYPE_GPU, Gpu);
+
 #else
 #define REGIST_KERNEL_GPU(OpName) ;
+#define REGIST_KERNEL_GPU_WITH_KERNEL_PREFIX(OpName, KernelNamePrifix) ;
 #define INIT_KERNEKS_GPU(OpName, OpParam) ;
 #endif
 
 #ifdef PADDLE_MOBILE_FPGA
-#define REGIST_KERNEL_FPGA(OpName) REGIST_KERNEL_TYPE(OpName, Fpga);
+#define REGIST_KERNEL_FPGA_WITH_KERNEL_PREFIX(OpName, KernelNamePrifix) \
+  REGIST_KERNEL_TYPE(OpName, Fpga, KernelNamePrifix);
+#define REGIST_KERNEL_FPGA(OpName) \
+  REGIST_KERNEL_FPGA_WITH_KERNEL_PREFIX(OpName, OpName##Kernel);
 #define INIT_KERNEKS_GPU(OpName, OpParam) \
   INIT_KERNEKS(OpName, OpParam, TYPE_FPGA, Fpga);
 #else
+#define REGIST_KERNEL_FPGA_WITH_KERNEL_PREFIX(OpName, KernelNamePrifix) ;
 #define REGIST_KERNEL_FPGA(OpName) ;
 #define INIT_KERNEKS_FPGA(OpName, OpParam) ;
 #endif
 
-#define DECLARE_OPERATOR_WITH_PARAMS(OpName, OpParam)                         \
+#define DECLARE_OPERATOR_WITH_PARAMS(OpName, OpParam, KernelNamePrifix)       \
   template <typename T>                                                       \
   class OpName##Op : public framework::OperatorWithKernels<T, OpParam> {      \
    public:                                                                    \
@@ -249,13 +266,13 @@ class FusionOpMatcher {
     }                                                                         \
                                                                               \
     void InferShape() const override;                                         \
-    REGIST_KERNEL_CPU(OpName);                                                \
-    REGIST_KERNEL_GPU(OpName);                                                \
-    REGIST_KERNEL_FPGA(OpName);                                               \
+    REGIST_KERNEL_CPU_WITH_KERNEL_PREFIX(OpName, KernelNamePrifix);           \
+    REGIST_KERNEL_GPU_WITH_KERNEL_PREFIX(OpName, KernelNamePrifix);           \
+    REGIST_KERNEL_FPGA_WITH_KERNEL_PREFIX(OpName, KernelNamePrifix);          \
   };
 
 #define DECLARE_OPERATOR(OpName) \
-  DECLARE_OPERATOR_WITH_PARAMS(OpName, OpName##Param)
+  DECLARE_OPERATOR_WITH_PARAMS(OpName, OpName##Param, OpName##Kernel)
 
 /*
 #define DECLARE_OPERATOR_CPU(OpName) DECLARE_OPERATOR(OpName, Cpu, CPU)

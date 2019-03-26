@@ -54,14 +54,5 @@ void ConvOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(conv2d, ops::ConvOp);
-#endif
-
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(conv2d, ops::ConvOp);
-#endif
-
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(conv2d, ops::ConvOp);
-#endif
 
 #endif

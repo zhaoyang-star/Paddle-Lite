@@ -41,8 +41,6 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(norm, ops::NormOp);
 
-
-
 #ifdef PADDLE_MOBILE_CL
 #endif
 

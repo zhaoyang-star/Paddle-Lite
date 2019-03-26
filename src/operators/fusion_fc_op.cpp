@@ -57,8 +57,6 @@ void FusionFcOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_fc, ops::FusionFcMatcher);
 
-
 REGISTER_OPERATOR(fusion_fc, ops::FusionFcOp);
-
 
 #endif  // FUSION_FC_OP

@@ -43,5 +43,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(multiclass_nms, ops::MultiClassNMSOp);
 
-
 #endif

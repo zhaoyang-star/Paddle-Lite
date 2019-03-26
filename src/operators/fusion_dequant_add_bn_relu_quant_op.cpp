@@ -31,11 +31,9 @@ namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_dequant_add_bn_relu_quant,
                         ops::FusionDequantAddBNReluQuantMatcher);
 
-
 REGISTER_OPERATOR(fusion_dequant_add_bn_relu_quant,
-                      ops::FusionDequantAddBNReluQuantOp);
+                  ops::FusionDequantAddBNReluQuantOp);
 #endif
-#endif  // FUSION_DEQUANT_ADD_BN_RELU_QUANT_OP
 
 #ifdef FUSION_DEQUANT_ADD_BN_QUANT_OP
 namespace paddle_mobile {
@@ -54,9 +52,6 @@ namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_dequant_add_bn_quant,
                         ops::FusionDequantAddBNQuantMatcher);
 
-
-REGISTER_OPERATOR(fusion_dequant_add_bn_quant,
-                      ops::FusionDequantAddBNQuantOp);
-#endif
+REGISTER_OPERATOR(fusion_dequant_add_bn_quant, ops::FusionDequantAddBNQuantOp);
 
 #endif  // FUSION_DEQUANT_ADD_BN_QUANT_OP

@@ -41,7 +41,7 @@ class SplitOp
 };
 */
 
-DECLARE_OPERATOR_ALL(Split);
+DECLARE_OPERATOR(Split);
 }  // namespace operators
 }  // namespace paddle_mobile
 

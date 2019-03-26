@@ -58,6 +58,7 @@ class FusionConvBNAddReluMatcher : public framework::FusionOpMatcher {
   }
 };
 
+/*
 template <typename T>
 class FusionConvBNAddReluOp
     : public framework::OperatorWithKernel<
@@ -76,7 +77,9 @@ class FusionConvBNAddReluOp
 
  protected:
 };
-
+*/
+DECLARE_OPERATOR_WITH_PARAMS(FusionConvBNAddRelu, FusionConvBNAddReluParam,
+                             ConvBNAddReluKernel);
 }  // namespace operators
 }  // namespace paddle_mobile
 

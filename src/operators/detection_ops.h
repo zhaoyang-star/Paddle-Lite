@@ -23,15 +23,15 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef ANCHOR_GENERATOR_OP
-DECLARE_OPERATOR(AnchorGenerator, AnchorGeneratorParam, AnchorGeneratorKernel);
+DECLARE_OPERATOR(AnchorGenerator);
 #endif
 
 #ifdef PROPOSAL_OP
-DECLARE_OPERATOR(Proposal, ProposalParam, ProposalKernel);
+DECLARE_OPERATOR(Proposal);
 #endif
 
 #ifdef PSROI_POOL_OP
-DECLARE_OPERATOR(PSRoiPool, PSRoiPoolParam, PSRoiPoolKernel);
+DECLARE_OPERATOR(PSRoiPool);
 #endif
 
 #ifdef ROIALIGN_POOL_OP
@@ -39,7 +39,7 @@ DECLARE_OPERATOR(RoiAlignPool, RoiAlignPoolParam, RoiAlignPoolKernel);
 #endif
 
 #ifdef ROI_PERSPECTIVE_OP
-DECLARE_OPERATOR(RoiPerspective, RoiPerspectiveParam, RoiPerspectiveKernel);
+DECLARE_OPERATOR(RoiPerspective);
 #endif
 
 }  // namespace operators

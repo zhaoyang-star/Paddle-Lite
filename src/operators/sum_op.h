@@ -22,7 +22,7 @@ limitations under the License. */
 #include "operators/op_param.h"
 namespace paddle_mobile {
 namespace operators {
-using std::string;
+/*using std::string;
 template <typename T>
 class SumOp : public framework::OperatorWithKernel<
                   DeviceType, SumParam<DeviceType>,
@@ -41,7 +41,8 @@ class SumOp : public framework::OperatorWithKernel<
   void InferShape() const override;
 
  protected:
-};
+};*/
+DECLARE_OPERATOR(Sum);
 
 }  // namespace operators
 }  // namespace paddle_mobile

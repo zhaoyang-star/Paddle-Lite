@@ -65,5 +65,4 @@ void ConcatOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 REGISTER_OPERATOR(concat, ops::ConcatOp)
 
-
 #endif

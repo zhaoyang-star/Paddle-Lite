@@ -37,5 +37,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(pad2d, ops::Pad2DOp);
 
-
 #endif  // PAD2D_OP

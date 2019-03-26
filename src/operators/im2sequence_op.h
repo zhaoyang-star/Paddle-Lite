@@ -24,6 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
+/*
 template <typename T>
 class Im2SequenceOp : public framework::OperatorWithKernel<
                           DeviceType, Im2SequenceParam<DeviceType>,
@@ -41,6 +42,8 @@ class Im2SequenceOp : public framework::OperatorWithKernel<
 
  private:
 };
+*/
+DECLARE_OPERATOR(Im2Sequence);
 
 }  // namespace operators
 }  // namespace paddle_mobile

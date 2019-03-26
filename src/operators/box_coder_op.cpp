@@ -59,5 +59,4 @@ REGISTER_OPERATOR(box_coder, ops::BoxCoderOp);
 REGISTER_OPERATOR_CL(box_coder, ops::BoxCoderOp);
 #endif
 
-
 #endif

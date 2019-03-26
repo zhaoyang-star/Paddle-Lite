@@ -50,6 +50,7 @@ class FusionDWConvBNReluMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_DWCONV_BN_RELU; }
 };
 
+/*
 template <typename T>
 class FusionDWConvBNReluOp
     : public framework::OperatorWithKernel<
@@ -69,7 +70,9 @@ class FusionDWConvBNReluOp
 
  protected:
 };
-
+*/
+DECLARE_OPERATOR_WITH_PARAMS(FusionDWConvBNRelu, FusionDWConvBNReluParam,
+                             DWConvBNReluKernel);
 }  // namespace operators
 }  // namespace paddle_mobile
 

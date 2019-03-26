@@ -41,7 +41,7 @@ class FusionDeconvAddMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_DECONV_ADD; }
 };
 
-template <typename T>
+/*template <typename T>
 class FusionDeconvAddOp : public framework::OperatorWithKernel<
                               DeviceType, FusionDeconvAddParam<DeviceType>,
                               operators::DeconvAddKernel<DeviceType, T>> {
@@ -100,7 +100,10 @@ class FusionDeconvAddOp : public framework::OperatorWithKernel<
   }
 
  protected:
-};
+};*/
+
+DECLARE_OPERATOR_WITH_PARAMS(FusionDeconvAdd, FusionDeconvAddParam,
+                             DeconvAddKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

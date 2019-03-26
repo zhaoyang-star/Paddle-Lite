@@ -39,7 +39,6 @@ Print &operator<<(Print &printer, const ConvParam &conv_param) {
   return printer;
 }
 
-
 #endif
 
 #ifdef ELEMENTWISEADD_OP

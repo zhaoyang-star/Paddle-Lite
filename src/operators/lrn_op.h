@@ -23,6 +23,7 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
+/*
 using std::string;
 template <typename T>
 class LrnOp : public framework::OperatorWithKernel<
@@ -39,6 +40,8 @@ class LrnOp : public framework::OperatorWithKernel<
 
  protected:
 };
+*/
+DECLARE_OPERATOR(Lrn);
 
 }  // namespace operators
 }  // namespace paddle_mobile

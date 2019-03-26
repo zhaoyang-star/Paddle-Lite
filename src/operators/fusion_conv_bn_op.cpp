@@ -51,11 +51,6 @@ void FusionConvBNOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_conv_bn, ops::FusionConvBNMatcher);
 
-
 REGISTER_OPERATOR(fusion_conv_bn, ops::FusionConvBNOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(fusion_conv_bn, ops::FusionConvBNOp);
-#endif
 
 #endif

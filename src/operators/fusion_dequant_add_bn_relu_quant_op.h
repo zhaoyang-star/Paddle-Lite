@@ -52,7 +52,7 @@ class FusionDequantAddBNReluQuantMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_DEQUANT_ADD_BN_RELU_QUANT; }
 };
 
-template <typename T>
+/*template <typename T>
 class FusionDequantAddBNReluQuantOp
     : public framework::OperatorWithKernel<
           DeviceType, FusionDequantAddBNReluQuantParam<DeviceType>,
@@ -69,7 +69,11 @@ class FusionDequantAddBNReluQuantOp
             type, inputs, outputs, attrs, scope) {}
   // inference output shape
   void InferShape() const override;
-};
+};*/
+
+DECLARE_OPERATOR_WITH_PARAMS(FusionDequantAddBNReluQuant,
+                             FusionDequantAddBNReluQuantParam,
+                             FusionDequantAddBNReluQuantKernel);
 #endif  // FUSION_DEQUANT_ADD_BN_RELU_QUANT_OP
 
 #ifdef FUSION_DEQUANT_ADD_BN_QUANT_OP
@@ -99,7 +103,7 @@ class FusionDequantAddBNQuantMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_DEQUANT_ADD_BN_QUANT; }
 };
 
-template <typename T>
+/*template <typename T>
 class FusionDequantAddBNQuantOp
     : public framework::OperatorWithKernel<
           DeviceType, FusionDequantAddBNQuantParam<DeviceType>,
@@ -116,7 +120,11 @@ class FusionDequantAddBNQuantOp
             type, inputs, outputs, attrs, scope) {}
   // inference output shape
   void InferShape() const override;
-};
+};*/
+
+DECLARE_OPERATOR_WITH_PARAMS(FusionDequantAddBNQuant,
+                             FusionDequantAddBNQuantParam,
+                             FusionDequantAddBNQuantKernel);
 #endif  // FUSION_DEQUANT_ADD_BN_QUANT_OP
 
 }  // namespace operators

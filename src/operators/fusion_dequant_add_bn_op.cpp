@@ -31,8 +31,6 @@ void FusionDequantAddBNOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_dequant_add_bn, ops::FusionDequantAddBNMatcher);
 
-
 REGISTER_OPERATOR(fusion_dequant_add_bn, ops::FusionDequantAddBNOp);
-#endif
 
 #endif

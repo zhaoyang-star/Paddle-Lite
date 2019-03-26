@@ -27,7 +27,7 @@ namespace operators {
 
 using paddle_mobile::framework::Tensor;
 
-template <typename T>
+/*template <typename T>
 class ScaleOp : public framework::OperatorWithKernel<
                     DeviceType, ScaleParam<DeviceType>,
                     operators::ScaleKernel<DeviceType, T>> {
@@ -41,7 +41,8 @@ class ScaleOp : public framework::OperatorWithKernel<
   void InferShape() const override;
 
  protected:
-};
+};*/
+DECLARE_OPERATOR(Scale);
 
 }  // namespace operators
 }  // namespace paddle_mobile

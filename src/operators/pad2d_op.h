@@ -24,7 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-DECLARE_OPERATOR(Pad2D, Pad2DParam, Pad2DKernel);
+DECLARE_OPERATOR(Pad2D);
 
 }  // namespace operators
 }  // namespace paddle_mobile

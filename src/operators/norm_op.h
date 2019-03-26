@@ -23,7 +23,7 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-using std::string;
+/*using std::string;
 template <typename T>
 class NormOp
     : public framework::OperatorWithKernel<DeviceType, NormParam<DeviceType>,
@@ -39,7 +39,8 @@ class NormOp
   void InferShape() const override;
 
  protected:
-};
+};*/
+DECLARE_OPERATOR(Norm);
 
 }  // namespace operators
 }  // namespace paddle_mobile

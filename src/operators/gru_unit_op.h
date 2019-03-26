@@ -24,6 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
+/*
 template <typename T>
 class GruUnitOp : public framework::OperatorWithKernel<
                       DeviceType, GruUnitParam<DeviceType>,
@@ -37,6 +38,8 @@ class GruUnitOp : public framework::OperatorWithKernel<
             type, inputs, outputs, attrs, scope) {}
   void InferShape() const override;
 };
+*/
+DECLARE_OPERATOR(GruUnit);
 
 }  // namespace operators
 }  // namespace paddle_mobile

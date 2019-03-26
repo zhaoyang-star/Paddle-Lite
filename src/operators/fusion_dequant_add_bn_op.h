@@ -51,6 +51,7 @@ class FusionDequantAddBNMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_DEQUANT_ADD_BN; }
 };
 
+/*
 template <typename T>
 class FusionDequantAddBNOp
     : public framework::OperatorWithKernel<
@@ -68,6 +69,10 @@ class FusionDequantAddBNOp
   // inference output shape
   void InferShape() const override;
 };
+*/
+
+DECLARE_OPERATOR_WITH_PARAMS(FusionDequantAddBN, FusionDequantAddBNParam,
+                             FusionDequantAddBNKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

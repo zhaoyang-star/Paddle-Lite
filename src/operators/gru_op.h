@@ -26,7 +26,7 @@ namespace operators {
 
 using paddle_mobile::framework::Tensor;
 
-template <typename T>
+/*template <typename T>
 class GruOp : public framework::OperatorWithKernel<
                   DeviceType, GruParam<DeviceType>,
                   operators::GruKernel<DeviceType, T>> {
@@ -38,7 +38,9 @@ class GruOp : public framework::OperatorWithKernel<
                                       operators::GruKernel<DeviceType, T>>(
             type, inputs, outputs, attrs, scope) {}
   void InferShape() const override;
-};
+};*/
+
+DECLARE_OPERATOR(Gru);
 
 }  // namespace operators
 }  // namespace paddle_mobile

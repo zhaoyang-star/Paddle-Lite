@@ -19,9 +19,5 @@ limitations under the License. */
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(fill_constant, ops::FillConstantOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(fill_constant, ops::FillConstantOp);
-#endif
 
 #endif

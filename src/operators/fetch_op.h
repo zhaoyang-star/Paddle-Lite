@@ -21,7 +21,7 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-using std::string;
+/*using std::string;
 
 template <typename T>
 class FetchOp
@@ -38,7 +38,8 @@ class FetchOp
   void InferShape() const override;
 
  protected:
-};
+};*/
+DECLARE_OPERATOR(Fetch);
 
 }  // namespace operators
 }  // namespace paddle_mobile

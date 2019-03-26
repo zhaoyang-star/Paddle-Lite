@@ -42,7 +42,7 @@ class FusionFcReluMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_FC_RELU; }
 };
 
-template <typename T>
+/*template <typename T>
 class FusionFcReluOp : public framework::OperatorWithKernel<
                            DeviceType, FusionFcReluParam<DeviceType>,
                            operators::FusionFcReluKernel<DeviceType, T>> {
@@ -58,7 +58,9 @@ class FusionFcReluOp : public framework::OperatorWithKernel<
   void InferShape() const override;
 
  protected:
-};
+};*/
+
+DECLARE_OPERATOR(FusionFcRelu);
 
 }  // namespace operators
 }  // namespace paddle_mobile

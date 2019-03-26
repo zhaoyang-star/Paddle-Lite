@@ -115,20 +115,3 @@ REGISTER_OPERATOR(psroi_pool, ops::PSRoiPoolOp);
 #ifdef ROI_PERSPECTIVE_OP
 REGISTER_OPERATOR(roi_perspective_transform, ops::RoiPerspectiveOp);
 #endif
-#endif
-
-#ifdef PADDLE_MOBILE_FPGA
-#ifdef ANCHOR_GENERATOR_OP
-REGISTER_OPERATOR_FPGA(anchor_generator, ops::AnchorGeneratorOp);
-#endif
-#ifdef PROPOSAL_OP
-REGISTER_OPERATOR_FPGA(generate_proposals, ops::ProposalOp);
-#endif
-#ifdef PSROI_POOL_OP
-REGISTER_OPERATOR_FPGA(psroi_pool, ops::PSRoiPoolOp);
-#endif
-#ifdef ROIALIGN_POOL_OP
-REGISTER_OPERATOR_FPGA(roialign_pool, ops::RoiAlignPoolOp);
-#endif
-
-#endif

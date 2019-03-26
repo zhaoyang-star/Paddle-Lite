@@ -25,7 +25,6 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-
 /*
 using paddle_mobile::framework::Tensor;
 
@@ -45,7 +44,6 @@ class BilinearOp : public framework::OperatorWithKernel<
 };*/
 
 DECLARE_OPERATOR(BilinearInterp);
-
 
 }  // namespace operators
 }  // namespace paddle_mobile

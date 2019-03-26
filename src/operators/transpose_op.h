@@ -25,6 +25,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
+/*
 using paddle_mobile::framework::Tensor;
 
 template <typename T>
@@ -41,6 +42,8 @@ class TransposeOp : public framework::OperatorWithKernel<
                                                        attrs, scope) {}
   void InferShape() const override;
 };
+*/
+DECLARE_OPERATOR(Transpose);
 
 }  // namespace operators
 }  // namespace paddle_mobile

@@ -32,5 +32,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(scale, ops::ScaleOp);
 
-
 #endif

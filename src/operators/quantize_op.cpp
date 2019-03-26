@@ -35,5 +35,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(quantize, ops::QuantizeOp);
 
-
 #endif  // QUANT_OP

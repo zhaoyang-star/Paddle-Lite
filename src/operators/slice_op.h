@@ -25,7 +25,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using paddle_mobile::framework::Tensor;
+/*using paddle_mobile::framework::Tensor;
 
 template <typename T>
 class SliceOp : public framework::OperatorWithKernel<
@@ -41,7 +41,9 @@ class SliceOp : public framework::OperatorWithKernel<
   void InferShape() const override;
 
  protected:
-};
+};*/
+
+DECLARE_OPERATOR(Slice);
 
 }  // namespace operators
 }  // namespace paddle_mobile

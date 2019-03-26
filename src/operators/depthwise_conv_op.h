@@ -23,7 +23,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename T>
+/*template <typename T>
 class DepthwiseConvOp : public framework::OperatorWithKernel<
                             DeviceType, ConvParam<DeviceType>,
                             operators::ConvKernel<DeviceType, T>> {
@@ -35,7 +35,11 @@ class DepthwiseConvOp : public framework::OperatorWithKernel<
                                       operators::ConvKernel<DeviceType, T>>(
             type, inputs, outputs, attrs, scope) {}
   void InferShape() const override;
-};
+};*/
+// typedef ConvKernelGpu<float> DepthwiseConvKernelGpu;
+// typedef ConvKernelCpu<float> DepthwiseConvKernelCpu;
+
+DECLARE_OPERATOR_WITH_PARAMS(DepthwiseConv, ConvParam, ConvKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

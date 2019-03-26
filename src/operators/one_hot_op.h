@@ -23,7 +23,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-DECLARE_OPERATOR(Onehot, OnehotParam, OnehotKernel);
+DECLARE_OPERATOR(Onehot);
 
 }  // namespace operators
 }  // namespace paddle_mobile

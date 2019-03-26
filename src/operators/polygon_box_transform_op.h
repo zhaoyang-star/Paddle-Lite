@@ -25,7 +25,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using paddle_mobile::framework::Tensor;
+/*using paddle_mobile::framework::Tensor;
 
 template <typename T>
 class PolygonBoxTransformOp
@@ -48,7 +48,9 @@ class PolygonBoxTransformOp
   void InferShape() const override;
 
  protected:
-};
+};*/
+
+DECLARE_OPERATOR(PolygonBoxTransform);
 
 }  // namespace operators
 }  // namespace paddle_mobile

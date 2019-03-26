@@ -59,7 +59,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(lookup_table, ops::LookupOp);
 
-
-
-
 #endif

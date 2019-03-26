@@ -31,6 +31,5 @@ void DequantizeOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(dequantize, ops::DequantizeOp);
-#endif
 
 #endif  // DEQUANT_OP

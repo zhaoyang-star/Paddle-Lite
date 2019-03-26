@@ -27,7 +27,7 @@ namespace operators {
 
 using paddle_mobile::framework::Tensor;
 
-template <typename T>
+/*template <typename T>
 class MultiClassNMSOp : public framework::OperatorWithKernel<
                             DeviceType, MultiClassNMSParam<DeviceType>,
                             operators::MultiClassNMSKernel<DeviceType, T>> {
@@ -42,7 +42,8 @@ class MultiClassNMSOp : public framework::OperatorWithKernel<
   void InferShape() const override;
 
  protected:
-};
+};*/
+DECLARE_OPERATOR(MultiClassNMS);
 
 }  // namespace operators
 }  // namespace paddle_mobile

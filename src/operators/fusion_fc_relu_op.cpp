@@ -57,8 +57,6 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_FUSION_MATCHER(fusion_fc_relu, ops::FusionFcReluMatcher);
 
-
 REGISTER_OPERATOR(fusion_fc_relu, ops::FusionFcReluOp);
-
 
 #endif

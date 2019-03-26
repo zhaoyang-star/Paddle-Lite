@@ -39,7 +39,6 @@ class ConvOp
  private:
 };*/
 
-
 DECLARE_OPERATOR_WITH_PARAMS(Conv, ConvParam);
 
 }  // namespace operators

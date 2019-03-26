@@ -34,8 +34,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(is_empty, ops::IsEmptyOp);
 
-
-
-
-
 #endif

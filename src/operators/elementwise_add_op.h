@@ -23,7 +23,7 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-using std::string;
+/*using std::string;
 template <typename T>
 class ElementwiseAddOp : public framework::OperatorWithKernel<
                              DeviceType, ElementwiseAddParam<DeviceType>,
@@ -40,7 +40,9 @@ class ElementwiseAddOp : public framework::OperatorWithKernel<
   void InferShape() const override;
 
  protected:
-};
+};*/
+DECLARE_OPERATOR(ElementwiseAdd);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

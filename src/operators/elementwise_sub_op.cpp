@@ -30,8 +30,4 @@ void ElementwiseSubOp<T>::InferShape() const {
 
 namespace ops = paddle_mobile::operators;
 
-REGISTER_OPERATOR(elementwise_sub, ops::ElementwiseSubOp);
-#endif
-
-
 #endif

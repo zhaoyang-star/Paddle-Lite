@@ -50,7 +50,7 @@ class FusionDequantBNReluMatcher : public framework::FusionOpMatcher {
   std::string Type() { return G_OP_TYPE_FUSION_DEQUANT_BN_RELU; }
 };
 
-template <typename T>
+/*template <typename T>
 class FusionDequantBNReluOp
     : public framework::OperatorWithKernel<
           DeviceType, FusionDequantBNReluParam<DeviceType>,
@@ -66,7 +66,10 @@ class FusionDequantBNReluOp
             type, inputs, outputs, attrs, scope) {}
   // inference output shape
   void InferShape() const override;
-};
+};*/
+
+DECLARE_OPERATOR_WITH_PARAMS(FusionDequantBNRelu, FusionDequantBNReluParam,
+                             FusionDequantBNReluKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

@@ -32,7 +32,6 @@ namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_elementwise_add_relu,
                         ops::FusioneElementwiseAddReluMatcher);
 
-
 // REGISTER_OPERATOR(fusion_elementwise_add_relu,
 //                      ops::FusionElementwiseAddReluOp);
 

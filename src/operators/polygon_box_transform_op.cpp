@@ -41,5 +41,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(polygon_box_transform, ops::PolygonBoxTransformOp);
 
-
 #endif

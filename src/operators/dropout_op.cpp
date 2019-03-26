@@ -29,12 +29,5 @@ void DropoutOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(dropout, ops::DropoutOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(dropout, ops::DropoutOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(dropout, ops::DropoutOp);
-#endif
 
 #endif

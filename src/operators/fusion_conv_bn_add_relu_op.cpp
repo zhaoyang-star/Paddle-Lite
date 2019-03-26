@@ -52,14 +52,6 @@ namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_conv_bn_add_relu,
                         ops::FusionConvBNAddReluMatcher);
 
-
 REGISTER_OPERATOR(fusion_conv_bn_add_relu, ops::FusionConvBNAddReluOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(fusion_conv_bn_add_relu, ops::FusionConvBNAddReluOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(fusion_conv_bn_add_relu, ops::FusionConvBNAddReluOp);
-#endif
 
 #endif

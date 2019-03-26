@@ -48,5 +48,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(crf_decoding, ops::CrfOp);
 
-
 #endif

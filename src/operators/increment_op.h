@@ -23,6 +23,7 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
+/*
 using std::string;
 template <typename T>
 class IncrementOp
@@ -41,6 +42,8 @@ class IncrementOp
 
  protected:
 };
+*/
+DECLARE_OPERATOR(Increment);
 
 }  // namespace operators
 }  // namespace paddle_mobile

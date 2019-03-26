@@ -32,7 +32,6 @@ void ReadFromArrayOp<T>::InferShape() const {}
 
 namespace ops = paddle_mobile::operators;
 
-
 #ifdef WRITE_TO_ARRAY_OP
 REGISTER_OPERATOR(write_to_array, ops::WriteToArrayOp);
 #endif  // WRITE_TO_ARRAY_OP

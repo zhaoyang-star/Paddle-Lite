@@ -50,7 +50,7 @@ class FusionDequantBNMatcher : public framework::FusionOpMatcher {
 #endif  // FUSION_DEQUANT_BN_OP || FUSION_DEQUANT_BN_RELU_OP
 
 #ifdef FUSION_DEQUANT_BN_OP
-template <typename T>
+/*template <typename T>
 class FusionDequantBNOp : public framework::OperatorWithKernel<
                               DeviceType, FusionDequantBNParam<DeviceType>,
                               operators::FusionDequantBNKernel<DeviceType, T>> {
@@ -65,7 +65,10 @@ class FusionDequantBNOp : public framework::OperatorWithKernel<
             type, inputs, outputs, attrs, scope) {}
   // inference output shape
   void InferShape() const override;
-};
+};*/
+
+DECLARE_OPERATOR_WITH_PARAMS(FusionDequantBN, FusionDequantBNParam,
+                             FusionDequantBNKernel);
 #endif  // FUSION_DEQUANT_BN_OP
 
 #ifdef FUSION_DEQUANT_BN_RELU_OP
@@ -78,7 +81,7 @@ class FusionDequantBNReluMatcher : public FusionDequantBNMatcher {
   virtual std::string Type() { return G_OP_TYPE_FUSION_DEQUANT_BN_RELU; }
 };
 
-template <typename T>
+/*template <typename T>
 class FusionDequantBNReluOp
     : public framework::OperatorWithKernel<
           DeviceType, FusionDequantBNParam<DeviceType>,
@@ -94,7 +97,10 @@ class FusionDequantBNReluOp
             type, inputs, outputs, attrs, scope) {}
 
   void InferShape() const override;
-};
+};*/
+
+DECLARE_OPERATOR_WITH_PARAMS(FusionDequantBNRelu, FusionDequantBNParam,
+                             FusionDequantBNReluKernel);
 #endif  // FUSION_DEQUANT_BN_RELU_OP
 
 }  // namespace operators

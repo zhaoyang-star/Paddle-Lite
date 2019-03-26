@@ -36,7 +36,6 @@ void OnehotOp<T>::InferShape() const {
 
 namespace ops = paddle_mobile::operators;
 
-
 REGISTER_OPERATOR(one_hot, ops::OnehotOp);
 
 #endif  // ONE_HOT_OP

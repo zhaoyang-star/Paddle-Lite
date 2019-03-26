@@ -55,6 +55,5 @@ void DepthwiseConvOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(depthwise_conv2d, ops::DepthwiseConvOp);
-#endif
 
 #endif

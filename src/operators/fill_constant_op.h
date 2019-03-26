@@ -25,6 +25,7 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
+/*
 
 template <typename T>
 class FillConstantOp : public framework::OperatorBase<DeviceType> {
@@ -35,6 +36,20 @@ class FillConstantOp : public framework::OperatorBase<DeviceType> {
       : framework::OperatorBase<DeviceType>(type, inputs, outputs, attrs,
                                             scope),
         param_(inputs, outputs, attrs, scope) {}
+
+ protected:
+};
+*/
+
+template <typename T>
+class FillConstantOp : public framework::OperatorBase {
+ public:
+  FillConstantOp(const std::string &type, const VariableNameMap &inputs,
+                 const VariableNameMap &outputs,
+                 const framework::AttributeMap &attrs, framework::Scope *scope)
+      : framework::OperatorWithKernels<T, FillConstantParam>(
+            type, inputs, outputs, attrs, scope) {}
+
   void RunImpl() {
     auto data_type =
         static_cast<_PaddleMobile__Framework__Proto__VarType__Type>(
@@ -68,9 +83,7 @@ class FillConstantOp : public framework::OperatorBase<DeviceType> {
     framework::DDim ddim = framework::make_ddim(param_.Shape());
     param_.Out()->Resize(ddim);
   }
-
- protected:
-  FillConstantParam<DeviceType> param_;
+  FillConstantParam param_;
 };
 
 }  // namespace operators

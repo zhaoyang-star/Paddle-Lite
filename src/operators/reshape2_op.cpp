@@ -40,5 +40,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(reshape2, ops::Reshape2Op);
 
-
 #endif

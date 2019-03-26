@@ -46,7 +46,7 @@ class FusionDeconvBNReluMatcher : public framework::FusionOpMatcher {
 
   std::string Type() { return G_OP_TYPE_FUSION_DECONV_BN_RELU; }
 };
-
+/*
 template <typename T>
 class FusionDeconvBNReluOp
     : public framework::OperatorWithKernel<
@@ -107,7 +107,9 @@ class FusionDeconvBNReluOp
   }
 
  protected:
-};
+};*/
+DECLARE_OPERATOR_WITH_PARAMS(FusionDeconvBNRelu, FusionDeconvBNReluParam,
+                             DeconvBNReluKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

@@ -24,6 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
+/*
 template <typename T>
 class MulOp : public framework::OperatorWithKernel<
                   DeviceType, MulParam<DeviceType>,
@@ -39,6 +40,8 @@ class MulOp : public framework::OperatorWithKernel<
 
  protected:
 };
+*/
+DECLARE_OPERATOR(Mul);
 
 }  // namespace operators
 }  // namespace paddle_mobile

@@ -40,7 +40,7 @@ inline std::vector<int32_t> GetOutputShape(const int axis,
   out_shape[1] = static_cast<int>(inner);
   return out_shape;
 }
-using paddle_mobile::framework::Tensor;
+/*using paddle_mobile::framework::Tensor;
 
 template <typename T>
 class FlattenOp : public framework::OperatorWithKernel<
@@ -54,7 +54,9 @@ class FlattenOp : public framework::OperatorWithKernel<
                                       operators::FlattenKernel<DeviceType, T>>(
             type, inputs, outputs, attrs, scope) {}
   void InferShape() const override;
-};
+};*/
+
+DECLARE_OPERATOR(Flatten);
 
 }  // namespace operators
 }  // namespace paddle_mobile

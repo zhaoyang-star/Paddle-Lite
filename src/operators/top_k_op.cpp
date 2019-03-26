@@ -38,5 +38,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(top_k, ops::TopKOp);
 
-
 #endif  // TOP_K_OP

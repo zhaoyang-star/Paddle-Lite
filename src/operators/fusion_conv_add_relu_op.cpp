@@ -50,13 +50,6 @@ void FusionConvAddReluOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_conv_add_relu, ops::FusionConvAddReluOpMatcher);
 
-
 REGISTER_OPERATOR(fusion_conv_add_relu, ops::FusionConvAddReluOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(fusion_conv_add_relu, ops::FusionConvAddReluOp);
-#endif
-#ifdef PADDLE_MOBILE_CL
-REGISTER_OPERATOR_CL(fusion_conv_add_relu, ops::FusionConvAddReluOp);
-#endif
+
 #endif

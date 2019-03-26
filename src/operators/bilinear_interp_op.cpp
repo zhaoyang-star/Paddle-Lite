@@ -47,6 +47,4 @@ void BilinearInterpOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 REGISTER_OPERATOR(bilinear_interp, ops::BilinearInterpOp);
 
-
-
 #endif

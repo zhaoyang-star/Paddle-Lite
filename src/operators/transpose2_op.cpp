@@ -60,5 +60,4 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(transpose2, ops::Transpose2Op);
 
-
 #endif  // TRANSPOSE_OP

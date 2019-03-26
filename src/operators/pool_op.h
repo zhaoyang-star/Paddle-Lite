@@ -25,7 +25,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename T>
+/*template <typename T>
 class PoolOp : public framework::OperatorWithKernel<
                    DeviceType, PoolParam<DeviceType>,
                    operators::PoolKernel<DeviceType, T>> {
@@ -39,7 +39,10 @@ class PoolOp : public framework::OperatorWithKernel<
   void InferShape() const override;
 
  private:
-};
+};*/
+
+DECLARE_OPERATOR(Pool);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 
