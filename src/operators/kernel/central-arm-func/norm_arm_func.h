@@ -36,7 +36,7 @@ inline void GetDims(const framework::DDim &dim, int axis, int *pre, int *n,
 }
 
 template <typename P>
-void NormCompute(const NormParam<CPU> &param) {
+void NormCompute(const NormParam &param) {
   const float epsilon = param.Epsilon();
   int axis = param.Axis();
 

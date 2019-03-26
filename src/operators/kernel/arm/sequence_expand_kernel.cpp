@@ -64,49 +64,42 @@ inline void SequenceExpandImpl(const framework::LoDTensor &x,
     out_offset += repeat_num;
   }
 }
+template <>
+void SequenceExpandKernelCpu<float>::Compute(const SequenceExpandParam &param) {
+  const framework::LoDTensor *input_x = param.input_x_;
+  const framework::LoDTensor *input_y = param.input_y_;
+  framework::LoDTensor *output = param.output_;
+  output->mutable_data<float>();
 
-template <typename T>
-class SequenceExpandKernelCpu<T>
-    : public framework::OpKernelBase<CPU, SequenceExpandParam<CPU>> {
- public:
-  bool Init(SequenceExpandParam<CPU> *param) { return true; }
+  const auto &x_lod = input_x->lod();
+  const auto &y_lod = input_y->lod();
+  int ref_level = param.ref_level_;
+  if (ref_level == -1) ref_level = y_lod.size() - 1;
 
-  void Compute(const SequenceExpandParam<CPU> &param) {
-    const framework::LoDTensor *input_x = param.input_x_;
-    const framework::LoDTensor *input_y = param.input_y_;
-    framework::LoDTensor *output = param.output_;
-    output->mutable_data<T>();
-
-    const auto &x_lod = input_x->lod();
-    const auto &y_lod = input_y->lod();
-    int ref_level = param.ref_level_;
-    if (ref_level == -1) ref_level = y_lod.size() - 1;
-
-    if (y_lod[ref_level].size() <= 1) {
-      framework::TensorCopy(*input_x, output);
-      output->set_lod(input_x->lod());
-      return;
-    }
-
-    std::vector<size_t> out_lod;
-    if (x_lod.size() == 1) {
-      out_lod.push_back(0);
-      for (size_t i = 1; i < y_lod[ref_level].size(); ++i) {
-        int repeat_num = y_lod[ref_level][i] - y_lod[ref_level][i - 1];
-        int x_start = x_lod[0][i - 1];
-        int x_end = x_lod[0][i];
-        int x_seq_len = x_end - x_start;
-        for (int j = 0; j < repeat_num; ++j) {
-          out_lod.push_back(out_lod.back() + x_seq_len);
-        }
-      }
-      output->set_lod({out_lod});
-    }
-    SequenceExpandImpl<T>(*input_x, y_lod[ref_level], output);
+  if (y_lod[ref_level].size() <= 1) {
+    framework::TensorCopy(*input_x, output);
+    output->set_lod(input_x->lod());
+    return;
   }
-};
 
-template class SequenceExpandKernelCpu<float>;
+  std::vector<size_t> out_lod;
+  if (x_lod.size() == 1) {
+    out_lod.push_back(0);
+    for (size_t i = 1; i < y_lod[ref_level].size(); ++i) {
+      int repeat_num = y_lod[ref_level][i] - y_lod[ref_level][i - 1];
+      int x_start = x_lod[0][i - 1];
+      int x_end = x_lod[0][i];
+      int x_seq_len = x_end - x_start;
+      for (int j = 0; j < repeat_num; ++j) {
+        out_lod.push_back(out_lod.back() + x_seq_len);
+      }
+    }
+    output->set_lod({out_lod});
+  }
+  SequenceExpandImpl<float>(*input_x, y_lod[ref_level], output);
+}
+
+// template class SequenceExpandKernelCpu<float>;
 // template class SequenceExpandKernelCpu< int64_t>;
 
 }  // namespace operators

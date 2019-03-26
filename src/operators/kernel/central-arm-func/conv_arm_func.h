@@ -30,16 +30,16 @@ bool IsExpand(const std::vector<int64_t> &filter_dim,
               const std::vector<int> &dilations);
 
 template <typename Itype, typename Otype>
-void GemmConv(const ConvParam<CPU> &param);
+void GemmConv(const ConvParam &param);
 
 template <int tile, int kernel>
-void WinogradConv3x3(const ConvParam<CPU> &param);
+void WinogradConv3x3(const ConvParam &param);
 
 template <typename Itype, typename Otype>
-void DepthwiseConv3x3(const ConvParam<CPU> &param);
+void DepthwiseConv3x3(const ConvParam &param);
 
 template <typename Itype, typename Otype>
-void DepthwiseConv5x5(const ConvParam<CPU> &param);
+void DepthwiseConv5x5(const ConvParam &param);
 
 }  // namespace operators
 }  // namespace paddle_mobile

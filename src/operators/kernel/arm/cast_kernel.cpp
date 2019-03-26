@@ -56,12 +56,12 @@ struct CastOpFunctor {
 };
 
 template <>
-bool CastKernelCpu<float>::Init(CastParam<CPU>* param) {
+bool CastKernelCpu<float>::Init(CastParam* param) {
   return true;
 }
 
 template <>
-void CastKernelCpu<float>::Compute(const CastParam<CPU>& param) {
+void CastKernelCpu<float>::Compute(const CastParam& param) {
   const Tensor* input = param.input_;
   Tensor* output = param.output_;
   framework::VisitDataType(framework::ToDataType(param.input_type_),

@@ -107,7 +107,7 @@ class TestBoxCoderOp {
   }
 };
 
-template class TestBoxCoderOp<CPU>;
+template class TestBoxCoderOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 

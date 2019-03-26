@@ -21,12 +21,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool PSRoiPoolKernelCpu<float>::Init(PSRoiPoolParam<CPU> *param) {
+bool PSRoiPoolKernelCpu<float>::Init(PSRoiPoolParam *param) {
   return true;
 }
 
 template <>
-void PSRoiPoolKernelCpu<float>::Compute(const PSRoiPoolParam<CPU> &param) {
+void PSRoiPoolKernelCpu<float>::Compute(const PSRoiPoolParam &param) {
   // TODO(hjchen2)
 }
 

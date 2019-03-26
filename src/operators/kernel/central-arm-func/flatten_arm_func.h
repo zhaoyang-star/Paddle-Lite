@@ -29,7 +29,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <typename P>
-void FlattenCompute(const FlattenParam<CPU> &param) {
+void FlattenCompute(const FlattenParam &param) {
   const auto *input_x = param.InputX();
   const auto axis = param.Axis();
   const auto &input_x_dims = input_x->dims();

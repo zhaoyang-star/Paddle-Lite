@@ -18,7 +18,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-void InitBaseConvKernel(ConvParam<CPU> *param) {
+void InitBaseConvKernel(ConvParam *param) {
   bool conv3x3 = param->Filter()->dims()[2] == param->Filter()->dims()[3] &&
                  param->Filter()->dims()[2] == 3;
   bool conv5x5 = param->Filter()->dims()[2] == param->Filter()->dims()[3] &&
@@ -32,26 +32,26 @@ void InitBaseConvKernel(ConvParam<CPU> *param) {
 #ifndef __aarch64__
     if (depth3x3 && param->Strides()[0] < 3 &&
         param->Strides()[0] == param->Strides()[1]) {
-      param->ExecMode() = ConvParam<CPU>::EXEC_DEPTHWISE3x3_INT8;
+      param->ExecMode() = ConvParam::EXEC_DEPTHWISE3x3_INT8;
     } else if (depth5x5 && param->Strides()[0] < 2 &&
                param->Strides()[0] == param->Strides()[1]) {
-      param->ExecMode() = ConvParam<CPU>::EXEC_DEPTHWISE5x5_INT8;
+      param->ExecMode() = ConvParam::EXEC_DEPTHWISE5x5_INT8;
     } else {
 #endif  // __aarch64__
-      param->ExecMode() = ConvParam<CPU>::EXEC_GEMM_INT8;
+      param->ExecMode() = ConvParam::EXEC_GEMM_INT8;
 #ifndef __aarch64__
     }
 #endif  // __aarch64__
   } else {
     if (depth3x3 && param->Strides()[0] == param->Strides()[1] &&
         param->Strides()[0] == 1) {
-      param->ExecMode() = ConvParam<CPU>::EXEC_DEPTHWISE3x3S1_FLOAT;
+      param->ExecMode() = ConvParam::EXEC_DEPTHWISE3x3S1_FLOAT;
     } else if (depth3x3 && param->Strides()[0] == param->Strides()[1] &&
                param->Strides()[0] == 2) {
-      param->ExecMode() = ConvParam<CPU>::EXEC_DEPTHWISE3x3S2_FLOAT;
+      param->ExecMode() = ConvParam::EXEC_DEPTHWISE3x3S2_FLOAT;
     } else if (depth5x5 && param->Strides()[0] == param->Strides()[1] &&
                param->Strides()[0] == 1) {
-      param->ExecMode() = ConvParam<CPU>::EXEC_DEPTHWISE5x5_FLOAT;
+      param->ExecMode() = ConvParam::EXEC_DEPTHWISE5x5_FLOAT;
     } else if (conv3x3 && !depth3x3 &&
                param->Strides()[0] == param->Strides()[1] &&
                param->Dilations()[0] == param->Dilations()[1] &&
@@ -62,7 +62,7 @@ void InitBaseConvKernel(ConvParam<CPU> *param) {
                param->Input()->dims()[2] <= 140 */ /* refered from ncnn */
 #endif
     ) {
-      param->ExecMode() = ConvParam<CPU>::EXEC_WINOGRAD3X3_FLOAT;
+      param->ExecMode() = ConvParam::EXEC_WINOGRAD3X3_FLOAT;
       // transform weight
       framework::TensorWrapper *tensorWrapper = new framework::TensorWrapper;
       param->transformed_filter_ = tensorWrapper;
@@ -71,7 +71,7 @@ void InitBaseConvKernel(ConvParam<CPU> *param) {
       operators::math::winograd_transform_weight<8, 3>(
           *param->Filter(), param->TransformedFilter());
     } else {
-      param->ExecMode() = ConvParam<CPU>::EXEC_GEMM_FLOAT;
+      param->ExecMode() = ConvParam::EXEC_GEMM_FLOAT;
     }
   }
 }

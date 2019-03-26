@@ -25,7 +25,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <typename P>
-void LookupCompute(const LookupParam<CPU> &param) {
+void LookupCompute(const LookupParam &param) {
   auto *ids_t = param.InputIds();
   auto *table_t = param.InputW();
   auto *output_t = param.Out();

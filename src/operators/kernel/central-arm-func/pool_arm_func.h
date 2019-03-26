@@ -25,7 +25,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <typename P>
-void PoolCompute(const PoolParam<CPU> &param) {
+void PoolCompute(const PoolParam &param) {
   const framework::Tensor *input = param.Input();
   framework::Tensor *output = param.Output();
   const std::string &pooling_type = param.PoolingType();

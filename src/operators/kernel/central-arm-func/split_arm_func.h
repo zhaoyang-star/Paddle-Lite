@@ -62,7 +62,7 @@ inline void StridedNumelCopyWithAxis(int64_t axis, T* dst,
 }
 
 template <typename P>
-void SplitCompute(const SplitParam<CPU>& param) {
+void SplitCompute(const SplitParam& param) {
   auto* in = param.InputX();
   auto outs = param.Outs();
   auto in_stride = framework::stride_numel(in->dims());

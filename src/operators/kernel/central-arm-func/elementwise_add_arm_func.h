@@ -26,7 +26,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <typename T>
-inline void ElementwiseAddCompute(const ElementwiseAddParam<CPU> &param) {
+inline void ElementwiseAddCompute(const ElementwiseAddParam &param) {
   const framework::Tensor *input_x = param.InputX();
   const framework::Tensor *input_y = param.InputY();
   framework::Tensor *Out = param.Out();

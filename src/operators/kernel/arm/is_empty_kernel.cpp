@@ -20,12 +20,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool IsEmptyKernelCpu<float>::Init(IsEmptyParam<CPU> *param) {
+bool IsEmptyKernelCpu<float>::Init(IsEmptyParam *param) {
   return true;
 }
 
 template <>
-void IsEmptyKernelCpu<float>::Compute(const IsEmptyParam<CPU> &param) {
+void IsEmptyKernelCpu<float>::Compute(const IsEmptyParam &param) {
   const framework::Tensor *input = param.InputX();
   framework::Tensor *out = param.Out();
   out->mutable_data<bool>()[0] = input->numel() == 0;

@@ -60,7 +60,7 @@ struct DtypeTensorTrait {
 };
 
 /*template <>
-struct DtypeTensorTrait<CPU> {
+struct DtypeTensorTrait {
   //  typedef framework::TensorWrapper wtype;
 
   // This is the type we obtained in variable.
@@ -82,7 +82,14 @@ struct DtypeTensorTrait<GPU_CL> {
   //  typedef framework::TensorWrapper wtype;
 };
 #endif*/
-
+static LoDTensor *UnpackToLodTensor(const framework::TensorWrapper &wrapper) {
+  return wrapper.getLoDTensor(const_cast<framework::TensorWrapper *>(&wrapper));
+}
+#ifdef PADDLE_MOBILE_CL
+static framework::CLImage *UnpackToClImage(framework::TensorWrapper *wrapper) {
+  return wrapper->getCLImage(wrapper);
+}
+#endif
 class OpParam {
  public:
   OpParam(const VariableNameMap &inputs, const VariableNameMap &outputs,

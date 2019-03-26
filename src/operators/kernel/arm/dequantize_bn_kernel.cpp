@@ -28,7 +28,7 @@ namespace operators {
     defined(FUSION_DEQUANT_ADD_BN_RELU_OP) ||                             \
     defined(FUSION_DEQUANT_ADD_BN_QUANT_OP) ||                            \
     defined(FUSION_DEQUANT_ADD_BN_RELU_QUANT_OP)
-void PublicFusionDequantBNInitParam(FusionDequantBNParam<CPU> *param,
+void PublicFusionDequantBNInitParam(FusionDequantBNParam *param,
                                     const framework::Tensor *bias) {
   // batch norm params
   const Tensor *bn_mean = param->bn_mean_;
@@ -55,7 +55,7 @@ void PublicFusionDequantBNInitParam(FusionDequantBNParam<CPU> *param,
     defined(FUSION_DEQUANT_BN_RELU_OP) ||                                 \
     defined(FUSION_DEQUANT_ADD_BN_RELU_OP)
 template <ActivationType Act>
-void DequantBNCompute(const FusionDequantBNParam<CPU> *param) {
+void DequantBNCompute(const FusionDequantBNParam *param) {
   const int32_t *input = param->input_->data<int32_t>();
   const float *bn_scale = param->bn_scale_->data<float>();
   const float *bn_bias = param->bn_bias_->data<float>();
@@ -123,14 +123,14 @@ void DequantBNCompute(const FusionDequantBNParam<CPU> *param) {
 
 #ifdef FUSION_DEQUANT_BN_OP
 template <>
-bool FusionDequantBNKernelCpu<float>::Init(FusionDequantBNParam<CPU> *param) {
+bool FusionDequantBNKernelCpu<float>::Init(FusionDequantBNParam *param) {
   PublicFusionDequantBNInitParam(param, nullptr);
   return true;
 }
 
 template <>
 void FusionDequantBNKernelCpu<float>::Compute(
-    const FusionDequantBNParam<CPU> &param) {
+    const FusionDequantBNParam &param) {
   DequantBNCompute<IDENTITY>(&param);
 }
 #endif  // FUSION_DEQUANT_BN_OP
@@ -138,14 +138,14 @@ void FusionDequantBNKernelCpu<float>::Compute(
 #ifdef FUSION_DEQUANT_BN_RELU_OP
 template <>
 bool FusionDequantBNReluKernelCpu<float>::Init(
-    FusionDequantBNParam<CPU> *param) {
+    FusionDequantBNParam *param) {
   PublicFusionDequantBNInitParam(param, nullptr);
   return true;
 }
 
 template <>
 void FusionDequantBNReluKernelCpu<float>::Compute(
-    const FusionDequantBNParam<CPU> &param) {
+    const FusionDequantBNParam &param) {
   DequantBNCompute<RELU>(&param);
 }
 #endif  // FUSION_DEQUANT_BN_RELU_OP
@@ -153,7 +153,7 @@ void FusionDequantBNReluKernelCpu<float>::Compute(
 #ifdef FUSION_DEQUANT_ADD_BN_OP
 template <>
 bool FusionDequantAddBNKernelCpu<float>::Init(
-    FusionDequantAddBNParam<CPU> *param) {
+    FusionDequantAddBNParam *param) {
   const framework::Tensor *bias = param->bias_;
   PublicFusionDequantBNInitParam(param, bias);
   return true;
@@ -161,7 +161,7 @@ bool FusionDequantAddBNKernelCpu<float>::Init(
 
 template <>
 void FusionDequantAddBNKernelCpu<float>::Compute(
-    const FusionDequantAddBNParam<CPU> &param) {
+    const FusionDequantAddBNParam &param) {
   DequantBNCompute<IDENTITY>(&param);
 }
 #endif  // FUSION_DEQUANT_ADD_BN_OP
@@ -169,7 +169,7 @@ void FusionDequantAddBNKernelCpu<float>::Compute(
 #ifdef FUSION_DEQUANT_ADD_BN_RELU_OP
 template <>
 bool FusionDequantAddBNReluKernelCpu<float>::Init(
-    FusionDequantAddBNParam<CPU> *param) {
+    FusionDequantAddBNParam *param) {
   const framework::Tensor *bias = param->bias_;
   PublicFusionDequantBNInitParam(param, bias);
   return true;
@@ -177,7 +177,7 @@ bool FusionDequantAddBNReluKernelCpu<float>::Init(
 
 template <>
 void FusionDequantAddBNReluKernelCpu<float>::Compute(
-    const FusionDequantAddBNParam<CPU> &param) {
+    const FusionDequantAddBNParam &param) {
   DequantBNCompute<RELU>(&param);
 }
 #endif  // FUSION_DEQUANT_ADD_BN_RELU_OP
@@ -185,7 +185,7 @@ void FusionDequantAddBNReluKernelCpu<float>::Compute(
 #if defined(FUSION_DEQUANT_ADD_BN_QUANT_OP) || \
     defined(FUSION_DEQUANT_ADD_BN_RELU_QUANT_OP)
 template <Activation Act, RoundType R>
-void DequantBNQuantCompute(const FusionDequantAddBNQuantParam<CPU> *param) {
+void DequantBNQuantCompute(const FusionDequantAddBNQuantParam *param) {
   const int32_t *input = param->input_->data<int32_t>();
   const float *bn_scale = param->bn_scale_->data<float>();
   const float *bn_bias = param->bn_bias_->data<float>();
@@ -281,7 +281,7 @@ void DequantBNQuantCompute(const FusionDequantAddBNQuantParam<CPU> *param) {
 
 template <>
 bool FusionDequantAddBNQuantKernelCpu<float>::Init(
-    FusionDequantAddBNQuantParam<CPU> *param) {
+    FusionDequantAddBNQuantParam *param) {
   const framework::Tensor *bias = param->bias_;
   PublicFusionDequantBNInitParam(param, bias);
   return true;
@@ -289,7 +289,7 @@ bool FusionDequantAddBNQuantKernelCpu<float>::Init(
 
 template <>
 void FusionDequantAddBNQuantKernelCpu<float>::Compute(
-    const FusionDequantAddBNQuantParam<CPU> &param) {
+    const FusionDequantAddBNQuantParam &param) {
   switch (param.round_type_) {
     case ROUND_NEAREST_TO_EVEN:
       DequantBNQuantCompute<IDENTITY, ROUND_NEAREST_TO_EVEN>(&param);
@@ -310,7 +310,7 @@ void FusionDequantAddBNQuantKernelCpu<float>::Compute(
 #ifdef FUSION_DEQUANT_ADD_BN_RELU_QUANT_OP
 template <>
 bool FusionDequantAddBNReluQuantKernelCpu<float>::Init(
-    FusionDequantAddBNQuantParam<CPU> *param) {
+    FusionDequantAddBNQuantParam *param) {
   const framework::Tensor *bias = param->bias_;
   PublicFusionDequantBNInitParam(param, bias);
   return true;
@@ -318,7 +318,7 @@ bool FusionDequantAddBNReluQuantKernelCpu<float>::Init(
 
 template <>
 void FusionDequantAddBNReluQuantKernelCpu<float>::Compute(
-    const FusionDequantAddBNQuantParam<CPU> &param) {
+    const FusionDequantAddBNQuantParam &param) {
   switch (param.round_type_) {
     case ROUND_NEAREST_TO_EVEN:
       DequantBNQuantCompute<RELU, ROUND_NEAREST_TO_EVEN>(&param);

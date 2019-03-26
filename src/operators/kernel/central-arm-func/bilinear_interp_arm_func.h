@@ -22,7 +22,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <typename P>
-void BilinearInterpCompute(const BilinearInterpParam<CPU>& param) {
+void BilinearInterpCompute(const BilinearInterpParam& param) {
   auto out_dims = param.Out()->dims();
   auto* input = param.InputX()->data<float>();
   auto out_size_t = param.InputOutPutSize();

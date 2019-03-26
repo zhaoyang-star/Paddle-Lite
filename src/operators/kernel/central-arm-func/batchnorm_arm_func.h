@@ -26,7 +26,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <typename P>
-void BatchnormCompute(const BatchNormParam<CPU> &param) {
+void BatchnormCompute(const BatchNormParam &param) {
   const float epsilon = param.Epsilon();
   const float *mean_ptr = param.InputMean()->data<float>();
   const float *variance_ptr = param.InputVariance()->data<float>();

@@ -97,7 +97,7 @@ class TestElementwiseSubOp {
   }
 };
 
-template class TestElementwiseSubOp<CPU>;
+template class TestElementwiseSubOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 

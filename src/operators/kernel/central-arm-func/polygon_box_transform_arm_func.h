@@ -21,7 +21,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <typename P>
-void PolygonBoxTransformCompute(const PolygonBoxTransformParam<CPU>& param) {
+void PolygonBoxTransformCompute(const PolygonBoxTransformParam& param) {
   const auto* input = param.Input();
   const auto& input_dims = input->dims();
   const auto* input_data = input->data<float>();

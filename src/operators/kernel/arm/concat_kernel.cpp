@@ -21,12 +21,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ConcatKernelCpu<float>::Init(ConcatParam<CPU> *param) {
+bool ConcatKernelCpu<float>::Init(ConcatParam *param) {
   return true;
 }
 
 template <>
-void ConcatKernelCpu<float>::Compute(const ConcatParam<CPU> &param) {
+void ConcatKernelCpu<float>::Compute(const ConcatParam &param) {
   if (param.Inputs()[0]->type() == typeid(int8_t)) {
     ConcatCompute<int8_t>(param);
   } else {

@@ -22,7 +22,7 @@ namespace paddle_mobile {
 namespace operators {
 
 class StepExecutor {
-  typedef std::shared_ptr<framework::OperatorBase<CPU>> OperatorPtr;
+  typedef std::shared_ptr<framework::OperatorBase> OperatorPtr;
 
  public:
   StepExecutor(const framework::BlockDesc *block, framework::Scope *scope)
@@ -32,7 +32,7 @@ class StepExecutor {
     for (int i = 0; i < ops.size(); ++i) {
       std::shared_ptr<framework::OpDesc> op_desc = ops[i];
       DLOG << "create op: " << op_desc->Type();
-      auto op_handler = framework::OpRegistry<CPU>::CreateOp(
+      auto op_handler = framework::OpRegistry::CreateOp(
           op_desc->Type(), op_desc->GetInputs(), op_desc->GetOutputs(),
           op_desc->GetAttrMap(), scope_);
       ops_of_block_[i] = op_handler;
@@ -52,12 +52,12 @@ class StepExecutor {
 };
 
 template <>
-bool WhileKernelCpu<float>::Init(WhileParam<CPU> *param) {
+bool WhileKernelCpu<float>::Init(WhileParam *param) {
   return true;
 }
 
 template <>
-void WhileKernelCpu<float>::Compute(const WhileParam<CPU> &param) {
+void WhileKernelCpu<float>::Compute(const WhileParam &param) {
   auto &current_scope = param.scope_->NewScope();
   StepExecutor executor(param.sub_block_, &current_scope);
   while (param.cond_->data<bool>()[0]) {

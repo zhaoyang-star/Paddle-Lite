@@ -24,7 +24,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ConvBNAddReluKernelCpu<float>::Init(FusionConvBNAddReluParam<CPU> *param) {
+bool ConvBNAddReluKernelCpu<float>::Init(FusionConvBNAddReluParam *param) {
   const Tensor *mean = param->InputMean();
   const Tensor *variance = param->InputVariance();
   const Tensor *scale = param->InputScale();
@@ -63,19 +63,19 @@ bool ConvBNAddReluKernelCpu<float>::Init(FusionConvBNAddReluParam<CPU> *param) {
 
 template <>
 void ConvBNAddReluKernelCpu<float>::Compute(
-    const FusionConvBNAddReluParam<CPU> &param) {
+    const FusionConvBNAddReluParam &param) {
   switch (param.ExecMode()) {
-    case ConvParam<CPU>::EXEC_DEPTHWISE3x3S1_FLOAT:
-    case ConvParam<CPU>::EXEC_DEPTHWISE3x3S2_FLOAT:
+    case ConvParam::EXEC_DEPTHWISE3x3S1_FLOAT:
+    case ConvParam::EXEC_DEPTHWISE3x3S2_FLOAT:
       DepthwiseConv3x3<float, float>(param);
       break;
-    case ConvParam<CPU>::EXEC_DEPTHWISE5x5_FLOAT:
+    case ConvParam::EXEC_DEPTHWISE5x5_FLOAT:
       DepthwiseConv5x5<float, float>(param);
       break;
-    case ConvParam<CPU>::EXEC_WINOGRAD3X3_FLOAT:
+    case ConvParam::EXEC_WINOGRAD3X3_FLOAT:
       WinogradConv3x3<8, 3>(param);
       break;
-    case ConvParam<CPU>::EXEC_GEMM_FLOAT:
+    case ConvParam::EXEC_GEMM_FLOAT:
       GemmConv<float, float>(param);
       break;
     default:

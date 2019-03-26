@@ -240,13 +240,13 @@ void BeamSearchDecodeFunctor::apply<bool>() const {
 }
 
 template <>
-bool BeamSearchDecodeKernelCpu<float>::Init(BeamSearchDecodeParam<CPU>* param) {
+bool BeamSearchDecodeKernelCpu<float>::Init(BeamSearchDecodeParam* param) {
   return true;
 }
 
 template <>
 void BeamSearchDecodeKernelCpu<float>::Compute(
-    const BeamSearchDecodeParam<CPU>& param) {
+    const BeamSearchDecodeParam& param) {
   const LoDTensorArray* ids = param.ids_;
   const LoDTensorArray* scores = param.scores_;
 

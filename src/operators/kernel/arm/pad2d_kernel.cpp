@@ -21,12 +21,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool Pad2DKernelCpu<float>::Init(Pad2DParam<CPU> *param) {
+bool Pad2DKernelCpu<float>::Init(Pad2DParam *param) {
   return true;
 }
 
 template <>
-void Pad2DKernelCpu<float>::Compute(const Pad2DParam<CPU> &param) {
+void Pad2DKernelCpu<float>::Compute(const Pad2DParam &param) {
   const auto *input = param.input_;
   auto *output = param.output_;
   const auto &paddings = param.paddings_;

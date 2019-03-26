@@ -24,7 +24,7 @@ namespace operators {
 using LoDTensorArray = std::vector<LoDTensor>;
 
 template <typename P>
-void SumCompute(const SumParam<CPU> &param) {
+void SumCompute(const SumParam &param) {
   auto inputsvars = param.InputsVars();
   int N = inputsvars.size();
   auto *outvar = param.OutVar();

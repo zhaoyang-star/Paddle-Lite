@@ -20,12 +20,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool LodResetKernelCpu<float>::Init(LodResetParam<CPU> *param) {
+bool LodResetKernelCpu<float>::Init(LodResetParam *param) {
   return true;
 }
 
 template <>
-void LodResetKernelCpu<float>::Compute(const LodResetParam<CPU> &param) {
+void LodResetKernelCpu<float>::Compute(const LodResetParam &param) {
   const auto *input = param.input_x_;
   const auto *lod_t = param.input_y_;
   auto *output = param.output_;

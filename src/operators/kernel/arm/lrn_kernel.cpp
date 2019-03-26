@@ -21,12 +21,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool LrnKernelCpu<float>::Init(LrnParam<CPU> *param) {
+bool LrnKernelCpu<float>::Init(LrnParam *param) {
   return true;
 }
 
 template <>
-void LrnKernelCpu<float>::Compute(const LrnParam<CPU> &param) {
+void LrnKernelCpu<float>::Compute(const LrnParam &param) {
   LrnCompute<float>(param);
 }
 

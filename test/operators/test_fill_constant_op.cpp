@@ -87,7 +87,7 @@ class TestFillConstantOp {
   }
 };
 
-template class TestFillConstantOp<CPU>;
+template class TestFillConstantOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 

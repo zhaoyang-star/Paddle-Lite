@@ -89,7 +89,7 @@ class TestPolygonBoxTransformOp {
   }
 };
 
-template class TestPolygonBoxTransformOp<CPU>;
+template class TestPolygonBoxTransformOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 

@@ -21,12 +21,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool PriorBoxKernelCpu<float>::Init(PriorBoxParam<CPU> *param) {
+bool PriorBoxKernelCpu<float>::Init(PriorBoxParam *param) {
   return true;
 }
 
 template <>
-void PriorBoxKernelCpu<float>::Compute(const PriorBoxParam<CPU> &param) {
+void PriorBoxKernelCpu<float>::Compute(const PriorBoxParam &param) {
   PriorBoxCompute<float>(param);
 }
 

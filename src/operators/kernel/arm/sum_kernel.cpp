@@ -21,12 +21,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool SumKernelCpu<float>::Init(SumParam<CPU> *param) {
+bool SumKernelCpu<float>::Init(SumParam *param) {
   return true;
 }
 
 template <>
-void SumKernelCpu<float>::Compute(const SumParam<CPU> &param) {
+void SumKernelCpu<float>::Compute(const SumParam &param) {
   SumCompute<float>(param);
   param.Out()->set_lod(param.Inputs()[0]->lod());
 }

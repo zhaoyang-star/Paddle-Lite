@@ -47,7 +47,7 @@ struct SubOpFunctor {
 };
 
 template <typename P>
-void ElementwiseSubCompute(const ElementwiseSubParam<CPU>& param) {
+void ElementwiseSubCompute(const ElementwiseSubParam& param) {
   const Tensor* input_x = param.InputX();
   const Tensor* input_y = param.InputY();
   Tensor* out = param.Out();

@@ -101,7 +101,7 @@ int TestFcOP() {
   attrs["x_num_col_dims"].Set<int>(1);
   attrs["y_num_col_dims"].Set<int>(1);
   attrs["axis"].Set<int>(1);
-  operators::OperatorBase<CPU> *op = nullptr;
+  operators::OperatorBase *op = nullptr;
   op = new operators::FusionFcOp<CPU, T>("fusion_fc", inputs, outputs, attrs,
                                          scope.get());
   op->InferShape();

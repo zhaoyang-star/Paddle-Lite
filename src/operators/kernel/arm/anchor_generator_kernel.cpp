@@ -21,13 +21,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool AnchorGeneratorKernelCpu<float>::Init(AnchorGeneratorParam<CPU> *param) {
+bool AnchorGeneratorKernelCpu<float>::Init(AnchorGeneratorParam *param) {
   return true;
 }
 
 template <>
 void AnchorGeneratorKernelCpu<float>::Compute(
-    const AnchorGeneratorParam<CPU> &param) {
+    const AnchorGeneratorParam &param) {
   // TODO(hjchen2)
 }
 

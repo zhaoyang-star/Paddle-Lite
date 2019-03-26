@@ -20,7 +20,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool Im2SequenceKernelCpu<float>::Init(Im2SequenceParam<CPU> *para) {
+bool Im2SequenceKernelCpu<float>::Init(Im2SequenceParam *para) {
   return true;
 }
 
@@ -32,7 +32,7 @@ inline int Im2SeqOutputSize(int input_size, int filter_size, int padding_0,
 }
 
 template <>
-void Im2SequenceKernelCpu<float>::Compute(const Im2SequenceParam<CPU> &param) {
+void Im2SequenceKernelCpu<float>::Compute(const Im2SequenceParam &param) {
   const Tensor *in_x = param.Input();
   framework::LoDTensor *out = param.Output();
   out->mutable_data<float>();

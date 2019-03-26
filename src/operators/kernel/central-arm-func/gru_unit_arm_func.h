@@ -26,7 +26,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <typename P>
-void GruUnitCompute(const GruUnitParam<CPU>& param) {
+void GruUnitCompute(const GruUnitParam& param) {
   // inputs
   auto* input = param.InputInput();
   auto* hidden_prev = param.InputHiddenPrev();

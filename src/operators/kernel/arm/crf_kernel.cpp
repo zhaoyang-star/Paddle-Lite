@@ -22,12 +22,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool CrfKernelCpu<float>::Init(CrfParam<CPU> *param) {
+bool CrfKernelCpu<float>::Init(CrfParam *param) {
   return true;
 }
 
 template <>
-void CrfKernelCpu<float>::Compute(const CrfParam<CPU> &param) {
+void CrfKernelCpu<float>::Compute(const CrfParam &param) {
   CrfCompute<float>(param);
 }
 

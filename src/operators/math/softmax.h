@@ -23,13 +23,13 @@ namespace paddle_mobile {
 namespace operators {
 namespace math {
 
-template <typename Device, typename T>
+template <typename T>
 class SoftmaxFuntor {
  public:
   void operator()(const framework::Tensor *X, framework::Tensor *Y);
 };
 
-template <typename Device, typename T>
+template < typename T>
 class SequenceSoftmaxFuntor {
  public:
   void operator()(const framework::LoDTensor *X, framework::LoDTensor *Y);

@@ -19,7 +19,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-void InitBaseConvKernel(ConvParam<CPU> *param);
+void InitBaseConvKernel(ConvParam *param);
 
 }  // namespace operators
 }  // namespace paddle_mobile

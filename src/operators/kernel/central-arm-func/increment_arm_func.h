@@ -22,7 +22,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <typename P>
-void IncrementCompute(const IncrementParam<CPU> &param) {
+void IncrementCompute(const IncrementParam &param) {
   const framework::Tensor *input = param.InputX();
   framework::Tensor *out = param.Out();
   float step = param.Step();

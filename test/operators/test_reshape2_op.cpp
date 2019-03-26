@@ -18,7 +18,6 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename Dtype>
 class TestReshape2Op {
  public:
   explicit TestReshape2Op(const Program<Dtype> p) : program_(p) {
@@ -105,7 +104,7 @@ class TestReshape2Op {
   }
 };
 
-template class TestReshape2Op<CPU>;
+template class TestReshape2Op;
 }  // namespace framework
 }  // namespace paddle_mobile
 

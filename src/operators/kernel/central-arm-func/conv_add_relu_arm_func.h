@@ -27,7 +27,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <typename Itype, typename Otype>
-void ConvAddReluBasic(const FusionConvAddReluParam<CPU> &param) {
+void ConvAddReluBasic(const FusionConvAddReluParam &param) {
   const Tensor *input = param.Input();
   Tensor filter = *param.Filter();
   Tensor bias = *param.Bias();
@@ -120,7 +120,7 @@ void ConvAddReluBasic(const FusionConvAddReluParam<CPU> &param) {
 }
 
 template <typename Itype, typename Otype>
-void ConvAddReluCompute(const FusionConvAddReluParam<CPU> &param) {
+void ConvAddReluCompute(const FusionConvAddReluParam &param) {
   param.Output()->mutable_data<float>();
   if (param.Groups() == param.Input()->dims()[1] &&
       param.Input()->dims()[1] == param.Output()->dims()[1] &&

@@ -96,7 +96,7 @@ class TestSumOp {
   }
 };
 
-template class TestSumOp<CPU>;
+template class TestSumOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 

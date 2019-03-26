@@ -31,8 +31,8 @@ limitations under the License. */
 
 #ifdef PADDLE_MOBILE_CL
 #include "framework/cl/cl_image.h"
-#include "tensor_wrapper.h"
 #endif
+#include "tensor_wrapper.h"
 
 namespace paddle_mobile {
 namespace framework {

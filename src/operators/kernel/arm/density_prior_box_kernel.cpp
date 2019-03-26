@@ -20,13 +20,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool DensityPriorBoxKernelCpu<float>::Init(DensityPriorBoxParam<CPU> *param) {
+bool DensityPriorBoxKernelCpu<float>::Init(DensityPriorBoxParam *param) {
   return true;
 }
 
 template <>
 void DensityPriorBoxKernelCpu<float>::Compute(
-    const DensityPriorBoxParam<CPU> &param) {
+    const DensityPriorBoxParam &param) {
   // TODO(hjchen2)
 }
 

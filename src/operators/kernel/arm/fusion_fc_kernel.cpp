@@ -21,12 +21,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool FusionFcKernelCpu<float>::Init(FusionFcParam<CPU> *param) {
+bool FusionFcKernelCpu<float>::Init(FusionFcParam *param) {
   return true;
 }
 
 template <>
-void FusionFcKernelCpu<float>::Compute(const FusionFcParam<CPU> &param) {
+void FusionFcKernelCpu<float>::Compute(const FusionFcParam &param) {
   FusionFcCompute<float, float>(param);
   param.Out()->set_lod(param.InputX()->lod());
 }
@@ -35,12 +35,12 @@ template class FusionFcKernelCpu<float>;
 
 #ifdef FUSION_FC_INT8_OP
 template <>
-bool FusionFcKernelCpu<int8_t>::Init(FusionFcParam<CPU> *param) {
+bool FusionFcKernelCpu<int8_t>::Init(FusionFcParam *param) {
   return true;
 }
 
 template <>
-void FusionFcKernelCpu<int8_t>::Compute(const FusionFcParam<CPU> &param) {
+void FusionFcKernelCpu<int8_t>::Compute(const FusionFcParam &param) {
   FusionFcCompute<int8_t, int32_t>(param);
   param.Out()->set_lod(param.InputX()->lod());
 }

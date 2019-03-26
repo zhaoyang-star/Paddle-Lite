@@ -21,13 +21,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool MultiClassNMSKernelCpu<float>::Init(MultiClassNMSParam<CPU> *param) {
+bool MultiClassNMSKernelCpu<float>::Init(MultiClassNMSParam *param) {
   return true;
 }
 
 template <>
 void MultiClassNMSKernelCpu<float>::Compute(
-    const MultiClassNMSParam<CPU> &param) {
+    const MultiClassNMSParam &param) {
   MultiClassNMSCompute<float>(param);
 }
 

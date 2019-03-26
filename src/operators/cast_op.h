@@ -51,6 +51,10 @@ class CastOp : public framework::OperatorWithKernels<T, CastParam> {
     framework::OperatorWithKernels<T, CastParam>::kernels.insert(TYPE_CPU,
                                                                  kernelCpu_);
   }
+  Init(){
+      kernelCpu_.Init(framework::OperatorWithKernels<T, CastParam>::param_);
+
+  }
   void InferShape() const override;
   CastKernelCpu<T> kernelCpu_;
   CastKernelGpu<T> kernelGpu_;

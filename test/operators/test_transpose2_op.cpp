@@ -106,7 +106,7 @@ class TestTranspose2Op {
   }
 };
 
-template class TestTranspose2Op<CPU>;
+template class TestTranspose2Op;
 }  // namespace framework
 }  // namespace paddle_mobile
 

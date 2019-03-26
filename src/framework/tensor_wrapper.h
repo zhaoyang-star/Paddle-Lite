@@ -22,12 +22,14 @@ limitations under the License. */
 #include <type_traits>
 #include <typeindex>
 #include <vector>
-
+#ifdef PADDLE_MOBILE_CL
 #include "cl/cl_image.h"
-#include "common/enforce.h"
-#include "common/types.h"
 #include "framework/cl/cl_helper.h"
 #include "framework/cl/cl_tensor.h"
+#endif
+#include "common/enforce.h"
+#include "common/types.h"
+
 #include "framework/data_layout.h"
 #include "framework/lod_tensor.h"
 #include "framework/tensor_base.h"
@@ -42,7 +44,7 @@ namespace framework {
  * 如果没初始化, 以第一次初始化为准
  *
  */
-class TensorWrapper {
+class TensorWrapper : public LoDTensor {
  public:
   //  // This is the type we obtained in variable.
   //  typedef framework::CLImage gtype;
@@ -57,13 +59,14 @@ class TensorWrapper {
   }
 
   bool IsInitialized() const { return holder_cpu_ != nullptr; }
+#ifdef PADDLE_MOBILE_CL
 
   framework::CLImage *MuteClImage() {
     mem_type_ = TYPE_GPU;
     Clear();
     return this->GetMutableGPU<framework::CLImage>();
   }
-
+#endif
   framework::LoDTensor *MuteLodTensor() {
     mem_type_ = TYPE_CPU;
     Clear();
@@ -79,6 +82,7 @@ class TensorWrapper {
     holder_cpu_.reset();
     holder_gpu_.reset();
   }
+#ifdef PADDLE_MOBILE_CL
 
   static CLImage *getCLImage(TensorWrapper *wrapper) {
     if (wrapper->GetRunTimeType() == TYPE_GPU) {
@@ -145,11 +149,14 @@ class TensorWrapper {
       return output;
     }
   }
-
+#endif
   static framework::LoDTensor *getLoDTensor(TensorWrapper *wrapper) {
     if (wrapper->GetRunTimeType() == TYPE_CPU) {
       return const_cast<LoDTensor *>(wrapper->Get<LoDTensor>());
-    } else {
+    }
+#ifdef PADDLE_MOBILE_CL
+
+    else {
       const CLImage *pClImage = wrapper->Get<CLImage>();
       // cast gpu to cpu
       CLImage *image_p = const_cast<CLImage *>(pClImage);
@@ -176,6 +183,9 @@ class TensorWrapper {
       delete[](image_data);
       return pTensor;
     }
+#else
+    return NULL;
+#endif
   }
 
   /* template <typename Type, typename RequestDeviceType>
@@ -330,9 +340,9 @@ class TensorWrapper {
   template <typename T>
   T *GetMutableGPU() {
     if (!IsType<T>()) {
-      holder_cpu_.reset(new PlaceholderImpl<T>(new T()));
+      holder_gpu_.reset(new PlaceholderImpl<T>(new T()));
     }
-    return static_cast<T *>(holder_cpu_->Ptr());
+    return static_cast<T *>(holder_gpu_->Ptr());
   }
 
   std::type_index Type() const { return holder_cpu_->Type(); }
@@ -361,7 +371,10 @@ class TensorWrapper {
   // holoder others
 
   paddle_mobile::RunTimeType mem_type_;
+#ifdef PADDLE_MOBILE_CL
+
   CLHelper cl_helper_;
+#endif
 };
 
 }  // namespace framework

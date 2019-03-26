@@ -21,12 +21,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool SoftmaxKernelCpu<float>::Init(SoftmaxParam<CPU> *param) {
+bool SoftmaxKernelCpu<float>::Init(SoftmaxParam *param) {
   return true;
 }
 
 template <>
-void SoftmaxKernelCpu<float>::Compute(const SoftmaxParam<CPU> &param) {
+void SoftmaxKernelCpu<float>::Compute(const SoftmaxParam &param) {
   SoftmaxCompute<float>(param);
   param.Out()->set_lod(param.InputX()->lod());
 }

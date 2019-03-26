@@ -35,7 +35,7 @@ inline void ReorderInitState(const framework::Tensor& src,
 }
 
 template <typename T>
-void GruCompute(const GruParam<CPU>& param) {
+void GruCompute(const GruParam& param) {
   auto* input = param.InputInput();
   auto* h0 = param.InputH0();
   auto* weight = param.InputWeight();

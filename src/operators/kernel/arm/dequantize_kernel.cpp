@@ -24,12 +24,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool DequantizeKernelCpu<float>::Init(DequantizeParam<CPU> *param) {
+bool DequantizeKernelCpu<float>::Init(DequantizeParam *param) {
   return true;
 }
 
 template <>
-void DequantizeKernelCpu<float>::Compute(const DequantizeParam<CPU> &param) {
+void DequantizeKernelCpu<float>::Compute(const DequantizeParam &param) {
   const LoDTensor *input = param.input_;
   LoDTensor *output = param.output_;
   float activation_scale = param.activation_scale_->data<float>()[0];

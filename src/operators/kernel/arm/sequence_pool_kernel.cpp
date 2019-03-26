@@ -36,7 +36,7 @@ void SequencePoolImpl(const framework::LoDTensor &input,
   const auto &lod = input.lod()[0];
   int64_t width = input.numel() / input.dims()[0];
 
-  #pragma omp parallel for
+#pragma omp parallel for
   for (int i = 0; i < static_cast<int>(lod.size()) - 1; ++i) {
     const float *in_ptr = input_ptr + lod[i] * width;
     float *out_ptr = output_ptr + i * width;
@@ -96,7 +96,7 @@ void SequencePoolImpl<SUM, float>(const framework::LoDTensor &input,
   const auto &lod = input.lod()[0];
   int64_t width = input.numel() / input.dims()[0];
 
-  #pragma omp parallel for
+#pragma omp parallel for
   for (int i = 0; i < static_cast<int>(lod.size()) - 1; ++i) {
     const float *in_ptr = input_ptr + lod[i] * width;
     float *out_ptr = output_ptr + i * width;
@@ -162,34 +162,30 @@ void SequencePoolImpl<FIRST, float>(const framework::LoDTensor &input,
     memcpy(out_ptr, in_ptr, width * sizeof(float));
   }
 }
+template <>
 
-template <typename T>
-class SequencePoolKernelCpu<T>
-    : public framework::OpKernelBase<CPU, SequencePoolParam<CPU>> {
- public:
-  bool Init(SequencePoolParam<CPU> *param) { return true; }
+bool SequencePoolKernelCpu<float>::Init(SequencePoolParam *param) {
+  return true;
+}
+template <>
 
-  void Compute(const SequencePoolParam<CPU> &param) {
-    const framework::LoDTensor *input = param.input_;
-    framework::LoDTensor *output = param.output_;
-    output->mutable_data<T>();
-    const std::string pooling_type = param.pool_type_;
+void SequencePoolKernelCpu<float>::Compute(const SequencePoolParam &param) {
+  const framework::LoDTensor *input = param.input_;
+  framework::LoDTensor *output = param.output_;
+  output->mutable_data<float>();
+  const std::string pooling_type = param.pool_type_;
 
-    if (param.pool_type_ == "MAX") {
-      SequencePoolImpl<MAX, T>(*input, output);
-    } else if (param.pool_type_ == "FIRST") {
-      SequencePoolImpl<FIRST, T>(*input, output);
-    } else if (param.pool_type_ == "SUM") {
-      SequencePoolImpl<SUM, T>(*input, output);
-    } else {
-      PADDLE_MOBILE_THROW_EXCEPTION(
-          "pooling type `%s` has not been implemented.",
-          param.pool_type_.c_str());
-    }
+  if (param.pool_type_ == "MAX") {
+    SequencePoolImpl<MAX, float>(*input, output);
+  } else if (param.pool_type_ == "FIRST") {
+    SequencePoolImpl<FIRST, float>(*input, output);
+  } else if (param.pool_type_ == "SUM") {
+    SequencePoolImpl<SUM, float>(*input, output);
+  } else {
+    PADDLE_MOBILE_THROW_EXCEPTION("pooling type `%s` has not been implemented.",
+                                  param.pool_type_.c_str());
   }
-};
-
-template class SequencePoolKernelCpu<float>;
+}
 
 }  // namespace operators
 }  // namespace paddle_mobile

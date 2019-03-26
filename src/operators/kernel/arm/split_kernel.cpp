@@ -21,12 +21,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool SplitKernelCpu<float>::Init(SplitParam<CPU> *param) {
+bool SplitKernelCpu<float>::Init(SplitParam *param) {
   return true;
 }
 
 template <>
-void SplitKernelCpu<float>::Compute(const SplitParam<CPU> &param) {
+void SplitKernelCpu<float>::Compute(const SplitParam &param) {
   SplitCompute<float>(param);
 }
 

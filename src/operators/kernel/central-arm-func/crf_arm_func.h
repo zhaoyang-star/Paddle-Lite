@@ -75,7 +75,7 @@ void Decode(const Tensor& emission_weights, const Tensor& transition_weights,
   }
 }
 template <typename P>
-void CrfCompute(const CrfParam<CPU>& param) {
+void CrfCompute(const CrfParam& param) {
   auto* emission = param.InputEmission();
   auto* transition = param.InputTransition();
   auto* label = param.InputLabel();

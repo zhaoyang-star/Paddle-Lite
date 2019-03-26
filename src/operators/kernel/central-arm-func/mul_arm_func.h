@@ -20,7 +20,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <typename P>
-void MulCompute(const MulParam<CPU> &param) {
+void MulCompute(const MulParam &param) {
   const Tensor *input_x = param.InputX();
   const Tensor *input_y = param.InputY();
   Tensor *out = param.Out();

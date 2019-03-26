@@ -21,22 +21,19 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename T>
-class SequenceSoftmaxKernelCpu<T>
-    : public framework::OpKernelBase<CPU, SoftmaxParam<CPU>> {
- public:
-  bool Init(SoftmaxParam<CPU> *param) { return true; }
+template <>
+bool SequenceSoftmaxKernelCpu<float>::Init(SoftmaxParam *param) {
+  return true;
+}
 
-  void Compute(const SoftmaxParam<CPU> &param) {
-    param.Out()->mutable_data<float>();
-    const framework::LoDTensor *input = param.InputX();
-    framework::LoDTensor *output = param.Out();
-    math::SequenceSoftmaxFuntor<CPU, T> sequence_softmax;
-    sequence_softmax(input, output);
-  }
-};
-
-template class SequenceSoftmaxKernelCpu<float>;
+template <>
+void SequenceSoftmaxKernelCpu<float>::Compute(const SoftmaxParam &param) {
+  param.Out()->mutable_data<float>();
+  const framework::LoDTensor *input = param.InputX();
+  framework::LoDTensor *output = param.Out();
+  math::SequenceSoftmaxFuntor<float> sequence_softmax;
+  sequence_softmax(input, output);
+}
 
 }  // namespace operators
 }  // namespace paddle_mobile

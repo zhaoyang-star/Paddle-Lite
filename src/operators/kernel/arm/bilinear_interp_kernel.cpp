@@ -21,13 +21,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool BilinearInterpKernelCpu<float>::Init(BilinearInterpParam<CPU> *param) {
+bool BilinearInterpKernelCpu<float>::Init(BilinearInterpParam *param) {
   return true;
 }
 
 template <>
 void BilinearInterpKernelCpu<float>::Compute(
-    const BilinearInterpParam<CPU> &param) {
+    const BilinearInterpParam &param) {
   BilinearInterpCompute<float>(param);
 }
 

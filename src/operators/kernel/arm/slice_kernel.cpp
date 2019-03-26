@@ -20,11 +20,11 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool SliceKernelCpu<float>::Init(SliceParam<CPU>* param) {
+bool SliceKernelCpu<float>::Init(SliceParam* param) {
   return true;
 }
 template <>
-void SliceKernelCpu<float>::Compute(const SliceParam<CPU>& param) {}
+void SliceKernelCpu<float>::Compute(const SliceParam& param) {}
 }  // namespace operators
 }  // namespace paddle_mobile
 #endif

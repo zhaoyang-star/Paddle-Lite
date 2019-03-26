@@ -21,13 +21,13 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ConvTransposeKernelCpu<float>::Init(ConvTransposeParam<CPU> *param) {
+bool ConvTransposeKernelCpu<float>::Init(ConvTransposeParam *param) {
   return true;
 }
 
 template <>
 void ConvTransposeKernelCpu<float>::Compute(
-    const ConvTransposeParam<CPU> &param) {
+    const ConvTransposeParam &param) {
   ConvTransposeCompute<float>(param);
 }
 

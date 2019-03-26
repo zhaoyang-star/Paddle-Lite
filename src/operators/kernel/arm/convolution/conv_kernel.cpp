@@ -22,36 +22,36 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ConvKernelCpu<float>::Init(ConvParam<CPU> *param) {
+bool ConvKernelCpu<float>::Init(ConvParam *param) {
   InitBaseConvKernel(param);
   return true;
 }
 
 template <>
-void ConvKernelCpu<float>::Compute(const ConvParam<CPU> &param) {
+void ConvKernelCpu<float>::Compute(const ConvParam &param) {
   switch (param.ExecMode()) {
 #ifndef __aarch64__
-    case ConvParam<CPU>::EXEC_GEMM_INT8:
+    case ConvParam::EXEC_GEMM_INT8:
       GemmConv<int8_t, int32_t>(param);
       break;
-    case ConvParam<CPU>::EXEC_DEPTHWISE3x3_INT8:
+    case ConvParam::EXEC_DEPTHWISE3x3_INT8:
       DepthwiseConv3x3<int8_t, int32_t>(param);
       break;
-    case ConvParam<CPU>::EXEC_DEPTHWISE5x5_INT8:
+    case ConvParam::EXEC_DEPTHWISE5x5_INT8:
       DepthwiseConv5x5<int8_t, int32_t>(param);
       break;
 #endif  // __aarch64__
-    case ConvParam<CPU>::EXEC_DEPTHWISE3x3S1_FLOAT:
-    case ConvParam<CPU>::EXEC_DEPTHWISE3x3S2_FLOAT:
+    case ConvParam::EXEC_DEPTHWISE3x3S1_FLOAT:
+    case ConvParam::EXEC_DEPTHWISE3x3S2_FLOAT:
       DepthwiseConv3x3<float, float>(param);
       break;
-    case ConvParam<CPU>::EXEC_DEPTHWISE5x5_FLOAT:
+    case ConvParam::EXEC_DEPTHWISE5x5_FLOAT:
       DepthwiseConv5x5<float, float>(param);
       break;
-    case ConvParam<CPU>::EXEC_WINOGRAD3X3_FLOAT:
+    case ConvParam::EXEC_WINOGRAD3X3_FLOAT:
       WinogradConv3x3<8, 3>(param);
       break;
-    case ConvParam<CPU>::EXEC_GEMM_FLOAT:
+    case ConvParam::EXEC_GEMM_FLOAT:
       GemmConv<float, float>(param);
       break;
     default:

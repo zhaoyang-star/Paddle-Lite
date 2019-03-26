@@ -22,13 +22,13 @@ namespace operators {
 
 template <>
 bool PolygonBoxTransformKernelCpu<float>::Init(
-    PolygonBoxTransformParam<CPU> *param) {
+    PolygonBoxTransformParam *param) {
   return true;
 }
 
 template <>
 void PolygonBoxTransformKernelCpu<float>::Compute(
-    const PolygonBoxTransformParam<CPU> &param) {
+    const PolygonBoxTransformParam &param) {
   PolygonBoxTransformCompute<float>(param);
 }
 

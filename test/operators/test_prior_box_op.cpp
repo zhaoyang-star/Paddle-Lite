@@ -118,7 +118,7 @@ class TestPriorBoxOp {
   }
 };
 
-template class TestPriorBoxOp<CPU>;
+template class TestPriorBoxOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 

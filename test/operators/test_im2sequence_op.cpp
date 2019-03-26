@@ -92,7 +92,7 @@ class TestIm2SequenceOp {
   }
 };
 
-template class TestIm2SequenceOp<CPU>;
+template class TestIm2SequenceOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 

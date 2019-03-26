@@ -106,10 +106,10 @@
 //      op_desc->SetComputeType(RunTimeType::TYPE_GPU);
 //      ops_of_block0_.push_back(&(op_handler_gpu.get()));
 //
-//    } else if (OpInfoMap<CPU>::Instance()->Has(op_desc->Type())) {
+//    } else if (OpInfoMap::Instance()->Has(op_desc->Type())) {
 //      DLOG << "create op : " << op_desc->Type() << "  use cpu";
 //
-//      auto op_handler_cpu = OpRegistry<CPU>::CreateOp(
+//      auto op_handler_cpu = OpRegistry::CreateOp(
 //          op_desc->Type(), op_desc->GetInputs(), op_desc->GetOutputs(),
 //          op_desc->GetAttrMap(), program_.scope.get());
 //

@@ -48,7 +48,7 @@ bool IsExpand(const std::vector<int64_t> &filter_dim,
 }
 
 template <typename Itype, typename Otype>
-void GemmConv(const ConvParam<CPU> &param) {
+void GemmConv(const ConvParam &param) {
   const Tensor *input = param.Input();
   Tensor filter = *param.Filter();
   Tensor *output = param.Output();
@@ -135,7 +135,7 @@ void GemmConv(const ConvParam<CPU> &param) {
 }
 
 template <int tile, int kernel>
-void WinogradConv3x3(const ConvParam<CPU> &param) {
+void WinogradConv3x3(const ConvParam &param) {
   const Tensor *input = param.Input();
   const Tensor *filter = param.TransformedFilter();
   Tensor *output = param.Output();
@@ -181,7 +181,7 @@ void WinogradConv3x3(const ConvParam<CPU> &param) {
 }
 
 template <typename Itype, typename Otype>
-void DepthwiseConv3x3(const ConvParam<CPU> &param) {
+void DepthwiseConv3x3(const ConvParam &param) {
   const Tensor *input = param.Input();
   const Tensor *filter = param.Filter();
   const std::vector<int> &paddings = param.Paddings();
@@ -210,7 +210,7 @@ void DepthwiseConv3x3(const ConvParam<CPU> &param) {
 }
 
 template <typename Itype, typename Otype>
-void DepthwiseConv5x5(const ConvParam<CPU> &param) {
+void DepthwiseConv5x5(const ConvParam &param) {
   const Tensor *input = param.Input();
   const Tensor *filter = param.Filter();
   const std::vector<int> &paddings = param.Paddings();
@@ -231,15 +231,15 @@ void DepthwiseConv5x5(const ConvParam<CPU> &param) {
   }
 }
 
-template void GemmConv<float, float>(const ConvParam<CPU> &param);
-template void WinogradConv3x3<8, 3>(const ConvParam<CPU> &param);
-template void DepthwiseConv3x3<float, float>(const ConvParam<CPU> &param);
-template void DepthwiseConv5x5<float, float>(const ConvParam<CPU> &param);
+template void GemmConv<float, float>(const ConvParam &param);
+template void WinogradConv3x3<8, 3>(const ConvParam &param);
+template void DepthwiseConv3x3<float, float>(const ConvParam &param);
+template void DepthwiseConv5x5<float, float>(const ConvParam &param);
 
 #ifndef __aarch64__
-template void GemmConv<int8_t, int32_t>(const ConvParam<CPU> &param);
-template void DepthwiseConv3x3<int8_t, int32_t>(const ConvParam<CPU> &param);
-template void DepthwiseConv5x5<int8_t, int32_t>(const ConvParam<CPU> &param);
+template void GemmConv<int8_t, int32_t>(const ConvParam &param);
+template void DepthwiseConv3x3<int8_t, int32_t>(const ConvParam &param);
+template void DepthwiseConv5x5<int8_t, int32_t>(const ConvParam &param);
 #endif
 #endif
 

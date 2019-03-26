@@ -30,7 +30,7 @@ struct ClipFunctor {
 };
 
 template <typename P>
-void PriorBoxCompute(const PriorBoxParam<CPU> &param) {
+void PriorBoxCompute(const PriorBoxParam &param) {
   const auto *input_ = param.Input();
   const auto &input_dims = input_->dims();
 

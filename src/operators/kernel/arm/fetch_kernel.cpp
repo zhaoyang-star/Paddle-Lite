@@ -15,12 +15,12 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool FetchKernelCpu<float>::Init(FetchParam<CPU> *param) {
+bool FetchKernelCpu<float>::Init(FetchParam *param) {
   return true;
 }
 
 template <>
-void FetchKernelCpu<float>::Compute(const FetchParam<CPU> &param) {
+void FetchKernelCpu<float>::Compute(const FetchParam &param) {
   int col = param.Col();
   param.Out()->at(col).ShareDataWith(*(param.InputX()));
 }

@@ -131,8 +131,8 @@ class OpRegistry {
     return 0;                                                        \
   }
 
-#define REGISTER_OPERATOR_FPGA(op_type, op_class) ;
+//#define REGISTER_OPERATOR_FPGA(op_type, op_class) ;
 
-#define REGISTER_OPERATOR_CL(op_type, op_class) ;
+//#define REGISTER_OPERATOR_CL(op_type, op_class) ;
 }  // namespace framework
 }  // namespace paddle_mobile

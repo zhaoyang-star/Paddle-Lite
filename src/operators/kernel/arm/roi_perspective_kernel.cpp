@@ -198,13 +198,13 @@ void bilinear_interpolate(const T *in_data, const int channels, const int width,
 }
 
 template <>
-bool RoiPerspectiveKernelCpu<float>::Init(RoiPerspectiveParam<CPU> *param) {
+bool RoiPerspectiveKernelCpu<float>::Init(RoiPerspectiveParam *param) {
   return true;
 }
 
 template <>
 void RoiPerspectiveKernelCpu<float>::Compute(
-    const RoiPerspectiveParam<CPU> &param) {
+    const RoiPerspectiveParam &param) {
   const auto *input_x = param.input_x_;
   const auto *input_rois = param.input_rois_;
   auto *output = param.output_;

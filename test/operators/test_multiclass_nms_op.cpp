@@ -104,7 +104,7 @@ class TestMultiClassNMSOp {
   }
 };
 
-template class TestMultiClassNMSOp<CPU>;
+template class TestMultiClassNMSOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 

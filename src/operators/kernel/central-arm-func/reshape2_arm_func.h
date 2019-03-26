@@ -23,7 +23,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <typename P>
-void Reshape2Compute(const Reshape2Param<CPU> &param) {
+void Reshape2Compute(const Reshape2Param &param) {
   const auto *input_x = param.InputX();
   const auto &input_x_dims = input_x->dims();
   auto *out = param.Out();

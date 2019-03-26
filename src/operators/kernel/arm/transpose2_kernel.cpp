@@ -34,7 +34,7 @@ bool IsShuffleChannel(const std::vector<int> &axis) {
   return is_shuffle_channel;
 }
 
-void ShuffleChannelCompute(const Transpose2Param<CPU> &param) {
+void ShuffleChannelCompute(const Transpose2Param &param) {
   const std::vector<int> &axis = param.Axis();
   const Tensor *input = param.InputX();
   const Dtype *input_ptr = input->data<Dtype>();
@@ -62,7 +62,7 @@ void ShuffleChannelCompute(const Transpose2Param<CPU> &param) {
   }
 }
 
-void Transpose2Compute(const Transpose2Param<CPU> &param) {
+void Transpose2Compute(const Transpose2Param &param) {
   const std::vector<int> &axis = param.Axis();
   const Tensor *input = param.InputX();
   const Dtype *input_ptr = input->data<Dtype>();
@@ -115,12 +115,12 @@ void Transpose2Compute(const Transpose2Param<CPU> &param) {
 }
 
 template <>
-bool Transpose2KernelCpu<float>::Init(Transpose2Param<CPU> *param) {
+bool Transpose2KernelCpu<float>::Init(Transpose2Param *param) {
   return true;
 }
 
 template <>
-void Transpose2KernelCpu<float>::Compute(const Transpose2Param<CPU> &param) {
+void Transpose2KernelCpu<float>::Compute(const Transpose2Param &param) {
   const std::vector<int> &axis = param.Axis();
   bool shuffle_channel = IsShuffleChannel(axis);
   if (shuffle_channel) {
