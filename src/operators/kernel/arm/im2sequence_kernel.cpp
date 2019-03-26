@@ -63,7 +63,7 @@ void Im2SequenceKernelCpu<float>::Compute(const Im2SequenceParam &param) {
         in_x->Slice(i, i + 1).Resize({img_channels, img_height, img_width});
     Tensor dst = out->Slice(i, i + 1).Resize(
         {output_height, output_width, img_channels, kernels[0], kernels[1]});
-    math::Im2ColFunctor<math::ColFormat::kOCF, CPU, float> f;
+    math::Im2ColFunctor<math::ColFormat::kOCF, float> f;
     f(src, dilations, strides, paddings, &dst);
   }
   out->Resize(out_dims);

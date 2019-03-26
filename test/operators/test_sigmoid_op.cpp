@@ -43,8 +43,8 @@ int TestSigmoidOp(const std::vector<int> input_shape) {
   auto output_var = scope.get()->Var("output");
 
   framework::AttributeMap attrs;
-  auto *op = new operators::SigmoidOp<CPU, float>("sigmoid", inputs, outputs,
-                                                  attrs, scope.get());
+  auto *op = new operators::SigmoidOp<float>("sigmoid", inputs, outputs, attrs,
+                                             scope.get());
   op->InferShape();
   op->Init();
   op->Run();

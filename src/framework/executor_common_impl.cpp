@@ -932,7 +932,7 @@
 //
 //#endif
 //
-// template class ExecutorSpecificDevice<CPU, float>;
+// template class ExecutorSpecificDevice< float>;
 //
 // template class ExecutorSpecificDevice<FPGA, float>;
 //

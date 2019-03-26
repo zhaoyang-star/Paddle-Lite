@@ -73,7 +73,7 @@ namespace math {
  */
 using Tensor = paddle_mobile::framework::Tensor;
 
-template <typename T>
+template <typename DeviceType, typename T>
 class Vol2ColFunctor {
  public:
   void operator()(const Tensor &vol, const std::vector<int> &dilations,
@@ -81,7 +81,7 @@ class Vol2ColFunctor {
                   const std::vector<int> &paddings, Tensor *col) const;
 };
 
-template <typename T>
+template <typename DeviceType, typename T>
 class Col2VolFunctor {
  public:
   void operator()(const Tensor &col, const std::vector<int> &dilations,

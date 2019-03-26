@@ -97,7 +97,7 @@ void GemmConv(const ConvParam &param) {
   int out_step = static_cast<int>(output->dims()[1]) / groups;
 
   math::Vol2ColFunctor<CPU, Itype> vol2col;
-  math::Im2ColFunctor<math::ColFormat::kCFO, CPU, Itype> im2col;
+  math::Im2ColFunctor<math::ColFormat::kCFO, Itype> im2col;
 
   const int batch_size = static_cast<int>(input->dims()[0]);
   for (int i = 0; i < batch_size; i++) {
@@ -240,7 +240,6 @@ template void DepthwiseConv5x5<float, float>(const ConvParam &param);
 template void GemmConv<int8_t, int32_t>(const ConvParam &param);
 template void DepthwiseConv3x3<int8_t, int32_t>(const ConvParam &param);
 template void DepthwiseConv5x5<int8_t, int32_t>(const ConvParam &param);
-#endif
 #endif
 
 }  // namespace operators

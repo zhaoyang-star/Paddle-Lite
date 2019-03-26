@@ -30,7 +30,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template < typename T = float>
+template <typename T = float>
 class ExecutorCpu : ExecutorBase<T> {
  public:
   ExecutorCpu(const Program<T> &program,

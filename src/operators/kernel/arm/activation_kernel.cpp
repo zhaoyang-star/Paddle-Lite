@@ -72,9 +72,7 @@ bool ReluKernelCpu<float>::Init(ReluParam *param) {
 
 template <>
 void ReluKernelCpu<float>::Compute(const ReluParam &param) {
-  unpactToLodTensor(param.InputX());
-
-  const LoDTensor *input = ;
+  const LoDTensor *input = param.InputX();
   LoDTensor *output = param.Out();
   ActivationCompute<float, RELU>()(input, output);
   output->set_lod(input->lod());

@@ -36,7 +36,7 @@ DECLARE_OPERATOR_WITH_PARAMS(Tanh, TanhParam, TanhKernel);
 #endif
 
 #ifdef LOG_OP
-DECLARE_OPERATOR_WITH_PARAMS(Log, ReluParam, Relu6Kernel);
+DECLARE_OPERATOR_WITH_PARAMS(Log, ReluParam, LogKernel);
 #endif
 
 }  // namespace operators

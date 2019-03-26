@@ -76,8 +76,8 @@ int TestLessThanOp(const std::vector<int> &x_shape,
 
   framework::AttributeMap attrs;
   attrs["axis"].Set<int>(axis);
-  auto *op = new operators::LessThanOp<CPU, float>("less_than", inputs, outputs,
-                                                   attrs, scope.get());
+  auto *op = new operators::LessThanOp<float>("less_than", inputs, outputs,
+                                              attrs, scope.get());
   op->InferShape();
   op->Init();
   op->Run();

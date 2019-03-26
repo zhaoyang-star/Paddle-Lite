@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
   paddle_mobile::PaddleMobile<paddle_mobile::FPGA> paddle_mobile;
 #endif
 #ifdef PADDLE_MOBILE_CPU
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile;
+  paddle_mobile::PaddleMobile<float> paddle_mobile;
 #endif
   paddle_mobile.SetThreadNum(thread_num);
   auto time1 = time();

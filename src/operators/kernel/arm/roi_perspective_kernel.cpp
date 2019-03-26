@@ -203,8 +203,7 @@ bool RoiPerspectiveKernelCpu<float>::Init(RoiPerspectiveParam *param) {
 }
 
 template <>
-void RoiPerspectiveKernelCpu<float>::Compute(
-    const RoiPerspectiveParam &param) {
+void RoiPerspectiveKernelCpu<float>::Compute(const RoiPerspectiveParam &param) {
   const auto *input_x = param.input_x_;
   const auto *input_rois = param.input_rois_;
   auto *output = param.output_;

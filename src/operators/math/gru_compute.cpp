@@ -25,7 +25,7 @@ namespace operators {
 namespace math {
 
 template <typename T>
-struct GRUUnitFunctor<CPU, T> {
+struct GRUUnitFunctor<T> {
   static void compute(GRUMetaValue<T> value, int frame_size, int batch_size,
                       const ActivationType active_node,
                       const ActivationType active_gate) {
@@ -48,7 +48,7 @@ struct GRUUnitFunctor<CPU, T> {
   }
 };
 
-template struct GRUUnitFunctor<CPU, float>;
+template struct GRUUnitFunctor<float>;
 
 }  // namespace math
 }  // namespace operators

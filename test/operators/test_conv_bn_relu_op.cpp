@@ -83,7 +83,7 @@ int TestConvBnReluOp(int in_channels, int in_height, int in_width,
   attrs["groups"].Set<int>(groups);
   attrs["epsilon"].Set<float>(1e-6);
   attrs["momentum"].Set<float>(0.f);
-  auto *op = new operators::FusionConvBNReluOp<CPU, float>(
+  auto *op = new operators::FusionConvBNReluOp<float>(
       "fusion_conv_bn_relu", inputs, outputs, attrs, scope.get());
   op->InferShape();
   op->Init();

@@ -61,8 +61,7 @@ bool ConvBNReluKernelCpu<float>::Init(FusionConvBNReluParam *param) {
 }
 
 template <>
-void ConvBNReluKernelCpu<float>::Compute(
-    const FusionConvBNReluParam &param) {
+void ConvBNReluKernelCpu<float>::Compute(const FusionConvBNReluParam &param) {
   switch (param.ExecMode()) {
     case ConvParam::EXEC_DEPTHWISE3x3S1_FLOAT:
     case ConvParam::EXEC_DEPTHWISE3x3S2_FLOAT:

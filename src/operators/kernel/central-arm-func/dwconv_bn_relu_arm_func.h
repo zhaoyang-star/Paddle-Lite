@@ -80,8 +80,8 @@ void DWConvBNReluBasic(const FusionDWConvBNReluParam &param) {
   int in_step = static_cast<int>(input->dims()[1]) / groups;
   int out_step = static_cast<int>(output->dims()[1]) / groups;
 
-  math::Vol2ColFunctor<CPU, float> vol2col;
-  math::Im2ColFunctor<math::ColFormat::kCFO, CPU, float> im2col;
+  math::Vol2ColFunctor<float> vol2col;
+  math::Im2ColFunctor<math::ColFormat::kCFO, float> im2col;
 
   for (int i = 0; i < batch_size; i++) {
     Tensor in_batch = input->Slice(i, i + 1).Resize(input_shape);

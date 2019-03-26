@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
   char *images_list = argv[3];
   char *output_name = argv[4];
 
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile;
+  paddle_mobile::PaddleMobile<float> paddle_mobile;
   paddle_mobile.SetThreadNum(1);
   auto isok = paddle_mobile.Load(std::string(model_dir) + "/model",
                                  std::string(model_dir) + "/params", true,

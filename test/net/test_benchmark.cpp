@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
     optimize = atoi(argv[4]);
   }
 
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile;
+  paddle_mobile::PaddleMobile<float> paddle_mobile;
   paddle_mobile.SetThreadNum(thread_num);
   auto time1 = time();
   //  if (paddle_mobile.Load(fluid_model, optimize, false, 1, true)) {

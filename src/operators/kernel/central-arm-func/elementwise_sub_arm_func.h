@@ -57,7 +57,7 @@ void ElementwiseSubCompute(const ElementwiseSubParam& param) {
                            SubOpFunctor(input_x, input_y, out, axis));
 }
 
-template class ElementwiseSubKernel<CPU, float>;
+template class ElementwiseSubKernel<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

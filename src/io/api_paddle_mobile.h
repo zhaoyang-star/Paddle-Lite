@@ -22,7 +22,7 @@ limitations under the License. */
 
 namespace paddle_mobile {
 
-template <typename Device = CPU, typename T = float>
+template <typename T = float>
 class PaddleMobilePredictor : public PaddlePredictor {
  public:
   PaddleMobilePredictor() = delete;
@@ -43,7 +43,7 @@ class PaddleMobilePredictor : public PaddlePredictor {
   ~PaddleMobilePredictor() override;
 
  private:
-  std::unique_ptr<PaddleMobile<Device, T>> paddle_mobile_;
+  std::unique_ptr<PaddleMobile<T>> paddle_mobile_;
   bool Init(const PaddleMobileConfig& config);
 
   PaddleMobileConfig config_;

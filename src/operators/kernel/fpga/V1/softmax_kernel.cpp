@@ -99,7 +99,7 @@ void SoftmaxKernel<FPGA, float>::Compute(const SoftmaxParam<FPGA> &param) {
 
       fpga::fpga_invalidate(in_x2->data<float>(),
                             in_x2->numel() * sizeof(float));
-      math::SoftmaxFuntor<CPU, float>()(in_x2, out);
+      math::SoftmaxFuntor<float>()(in_x2, out);
       fpga::fpga_flush(out->data<float>(), out->memory_size());
     }
   } else {
@@ -107,7 +107,7 @@ void SoftmaxKernel<FPGA, float>::Compute(const SoftmaxParam<FPGA> &param) {
       Tensor *out = param.Out();
       out->Resize(
           {in_x->dims()[0], out->dims()[1], out->dims()[2], out->dims()[3]});
-      math::SoftmaxFuntor<CPU, float>()(in_x, out);
+      math::SoftmaxFuntor<float>()(in_x, out);
     }
   }
 }

@@ -102,8 +102,8 @@ int TestFcOP() {
   attrs["y_num_col_dims"].Set<int>(1);
   attrs["axis"].Set<int>(1);
   operators::OperatorBase *op = nullptr;
-  op = new operators::FusionFcOp<CPU, T>("fusion_fc", inputs, outputs, attrs,
-                                         scope.get());
+  op = new operators::FusionFcOp<T>("fusion_fc", inputs, outputs, attrs,
+                                    scope.get());
   op->InferShape();
   op->Run();
   auto output = output_var->template Get<framework::LoDTensor>();
@@ -153,7 +153,7 @@ int TestFcOP() {
 }  // namespace paddle_mobile
 
 int main() {
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile;
+  paddle_mobile::PaddleMobile<float> paddle_mobile;
   paddle_mobile.SetThreadNum(4);
   paddle_mobile::TestFcOP<float, float>();
   return 0;

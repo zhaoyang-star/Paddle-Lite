@@ -160,6 +160,7 @@ struct PaddleMobileConfig : public PaddlePredictor::Config {
   int thread_num = 1;
   std::string cl_path;
   struct PaddleModelMemoryPack memory_pack;
+  int computeType = 0;
 };
 
 // A factory to help create different predictors.

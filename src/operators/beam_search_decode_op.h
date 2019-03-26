@@ -32,7 +32,7 @@ framework::OperatorWithKernels<T, BeamSearchDecodeParam>(type, inputs, outputs,
     framework::OperatorWithKernels<T,
 BeamSearchDecodeParam>::kernels.insert(TYPE_GPU, kernelGpu_);
     framework::OperatorWithKernels<T,
-BeamSearchDecodeParam>::kernels.insert(TYPE_CPU, kernelCpu_);
+BeamSearchDecodeParam>::kernels.insert(TYPE_ kernelCpu_);
   }
   void InferShape() const override;
   BeamSearchDecodeKernelCpu<T> kernelCpu_;

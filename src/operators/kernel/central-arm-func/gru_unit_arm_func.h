@@ -42,7 +42,7 @@ void GruUnitCompute(const GruUnitParam& param) {
 
   // add bias
   if (bias) {
-    math::RowwiseAdd<CPU, float> add_bias;
+    math::RowwiseAdd<float> add_bias;
     add_bias(*input, *bias, gate);
   }
 
@@ -62,8 +62,8 @@ void GruUnitCompute(const GruUnitParam& param) {
 
   auto active_node = math::GetActivationType(param.Activation());
   auto active_gate = math::GetActivationType(param.GateActivation());
-  math::GRUUnitFunctor<CPU, float>::compute(gru_value, frame_size, batch_size,
-                                            active_node, active_gate);
+  math::GRUUnitFunctor<float>::compute(gru_value, frame_size, batch_size,
+                                       active_node, active_gate);
 }
 
 }  // namespace operators

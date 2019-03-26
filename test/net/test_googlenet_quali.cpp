@@ -22,7 +22,7 @@ int main() {
 #endif
 
 #ifdef PADDLE_MOBILE_CPU
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile;
+  paddle_mobile::PaddleMobile<float> paddle_mobile;
 #endif
 
   paddle_mobile.SetThreadNum(4);

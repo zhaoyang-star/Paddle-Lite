@@ -16,6 +16,7 @@ limitations under the License. */
 
 #include <string>
 #include <vector>
+#include <framework/executor_cpu_impl.h>
 
 #include "common/log.h"
 #include "framework/executor_common_impl.h"
@@ -30,7 +31,7 @@ limitations under the License. */
 
 using paddle_mobile::framework::BlockDesc;
 using paddle_mobile::framework::DDim;
-using paddle_mobile::framework::ExecutorSpecificDevice;
+using paddle_mobile::framework::ExecutorCpu;
 using paddle_mobile::framework::LoDTensor;
 using paddle_mobile::framework::OpDesc;
 using paddle_mobile::framework::Program;
@@ -39,12 +40,12 @@ using paddle_mobile::framework::Variable;
 using std::string;
 using std::vector;
 
-template <typename DeviceType, typename OpType>
-class Executor4Test : public ExecutorSpecificDevice<DeviceType> {
+template <typename OpType>
+class Executor4Test : public ExecutorCpu<float> {
  public:
-  Executor4Test(Program<DeviceType> p, string op_type,
+  Executor4Test(Program<float> p, string op_type,
                 bool use_optimize = false)
-      : ExecutorSpecificDevice<DeviceType>() {
+      : ExecutorCpu() {
     this->use_optimize_ = use_optimize;
     this->program_ = p;
     if (this->use_optimize_) {
@@ -66,8 +67,8 @@ class Executor4Test : public ExecutorSpecificDevice<DeviceType> {
         DLOG << "匹配到: " << op->Type();
 
         /// test first meeting op in program
-        std::shared_ptr<paddle_mobile::framework::OperatorBase<DeviceType>>
-            op_ptr = paddle_mobile::framework::OpRegistry<DeviceType>::CreateOp(
+        std::shared_ptr<paddle_mobile::framework::OperatorBase>
+            op_ptr = paddle_mobile::framework::OpRegistry::CreateOp(
                 op->Type(), op->GetInputs(), op->GetOutputs(), op->GetAttrMap(),
                 this->program_.scope.get());
         this->ops_of_block0_.push_back(op_ptr);

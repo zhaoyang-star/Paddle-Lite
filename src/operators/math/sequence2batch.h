@@ -21,7 +21,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 namespace math {
-template <typename T>
+template <typename DeviceType, typename T>
 class CopyMatrixRowsFunctor {
  public:
   // If is_src_index is true,
@@ -33,7 +33,7 @@ class CopyMatrixRowsFunctor {
                   framework::Tensor* dst, bool is_src_index);
 };
 
-template <typename T>
+template <typename DeviceType,typename T>
 class LoDTensor2BatchFunctor {
   // Calculate the length of each sequence and
   // sort sequence index by the length.
@@ -62,7 +62,7 @@ class LoDTensor2BatchFunctor {
       PADDLE_MOBILE_ENFORCE(
           (lods[1].size() == static_cast<size_t>(lod_tensor.dims()[0])),
           "The LoD information should be consistent with the dims.");
-      CopyMatrixRowsFunctor<DeviceType, T> to_batch;
+      CopyMatrixRowsFunctor<CPU, T> to_batch;
       to_batch(lod_tensor, lods[1], batch, true);
       return;
     }
@@ -142,12 +142,12 @@ class LoDTensor2BatchFunctor {
     }
     batch->set_lod(batch_lods);
 
-    CopyMatrixRowsFunctor<DeviceType, T> to_batch;
+    CopyMatrixRowsFunctor<CPU, T> to_batch;
     to_batch(lod_tensor, batch_lods[1], batch, true);
   }
 };
 
-template <typename T>
+template <typename DeviceType, typename T>
 class Batch2LoDTensorFunctor {
  public:
   void operator()(const framework::LoDTensor& batch,
@@ -160,7 +160,7 @@ class Batch2LoDTensorFunctor {
     PADDLE_MOBILE_ENFORCE(
         (in_lod[1].size() == static_cast<size_t>(lod_tensor->dims()[0])),
         "The LoD information should be consistent with the dims.");
-    CopyMatrixRowsFunctor<DeviceType, T> to_seq;
+    CopyMatrixRowsFunctor<CPU, T> to_seq;
     to_seq(batch, in_lod[1], lod_tensor, false);
   }
 };

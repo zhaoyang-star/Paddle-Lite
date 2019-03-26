@@ -42,7 +42,6 @@ class SequencePoolOp : public framework::OperatorWithKernel<
 
 DECLARE_OPERATOR(SequencePool);
 
-
 }  // namespace operators
 }  // namespace paddle_mobile
 

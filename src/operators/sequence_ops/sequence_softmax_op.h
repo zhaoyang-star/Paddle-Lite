@@ -40,7 +40,8 @@ class SequenceSoftmaxOp : public framework::OperatorWithKernel<
   // inference output shape
   void InferShape() const override;
 };*/
-DECLARE_OPERATOR_WITH_PARAMS(SequenceSoftmax,SoftmaxParam,SequenceSoftmaxKernel);
+DECLARE_OPERATOR_WITH_PARAMS(SequenceSoftmax, SoftmaxParam,
+                             SequenceSoftmaxKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

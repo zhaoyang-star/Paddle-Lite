@@ -17,7 +17,7 @@ limitations under the License. */
 #include "../test_include.h"
 
 int main() {
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile;
+  paddle_mobile::PaddleMobile<float> paddle_mobile;
   paddle_mobile.SetThreadNum(4);
   //  ../../../test/models/googlenet
   //  ../../../test/models/mobilenet

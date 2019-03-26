@@ -1,16 +1,16 @@
 ///* Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
 //
-//Licensed under the Apache License, Version 2.0 (the "License");
-//you may not use this file except in compliance with the License.
-//You may obtain a copy of the License at
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
 //    http://www.apache.org/licenses/LICENSE-2.0
 //
-//Unless required by applicable law or agreed to in writing, software
-//distributed under the License is distributed on an "AS IS" BASIS,
-//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//See the License for the specific language governing permissions and
-//limitations under the License. */
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License. */
 //
 //#pragma once
 //
@@ -27,10 +27,10 @@
 //#include "framework/program/program.h"
 //#include "framework/tensor.h"
 //
-//namespace paddle_mobile {
-//namespace framework {
-//template <typename Device, typename T>
-//void ExecutorCore<Device, T>::LoadMemInternal(void **data, LoDTensor *tensor,
+// namespace paddle_mobile {
+// namespace framework {
+// template <typename Device, typename T>
+// void ExecutorCore<Device, T>::LoadMemInternal(void **data, LoDTensor *tensor,
 //                                              bool quant_uint8) {
 //  char **data_buf = reinterpret_cast<char **>(data);
 //  int64_t size = tensor->numel();
@@ -54,8 +54,8 @@
 //  }
 //}
 //
-//template <typename Device, typename T>
-//void ExecutorCore<Device, T>::LoadMemory(
+// template <typename Device, typename T>
+// void ExecutorCore<Device, T>::LoadMemory(
 //    void **data, const std::shared_ptr<VarDesc> var_desc, LoDTensor *tensor) {
 //  char **data_buf = reinterpret_cast<char **>(data);
 //  // version
@@ -104,8 +104,8 @@
 //      LOG(kLOG_ERROR) << "data type is not supported";
 //  }
 //}
-///*template class ExecutorCore<CPU, float>;
-//template class ExecutorCore<GPU_CL, float>;
-//template class ExecutorCore<FPGA, float>;*/
+///*template class ExecutorCore< float>;
+// template class ExecutorCore<GPU_CL, float>;
+// template class ExecutorCore<FPGA, float>;*/
 //}  // namespace framework
 //}  // namespace paddle_mobile

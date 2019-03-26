@@ -21,7 +21,7 @@ limitations under the License. */
 
 namespace paddle_mobile {
 
-template <typename Dtype = CPU, Precision P = Precision::FP32>
+template <typename Dtype = Precision P = Precision::FP32>
 class Loader {
  public:
   const framework::Program<Dtype, P> Load(const std::string &dirname,

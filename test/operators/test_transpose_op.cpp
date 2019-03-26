@@ -21,8 +21,8 @@ int main() {
   if (program.originProgram == nullptr) {
     DLOG << "program read file";
   }
-  Executor4Test<paddle_mobile::CPU, paddle_mobile::operators::TransposeOp<
-                                        paddle_mobile::CPU, float>>
+  Executor4Test<paddle_mobile::paddle_mobile::operators::TransposeOp<
+      paddle_mobile::float>>
       executor(program, "transpose");
   paddle_mobile::framework::Tensor input;
   SetupTensor<float>(&input, {1, 2, 3, 4}, static_cast<float>(0),

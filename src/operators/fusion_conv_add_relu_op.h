@@ -62,7 +62,8 @@ class FusionConvAddReluOp : public framework::OperatorWithKernel<
  protected:
 };*/
 
-DECLARE_OPERATOR_WITH_PARAMS(FusionConvAddRelu,FusionConvAddReluParam,ConvAddReluKernel);
+DECLARE_OPERATOR_WITH_PARAMS(FusionConvAddRelu, FusionConvAddReluParam,
+                             ConvAddReluKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

@@ -98,8 +98,8 @@ int TestConcatOP() {
   AttributeMap attrs;
   attrs["axis"].Set<int>(axis_v);
 
-  auto *op = new operators::ConcatOp<CPU, float>("concat", inputs, outputs,
-                                                 attrs, scope.get());
+  auto *op = new operators::ConcatOp<float>("concat", inputs, outputs, attrs,
+                                            scope.get());
   op->InferShape();
   op->Run();
   auto output = output_var->template Get<framework::LoDTensor>();
@@ -128,7 +128,7 @@ int TestConcatOP() {
 }  // namespace paddle_mobile
 
 int main() {
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile;
+  paddle_mobile::PaddleMobile<float> paddle_mobile;
   paddle_mobile.SetThreadNum(4);
   paddle_mobile::TestConcatOP<float>();
   paddle_mobile::TestConcatOP<int8_t>();

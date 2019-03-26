@@ -44,7 +44,7 @@ int TestSequenceExpandOp(const framework::LoDTensor &input_x,
   framework::AttributeMap attrs;
   attrs["ref_level"].Set<int>(0);
 
-  auto *op = new operators::SequenceExpandOp<CPU, float>(
+  auto *op = new operators::SequenceExpandOp<float>(
       "sequence_expand", inputs, outputs, attrs, scope.get());
 
   op->InferShape();

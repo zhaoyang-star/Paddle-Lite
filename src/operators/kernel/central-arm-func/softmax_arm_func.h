@@ -25,7 +25,7 @@ void SoftmaxCompute(const SoftmaxParam &param) {
   auto x_dims = in_x->dims();
   out->Resize(x_dims);
   out->mutable_data<float>();
-  math::SoftmaxFuntor<CPU, float>()(in_x, out);
+  math::SoftmaxFuntor<float>()(in_x, out);
 }
 }  // namespace operators
 }  // namespace paddle_mobile

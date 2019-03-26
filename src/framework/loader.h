@@ -47,8 +47,7 @@ class Loader {
                                       uint8_t *combined_params_buf,
                                       bool optimize = false,
                                       bool quantification = false);
-  // todo consider gpu memory
-  bool is_cl_gpu_ = false;
+
 
  private:
   const Program<T> LoadProgram(const std::string &model_path,

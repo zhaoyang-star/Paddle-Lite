@@ -20,17 +20,17 @@
 
 namespace paddle_mobile {
 
-template <typename Device, typename T>
-PaddleMobilePredictor<Device, T>::PaddleMobilePredictor(
+template <typename T>
+PaddleMobilePredictor<T>::PaddleMobilePredictor(
     const PaddleMobileConfig &config) {
   PADDLE_MOBILE_ENFORCE(Init(config) == true,
                         "paddle mobile predictor init failed!");
   config_ = config;
 }
 
-template <typename Device, typename T>
-bool PaddleMobilePredictor<Device, T>::Init(const PaddleMobileConfig &config) {
-  paddle_mobile_.reset(new PaddleMobile<Device, T>());
+template <typename T>
+bool PaddleMobilePredictor<T>::Init(const PaddleMobileConfig &config) {
+  paddle_mobile_.reset(new PaddleMobile<T>());
 #ifdef PADDLE_MOBILE_CL
   paddle_mobile_->SetCLPath(config.cl_path);
 #endif
@@ -56,10 +56,10 @@ bool PaddleMobilePredictor<Device, T>::Init(const PaddleMobileConfig &config) {
   paddle_mobile_->SetThreadNum(config.thread_num);
   return true;
 }
-template <typename Device, typename T>
-bool PaddleMobilePredictor<Device, T>::Run(
-    const std::vector<PaddleTensor> &inputs,
-    std::vector<PaddleTensor> *output_data, int batch_size) {
+template <typename T>
+bool PaddleMobilePredictor<T>::Run(const std::vector<PaddleTensor> &inputs,
+                                   std::vector<PaddleTensor> *output_data,
+                                   int batch_size) {
   if (inputs.empty()) {
     LOG(kLOG_ERROR) << "At least one output should be set with tensors' names.";
     return false;
@@ -137,8 +137,8 @@ void ConvertTensors(const framework::Tensor &src, PaddleTensor *des) {
   }
 }
 
-template <typename Device, typename T>
-void PaddleMobilePredictor<Device, T>::FeedPaddleTensors(
+template <typename T>
+void PaddleMobilePredictor<T>::FeedPaddleTensors(
     const std::vector<PaddleTensor> &inputs) {
   auto num = inputs.size();
   std::vector<framework::Tensor> tensors(num, framework::Tensor());
@@ -149,8 +149,8 @@ void PaddleMobilePredictor<Device, T>::FeedPaddleTensors(
   // paddle_mobile_->FeedTensorData(tensors);
 }
 
-template <typename Device, typename T>
-void PaddleMobilePredictor<Device, T>::FetchPaddleTensors(
+template <typename T>
+void PaddleMobilePredictor<T>::FetchPaddleTensors(
     std::vector<PaddleTensor> *outputs) {
   //  auto num = outputs->size();
   //  PADDLE_MOBILE_ENFORCE(num > 0, "0 output pointers is not permitted");
@@ -165,21 +165,21 @@ void PaddleMobilePredictor<Device, T>::FetchPaddleTensors(
   }
 }
 
-template <typename Device, typename T>
-void PaddleMobilePredictor<Device, T>::GetPaddleTensor(const std::string &name,
-                                                       PaddleTensor *output) {
+template <typename T>
+void PaddleMobilePredictor<T>::GetPaddleTensor(const std::string &name,
+                                               PaddleTensor *output) {
   framework::Tensor *t = paddle_mobile_->GetTensorByName(name);
   ConvertTensors(*t, output);
 }
 
-template <typename Device, typename T>
-void PaddleMobilePredictor<Device, T>::Predict_From_To(int start, int end) {
+template <typename T>
+void PaddleMobilePredictor<T>::Predict_From_To(int start, int end) {
   paddle_mobile_->Predict_From_To(start, end);
 }
 
 #endif
-template <typename Device, typename T>
-PaddleMobilePredictor<Device, T>::~PaddleMobilePredictor() {
+template <typename T>
+PaddleMobilePredictor<T>::~PaddleMobilePredictor() {
   paddle_mobile_->Clear();
 }
 
@@ -189,9 +189,10 @@ std::unique_ptr<PaddlePredictor>
 CreatePaddlePredictor<PaddleMobileConfig, PaddleEngineKind::kPaddleMobile>(
     const PaddleMobileConfig &config) {
   std::unique_ptr<PaddlePredictor> x;
+  /*
   if (config.precision == PaddleMobileConfig::FP32) {
     if (config.device == PaddleMobileConfig::kCPU) {
-      x.reset(new PaddleMobilePredictor<CPU, float>(config));
+      x.reset(new PaddleMobilePredictor< float>(config));
     } else if (config.device == PaddleMobileConfig::kFPGA) {
       x.reset(new PaddleMobilePredictor<FPGA, float>(config));
     } else if (config.device == PaddleMobileConfig::kGPU_CL) {
@@ -203,7 +204,7 @@ CreatePaddlePredictor<PaddleMobileConfig, PaddleEngineKind::kPaddleMobile>(
   } else {
     LOG(kLOG_ERROR) << "unsupport precision type!";
     return nullptr;
-  }
+  }*/
   return std::move(x);
 }
 

@@ -199,12 +199,12 @@ class TensorWrapper : public LoDTensor {
        // gpu kernel gpu mem
        return const_cast<Type *>(currentMem);
 
-     } else if (std::is_same<CPU, RequestDeviceType>::value &&
+     } else if (std::is_same< RequestDeviceType>::value &&
                 this->GetRunTimeType() == TYPE_CPU) {
        // cpu cpu mem
        return const_cast<Type *>(currentMem);
 
-     } else if (std::is_same<CPU, RequestDeviceType>::value &&
+     } else if (std::is_same< RequestDeviceType>::value &&
                 this->GetRunTimeType() == TYPE_GPU) {
        if (mem_type_ == TYPE_GPU) {
          const CLImage *pClImage = this->Get<CLImage>();

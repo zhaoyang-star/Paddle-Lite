@@ -20,8 +20,8 @@ int main() {
   PADDLE_MOBILE_ENFORCE(program.originProgram != nullptr,
                         "program file read fail");
 
-  Executor4Test<paddle_mobile::CPU, paddle_mobile::operators::ElementwiseAddOp<
-                                        paddle_mobile::CPU, float>>
+  Executor4Test<paddle_mobile::paddle_mobile::operators::ElementwiseAddOp<
+      paddle_mobile::float>>
       executor(program, "elementwise_add");
 
   // 1. input_tensors;

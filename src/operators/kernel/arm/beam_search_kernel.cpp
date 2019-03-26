@@ -249,7 +249,7 @@ bool BeamSearchKernelCpu<float>::Init(BeamSearchParam *param) {
 
 template <>
 void BeamSearchKernelCpu<float>::Compute(const BeamSearchParam &param) {
-  BeamSearchFunctor<CPU, float> alg;
+  BeamSearchFunctor<float> alg;
   alg(param.pre_ids_, param.pre_scores_, param.ids_, param.scores_,
       param.selected_ids_, param.selected_scores_, param.parent_idx_,
       param.level_, param.beam_size_, param.end_id_, param.is_accumulated_);

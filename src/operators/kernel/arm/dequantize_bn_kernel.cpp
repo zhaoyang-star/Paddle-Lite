@@ -137,8 +137,7 @@ void FusionDequantBNKernelCpu<float>::Compute(
 
 #ifdef FUSION_DEQUANT_BN_RELU_OP
 template <>
-bool FusionDequantBNReluKernelCpu<float>::Init(
-    FusionDequantBNParam *param) {
+bool FusionDequantBNReluKernelCpu<float>::Init(FusionDequantBNParam *param) {
   PublicFusionDequantBNInitParam(param, nullptr);
   return true;
 }
@@ -152,8 +151,7 @@ void FusionDequantBNReluKernelCpu<float>::Compute(
 
 #ifdef FUSION_DEQUANT_ADD_BN_OP
 template <>
-bool FusionDequantAddBNKernelCpu<float>::Init(
-    FusionDequantAddBNParam *param) {
+bool FusionDequantAddBNKernelCpu<float>::Init(FusionDequantAddBNParam *param) {
   const framework::Tensor *bias = param->bias_;
   PublicFusionDequantBNInitParam(param, bias);
   return true;

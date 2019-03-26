@@ -21,8 +21,8 @@ int main() {
   PADDLE_MOBILE_ENFORCE(program.originProgram != nullptr,
                         "program file read fail");
 
-  Executor4Test<paddle_mobile::CPU,
-                paddle_mobile::operators::LrnOp<paddle_mobile::CPU, float>>
+  Executor4Test<
+      paddle_mobile::paddle_mobile::operators::LrnOp<paddle_mobile::float>>
       executor(program, "lrn");
 
   // 1. input_tensors;

@@ -26,8 +26,7 @@ bool MultiClassNMSKernelCpu<float>::Init(MultiClassNMSParam *param) {
 }
 
 template <>
-void MultiClassNMSKernelCpu<float>::Compute(
-    const MultiClassNMSParam &param) {
+void MultiClassNMSKernelCpu<float>::Compute(const MultiClassNMSParam &param) {
   MultiClassNMSCompute<float>(param);
 }
 

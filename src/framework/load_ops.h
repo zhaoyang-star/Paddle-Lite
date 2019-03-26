@@ -16,27 +16,21 @@ limitations under the License. */
 
 #ifdef PADDLE_MOBILE_CPU
 #define LOAD_CPU_OP(op_type)                                           \
-  extern int TouchOpRegistrar_##op_type##_##cpu();                     \
-  static int use_op_itself_##op_type##_##cpu __attribute__((unused)) = \
-      TouchOpRegistrar_##op_type##_##cpu()
+  extern int TouchOpRegistrar_##op_type##_();                     \
+  static int use_op_itself_##op_type##_ __attribute__((unused)) = \
+      TouchOpRegistrar_##op_type##_()
 #else
 #define LOAD_CPU_OP(op_type)
 #endif
 
 #ifdef PADDLE_MOBILE_CL
-#define LOAD_GPU_CL_OP(op_type)                                       \
-  extern int TouchOpRegistrar_##op_type##_##cl();                     \
-  static int use_op_itself_##op_type##_##cl __attribute__((unused)) = \
-      TouchOpRegistrar_##op_type##_##cl()
+#define LOAD_GPU_CL_OP(op_type)
 #else
 #define LOAD_GPU_CL_OP(op_type)
 #endif
 
 #ifdef PADDLE_MOBILE_FPGA
-#define LOAD_FPGA_OP(op_type)                                           \
-  extern int TouchOpRegistrar_##op_type##_##fpga();                     \
-  static int use_op_itself_##op_type##_##fpga __attribute__((unused)) = \
-      TouchOpRegistrar_##op_type##_##fpga()
+#define LOAD_FPGA_OP(op_type)
 #else
 #define LOAD_FPGA_OP(op_type)
 #endif

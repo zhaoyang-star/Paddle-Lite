@@ -29,4 +29,3 @@ void FetchOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(fetch, ops::FetchOp);
-

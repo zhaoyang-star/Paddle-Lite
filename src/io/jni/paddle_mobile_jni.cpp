@@ -1,16 +1,16 @@
 ///* Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
 //
-//Licensed under the Apache License, Version 2.0 (the "License");
-//you may not use this file except in compliance with the License.
-//You may obtain a copy of the License at
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
 //    http://www.apache.org/licenses/LICENSE-2.0
 //
-//Unless required by applicable law or agreed to in writing, software
-//distributed under the License is distributed on an "AS IS" BASIS,
-//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//See the License for the specific language governing permissions and
-//limitations under the License. */
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License. */
 //
 //#ifdef ANDROID
 //
@@ -27,31 +27,31 @@
 //#endif
 //
 //#ifdef __cplusplus
-//extern "C" {
+// extern "C" {
 //#endif
 //
-//namespace paddle_mobile {
-//namespace jni {
+// namespace paddle_mobile {
+// namespace jni {
 //
-//using framework::DDim;
-//using framework::Program;
-//using framework::Tensor;
-//using paddle_mobile::CPU;
-//using std::string;
+// using framework::DDim;
+// using framework::Program;
+// using framework::Tensor;
+// using paddle_mobile::CPU;
+// using std::string;
 //
-//paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile;
-//static std::mutex shared_mutex;
+// paddle_mobile::PaddleMobile<float> paddle_mobile;
+// static std::mutex shared_mutex;
 //
-//PaddleMobile *getPaddleMobileInstance() { return &paddle_mobile; }
+// PaddleMobile *getPaddleMobileInstance() { return &paddle_mobile; }
 //
-//string jstring2cppstring(JNIEnv *env, jstring jstr) {
+// string jstring2cppstring(JNIEnv *env, jstring jstr) {
 //  const char *cstr = env->GetStringUTFChars(jstr, 0);
 //  string cppstr(cstr);
 //  env->ReleaseStringUTFChars(jstr, cstr);
 //  return cppstr;
 //}
 //
-//JNIEXPORT jboolean JNICALL Java_com_baidu_paddle_PML_load(JNIEnv *env,
+// JNIEXPORT jboolean JNICALL Java_com_baidu_paddle_PML_load(JNIEnv *env,
 //                                                          jclass thiz,
 //                                                          jstring modelPath,
 //                                                          jboolean lodMode) {
@@ -69,14 +69,15 @@
 //    isLoadOk = false;
 //  }
 //#else
-//  isLoadOk = getPaddleMobileInstance()->Load(jstring2cppstring(env, modelPath),
+//  isLoadOk = getPaddleMobileInstance()->Load(jstring2cppstring(env,
+//  modelPath),
 //                                             optimize, false, 1,
 //                                             static_cast<bool>(lodMode));
 //#endif
 //  return static_cast<jboolean>(isLoadOk);
 //}
 //
-//JNIEXPORT jboolean JNICALL Java_com_baidu_paddle_PML_loadQualified(
+// JNIEXPORT jboolean JNICALL Java_com_baidu_paddle_PML_loadQualified(
 //    JNIEnv *env, jclass thiz, jstring modelPath, jboolean lodMode) {
 //  std::lock_guard<std::mutex> lock(shared_mutex);
 //
@@ -95,7 +96,8 @@
 //    isLoadOk = false;
 //  }
 //#else
-//  isLoadOk = getPaddleMobileInstance()->Load(jstring2cppstring(env, modelPath),
+//  isLoadOk = getPaddleMobileInstance()->Load(jstring2cppstring(env,
+//  modelPath),
 //                                             optimize, qualified, 1,
 //                                             static_cast<bool>(lodMode));
 //#endif
@@ -103,7 +105,7 @@
 //  return static_cast<jboolean>(isLoadOk);
 //}
 //
-//JNIEXPORT jboolean JNICALL Java_com_baidu_paddle_PML_loadCombined(
+// JNIEXPORT jboolean JNICALL Java_com_baidu_paddle_PML_loadCombined(
 //    JNIEnv *env, jclass thiz, jstring modelPath, jstring paramPath,
 //    jboolean lodMode) {
 //  std::lock_guard<std::mutex> lock(shared_mutex);
@@ -128,7 +130,7 @@
 //  return static_cast<jboolean>(isLoadOk);
 //}
 //
-//JNIEXPORT jboolean JNICALL Java_com_baidu_paddle_PML_loadCombinedQualified(
+// JNIEXPORT jboolean JNICALL Java_com_baidu_paddle_PML_loadCombinedQualified(
 //    JNIEnv *env, jclass thiz, jstring modelPath, jstring paramPath,
 //    jboolean lodMode) {
 //  std::lock_guard<std::mutex> lock(shared_mutex);
@@ -154,7 +156,7 @@
 //  return static_cast<jboolean>(isLoadOk);
 //}
 //
-//JNIEXPORT jfloatArray JNICALL Java_com_baidu_paddle_PML_predictImage(
+// JNIEXPORT jfloatArray JNICALL Java_com_baidu_paddle_PML_predictImage(
 //    JNIEnv *env, jclass thiz, jfloatArray buf, jintArray ddims) {
 //  std::lock_guard<std::mutex> lock(shared_mutex);
 //
@@ -235,7 +237,7 @@
 //  return result;
 //}
 //
-//inline int yuv_to_rgb(int y, int u, int v, float *r, float *g, float *b) {
+// inline int yuv_to_rgb(int y, int u, int v, float *r, float *g, float *b) {
 //  int r1 = (int)(y + 1.370705 * (v - 128));
 //  int g1 = (int)(y - 0.698001 * (u - 128) - 0.703125 * (v - 128));
 //  int b1 = (int)(y + 1.732446 * (u - 128));
@@ -249,7 +251,8 @@
 //
 //  return 0;
 //}
-//void convert_nv21_to_matrix(uint8_t *nv21, float *matrix, int width, int height,
+// void convert_nv21_to_matrix(uint8_t *nv21, float *matrix, int width, int
+// height,
 //                            int targetWidth, int targetHeight, float *means) {
 //  const uint8_t *yData = nv21;
 //  const uint8_t *vuData = nv21 + width * height;
@@ -281,7 +284,7 @@
 //  }
 //}
 //
-//JNIEXPORT jfloatArray JNICALL Java_com_baidu_paddle_PML_predictYuv(
+// JNIEXPORT jfloatArray JNICALL Java_com_baidu_paddle_PML_predictYuv(
 //    JNIEnv *env, jclass thiz, jbyteArray yuv_, jint imgwidth, jint imgHeight,
 //    jintArray ddims, jfloatArray meanValues) {
 //  std::lock_guard<std::mutex> lock(shared_mutex);
@@ -305,7 +308,8 @@
 //    if (nullptr != meanValues) {
 //      meansPointer = env->GetFloatArrayElements(meanValues, NULL);
 //    }
-//    convert_nv21_to_matrix((uint8_t *)yuv, matrix, imgwidth, imgHeight, ddim[3],
+//    convert_nv21_to_matrix((uint8_t *)yuv, matrix, imgwidth, imgHeight,
+//    ddim[3],
 //                           ddim[2], meansPointer);
 //    int count = 0;
 //    framework::Tensor input;
@@ -363,8 +367,9 @@
 //
 //  return result;
 //}
-//JNIEXPORT jlongArray JNICALL
-//Java_com_baidu_paddle_PML_predictLod(JNIEnv *env, jclass thiz, jlongArray buf) {
+// JNIEXPORT jlongArray JNICALL
+// Java_com_baidu_paddle_PML_predictLod(JNIEnv *env, jclass thiz, jlongArray
+// buf) {
 //  std::lock_guard<std::mutex> lock(shared_mutex);
 //
 //  jlong *ddim_ptr = env->GetLongArrayElements(buf, NULL);
@@ -400,7 +405,7 @@
 //  return result;
 //}
 //
-//JNIEXPORT void JNICALL Java_com_baidu_paddle_PML_setThread(JNIEnv *env,
+// JNIEXPORT void JNICALL Java_com_baidu_paddle_PML_setThread(JNIEnv *env,
 //                                                           jclass thiz,
 //                                                           jint threadCount) {
 //  std::lock_guard<std::mutex> lock(shared_mutex);
@@ -418,7 +423,7 @@
 //#endif
 //}
 //
-//JNIEXPORT void JNICALL Java_com_baidu_paddle_PML_clear(JNIEnv *env,
+// JNIEXPORT void JNICALL Java_com_baidu_paddle_PML_clear(JNIEnv *env,
 //                                                       jclass thiz) {
 //  std::lock_guard<std::mutex> lock(shared_mutex);
 //

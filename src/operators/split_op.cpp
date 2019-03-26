@@ -82,9 +82,5 @@ void SplitOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(split, ops::SplitOp);
-#endif
-#ifdef PADDLE_MOBILE_FPGA
-REGISTER_OPERATOR_FPGA(split, ops::SplitOp);
-#endif
 
 #endif  // SPLIT_OP

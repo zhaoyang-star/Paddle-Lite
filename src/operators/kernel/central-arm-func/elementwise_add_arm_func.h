@@ -123,8 +123,6 @@ inline void ElementwiseAddCompute(const ElementwiseAddParam &param) {
   }
 }
 
-template class ElementwiseAddKernel<CPU, float>;
-
 }  // namespace operators
 }  // namespace paddle_mobile
 

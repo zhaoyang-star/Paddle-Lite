@@ -24,9 +24,8 @@ int main() {
   PADDLE_MOBILE_ENFORCE(program.originProgram != nullptr,
                         "program file read fail");
 
-  Executor4Test<paddle_mobile::CPU,
-                paddle_mobile::operators::FusionConvAddBNReluOp<
-                    paddle_mobile::CPU, float>>
+  Executor4Test<paddle_mobile::paddle_mobile::operators::FusionConvAddBNReluOp<
+      paddle_mobile::float>>
       executor(program, "fusion_conv_add_bn_relu", true);
 
   std::cout << "executor 4 test: " << std::endl;

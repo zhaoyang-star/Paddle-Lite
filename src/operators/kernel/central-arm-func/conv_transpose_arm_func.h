@@ -80,8 +80,8 @@ void ConvTransposeCompute(const ConvTransposeParam &param) {
   int in_step = static_cast<int>(input->dims()[1]) / groups;
   int out_step = static_cast<int>(output->dims()[1]) / groups;
 
-  math::Col2ImFunctor<math::ColFormat::kCFO, CPU, P> col2im;
-  math::Col2VolFunctor<CPU, P> col2vol;
+  math::Col2ImFunctor<math::ColFormat::kCFO, P> col2im;
+  math::Col2VolFunctor<P> col2vol;
 
   for (int i = 0; i < batch_size; ++i) {
     Tensor input_batch = input->Slice(i, i + 1).Resize(input_matrix_shape);

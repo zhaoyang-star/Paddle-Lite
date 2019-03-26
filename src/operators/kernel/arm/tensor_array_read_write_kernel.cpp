@@ -24,8 +24,7 @@ bool WriteToArrayKernelCpu<float>::Init(WriteToArrayParam *param) {
 }
 
 template <>
-void WriteToArrayKernelCpu<float>::Compute(
-    const WriteToArrayParam &param) {
+void WriteToArrayKernelCpu<float>::Compute(const WriteToArrayParam &param) {
   int64_t offset = param.index_->data<int64_t>()[0];
   if (offset >= param.output_->size()) {
     param.output_->resize(offset + 1);
@@ -46,8 +45,7 @@ bool ReadFromArrayKernelCpu<float>::Init(ReadFromArrayParam *param) {
 }
 
 template <>
-void ReadFromArrayKernelCpu<float>::Compute(
-    const ReadFromArrayParam &param) {
+void ReadFromArrayKernelCpu<float>::Compute(const ReadFromArrayParam &param) {
   int64_t offset = param.index_->data<int64_t>()[0];
   if (offset < param.input_->size()) {
     TensorCopy(param.input_->at(offset), param.output_);

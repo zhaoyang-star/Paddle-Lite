@@ -26,8 +26,7 @@ bool ConvTransposeKernelCpu<float>::Init(ConvTransposeParam *param) {
 }
 
 template <>
-void ConvTransposeKernelCpu<float>::Compute(
-    const ConvTransposeParam &param) {
+void ConvTransposeKernelCpu<float>::Compute(const ConvTransposeParam &param) {
   ConvTransposeCompute<float>(param);
 }
 

@@ -43,7 +43,6 @@ class SequenceExpandOp : public framework::OperatorWithKernel<
 
 DECLARE_OPERATOR(SequenceExpand);
 
-
 }  // namespace operators
 }  // namespace paddle_mobile
 

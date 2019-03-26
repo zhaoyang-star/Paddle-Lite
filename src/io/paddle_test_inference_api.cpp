@@ -17,20 +17,26 @@ limitations under the License. */
 
 namespace paddle_mobile {
 
-template <typename Device, typename T>
-double PaddleTester<Device, T>::CaculatePredictTime(std::string *cl_path) {
-  PaddleMobile<Device, T> paddle_mobile;
+template <typename T>
+double PaddleTester<T>::CaculateCpuPredictTime() {
+  PaddleMobile<T> paddle_mobile;
+  return paddle_mobile.GetCpuPredictTime();
+}
+
+template <typename T>
+double PaddleTester<T>::CaculateGpuPredictTime(std::string *cl_path) {
 #ifdef PADDLE_MOBILE_CL
+
+  PaddleMobile<T> paddle_mobile;
   if (cl_path) {
     paddle_mobile.SetCLPath(*cl_path);
   }
 
+  return paddle_mobile.GetGpuPredictTime();
+#else
+  return -1;
 #endif
-  return paddle_mobile.GetPredictTime();
 }
-template class PaddleTester<CPU, float>;
-template class PaddleTester<FPGA, float>;
-
-template class PaddleTester<GPU_CL, float>;
+template class PaddleTester<float>;
 
 }  // namespace paddle_mobile

@@ -95,7 +95,7 @@ class OperatorBase {
 template <typename P>
 class OpKernelBase {
  public:
-  OpKernelBase() {};
+  OpKernelBase(){};
 
 #ifdef PADDLE_MOBILE_CL
   virtual void InitCLHelper(CLScope *clScope) {
@@ -103,15 +103,14 @@ class OpKernelBase {
   }
 #endif
 
-  void Compute(const P &para){};
-  bool Init(P *para) { return true; }
-  ~OpKernelBase(){};
+  virtual void Compute(const P &para) = 0;
+  virtual bool Init(P *para) { return true; }
+  virtual ~OpKernelBase(){};
 
  protected:
 #ifdef PADDLE_MOBILE_CL
   CLHelper cl_helper_;
 #endif
-
 };
 
 /*template <typename P>
@@ -206,7 +205,7 @@ class FusionOpMatcher {
 
 #define REGIST_INIT(DeviceName, OpParam) \
   kernel##DeviceName##_.Init(            \
-      &framework::OperatorWithKernels<T, OpParam>::param_);
+      &(framework::OperatorWithKernels<T, OpParam>::param_));
 
 #ifdef PADDLE_MOBILE_CPU
 #define REGIST_KERNEL_CPU_WITH_KERNEL_PREFIX(OpName, KernelNamePrifix) \

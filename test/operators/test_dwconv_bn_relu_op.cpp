@@ -86,7 +86,7 @@ int TestDWConvAddBnReluOp(int in_channels, int in_height, int in_width,
   attrs["epsilon"].Set<float>(1e-6);
   attrs["momentum"].Set<float>(0.f);
 
-  auto *op = new operators::FusionDWConvBNReluOp<CPU, float>(
+  auto *op = new operators::FusionDWConvBNReluOp<float>(
       "fusion_dwconv_bn_relu", inputs, outputs, attrs, scope.get());
   op->InferShape();
   op->Init();

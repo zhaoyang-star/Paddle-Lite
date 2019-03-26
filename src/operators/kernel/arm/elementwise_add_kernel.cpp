@@ -26,8 +26,7 @@ bool ElementwiseAddKernelCpu<float>::Init(ElementwiseAddParam *param) {
 }
 
 template <>
-void ElementwiseAddKernelCpu<float>::Compute(
-    const ElementwiseAddParam &param) {
+void ElementwiseAddKernelCpu<float>::Compute(const ElementwiseAddParam &param) {
   ElementwiseAddCompute<float>(param);
   param.Out()->set_lod(param.InputX()->lod());
 }

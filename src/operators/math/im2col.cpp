@@ -103,7 +103,7 @@ void ExtractToImg(const float *im_data, float *col_data, const int im_height,
  * output_width]
  */
 template <>
-void Im2ColFunctor<ColFormat::kCFO, CPU, float>::operator()(
+void Im2ColFunctor<ColFormat::kCFO, float>::operator()(
     const framework::Tensor &im, const std::vector<int> &dilation,
     const std::vector<int> &stride, const std::vector<int> &padding,
     framework::Tensor *col) {
@@ -124,7 +124,7 @@ void Im2ColFunctor<ColFormat::kCFO, CPU, float>::operator()(
     int col_spatial_size = col_height * col_width;
     // pad 0
     memset(col_data, 0, col->numel() * sizeof(float));
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int ic = 0; ic < im_channels; ++ic) {
       const float *local_im_data = im_data + ic * im_spatial_size;
       float *local_col_data =
@@ -233,7 +233,7 @@ void ExtractToImg(const int8_t *im_data, int8_t *col_data, const int im_height,
  * output_width]
  */
 template <>
-void Im2ColFunctor<ColFormat::kCFO, CPU, int8_t>::operator()(
+void Im2ColFunctor<ColFormat::kCFO, int8_t>::operator()(
     const framework::Tensor &im, const std::vector<int> &dilation,
     const std::vector<int> &stride, const std::vector<int> &padding,
     framework::Tensor *col) {
@@ -254,7 +254,7 @@ void Im2ColFunctor<ColFormat::kCFO, CPU, int8_t>::operator()(
     int col_spatial_size = col_height * col_width;
     // pad 0
     memset(col_data, 0, col->numel() * sizeof(int8_t));
-    #pragma omp parallel for
+#pragma omp parallel for
     for (int ic = 0; ic < im_channels; ++ic) {
       const int8_t *local_im_data = im_data + ic * im_spatial_size;
       int8_t *local_col_data =
@@ -300,7 +300,7 @@ void Im2ColFunctor<ColFormat::kCFO, CPU, int8_t>::operator()(
  * output_width]
  */
 template <class T>
-class Col2ImFunctor<ColFormat::kCFO, CPU, T> {
+class Col2ImFunctor<ColFormat::kCFO, T> {
  public:
   void operator()(const framework::Tensor &col,
                   const std::vector<int> &dilation,
@@ -341,10 +341,10 @@ class Col2ImFunctor<ColFormat::kCFO, CPU, T> {
   }
 };
 
-template class Im2ColFunctor<ColFormat::kCFO, CPU, float>;
-template class Im2ColFunctor<ColFormat::kCFO, CPU, int8_t>;
-template class Col2ImFunctor<ColFormat::kCFO, CPU, float>;
-template class Col2ImFunctor<ColFormat::kCFO, CPU, int8_t>;
+template class Im2ColFunctor<ColFormat::kCFO, float>;
+template class Im2ColFunctor<ColFormat::kCFO, int8_t>;
+template class Col2ImFunctor<ColFormat::kCFO, float>;
+template class Col2ImFunctor<ColFormat::kCFO, int8_t>;
 
 /*
  * im = [input_channels, input_height, input_width]
@@ -353,7 +353,7 @@ template class Col2ImFunctor<ColFormat::kCFO, CPU, int8_t>;
  * filter_width]
  */
 template <class T>
-class Im2ColFunctor<ColFormat::kOCF, CPU, T> {
+class Im2ColFunctor<ColFormat::kOCF, T> {
  public:
   void operator()(const framework::Tensor &im, const std::vector<int> &dilation,
                   const std::vector<int> &stride,
@@ -408,7 +408,7 @@ class Im2ColFunctor<ColFormat::kOCF, CPU, T> {
  * filter_width]
  */
 template <class T>
-class Col2ImFunctor<ColFormat::kOCF, CPU, T> {
+class Col2ImFunctor<ColFormat::kOCF, T> {
  public:
   void operator()(const framework::Tensor &col,
                   const std::vector<int> &dilation,
@@ -460,8 +460,8 @@ class Col2ImFunctor<ColFormat::kOCF, CPU, T> {
   }
 };
 
-template class Im2ColFunctor<ColFormat::kOCF, CPU, float>;
-template class Col2ImFunctor<ColFormat::kOCF, CPU, float>;
+template class Im2ColFunctor<ColFormat::kOCF, float>;
+template class Col2ImFunctor<ColFormat::kOCF, float>;
 
 }  // namespace math
 }  // namespace operators

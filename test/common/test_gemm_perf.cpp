@@ -27,7 +27,7 @@ limitations under the License. */
 #define k 1024
 
 int main() {
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile;
+  paddle_mobile::PaddleMobile<float> paddle_mobile;
   paddle_mobile.SetThreadNum(4);
   Tensor aa, bb, cc;
   auto aaptr = aa.mutable_data<float>({m, k});

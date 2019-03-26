@@ -34,21 +34,21 @@
 //#include "tensor_wrapper.h"
 //#endif
 //
-//namespace paddle_mobile {
-//namespace framework {
+// namespace paddle_mobile {
+// namespace framework {
 //
 //#pragma mark - executor
 //
-//template <typename T>
-//void ExecutorMultiKernel<T>::SetThreadNum(int threads) {
+// template <typename T>
+// void ExecutorMultiKernel<T>::SetThreadNum(int threads) {
 //  set_global_num_threads(threads);
 //}
 //
-//template <typename T>
-//ExecutorMultiKernel<T>::ExecutorMultiKernel(
-//    const Program<T> &program, paddle_mobile::PaddleMobileConfigInternal config,
-//    int batch_size, const bool use_optimize, const bool lod_mode)
-//    : program_(program),
+// template <typename T>
+// ExecutorMultiKernel<T>::ExecutorMultiKernel(
+//    const Program<T> &program, paddle_mobile::PaddleMobileConfigInternal
+//    config, int batch_size, const bool use_optimize, const bool lod_mode) :
+//    program_(program),
 //      batch_size_(batch_size),
 //      use_optimize_(use_optimize),
 //      lod_mode_(lod_mode),
@@ -209,8 +209,8 @@
 //  }
 //}
 //
-//template <typename T>
-//void ExecutorMultiKernel<T>::InitFeedFetchList() {
+// template <typename T>
+// void ExecutorMultiKernel<T>::InitFeedFetchList() {
 //  std::unordered_map<std::string, int> feed_indices, fetch_indices;
 //  for (const auto &block : program_desc_->Blocks()) {
 //    for (const auto &op_desc : block->Ops()) {
@@ -227,7 +227,8 @@
 //  fetch_indices_.swap(fetch_indices);
 //
 //  auto *feed_var = program_.scope->Var("feed");
-//  auto *feed_list = feed_var->template GetMutable<framework::LoDTensorArray>();
+//  auto *feed_list = feed_var->template
+//  GetMutable<framework::LoDTensorArray>();
 //  feed_list->resize(feed_indices_.size());
 //
 //  auto *fetch_var = program_.scope->Var("fetch");
@@ -236,8 +237,8 @@
 //  fetch_list->resize(fetch_indices_.size());
 //}
 //
-//template <typename T>
-//static void LoadMemInternal(void **data, LoDTensor *tensor,
+// template <typename T>
+// static void LoadMemInternal(void **data, LoDTensor *tensor,
 //                            bool quant_uint8 = false) {
 //  char **data_buf = reinterpret_cast<char **>(data);
 //  int64_t size = tensor->numel();
@@ -261,10 +262,10 @@
 //  }
 //}
 //
-//template <typename T>
-//void ExecutorMultiKernel<T>::LoadMemory(void **data,
-//                                        const std::shared_ptr<VarDesc> var_desc,
-//                                        LoDTensor *tensor) {
+// template <typename T>
+// void ExecutorMultiKernel<T>::LoadMemory(void **data,
+//                                        const std::shared_ptr<VarDesc>
+//                                        var_desc, LoDTensor *tensor) {
 //  char **data_buf = reinterpret_cast<char **>(data);
 //  // version
 //  uint32_t version = *(reinterpret_cast<uint32_t *>(*data_buf));
@@ -313,8 +314,8 @@
 //  }
 //}
 //
-//template <typename T>
-//void ExecutorMultiKernel<T>::InitMemory() {
+// template <typename T>
+// void ExecutorMultiKernel<T>::InitMemory() {
 //  for (const auto &block : program_desc_->Blocks()) {
 //    for (const auto &var_desc : block->Vars()) {
 //      auto var = program_.scope->Var(var_desc->Name());
@@ -348,8 +349,8 @@
 //  }
 //}
 //
-//template <typename T>
-//void ExecutorMultiKernel<T>::InitCombineMemory() {
+// template <typename T>
+// void ExecutorMultiKernel<T>::InitCombineMemory() {
 //  char *origin_data = nullptr;
 //  bool self_alloc = false;
 //  if (program_.combined_params_buf && program_.combined_params_len) {
@@ -384,8 +385,8 @@
 //  LOG(kLOG_INFO) << "init combine memory finish";
 //}
 //
-//template <typename T>
-//void ExecutorMultiKernel<T>::InitNoPersistableMemory(
+// template <typename T>
+// void ExecutorMultiKernel<T>::InitNoPersistableMemory(
 //    const Tensor &input_tensor) {
 //  for (const auto &block : program_desc_->Blocks()) {
 //    for (const auto &var_desc : block->Vars()) {
@@ -417,8 +418,8 @@
 //  output->mutable_data<T>();
 //}
 //
-//template <typename T>
-//bool ExecutorMultiKernel<T>::varInputMemory(
+// template <typename T>
+// bool ExecutorMultiKernel<T>::varInputMemory(
 //    const std::shared_ptr<VarDesc> &var_desc, Variable *var) const {
 //  auto TypeId = [](const VarType_Type &type) -> std::type_index {
 //    switch (type) {
@@ -454,8 +455,8 @@
 //  return true;
 //}
 //
-//template <typename T>
-//PMStatus ExecutorMultiKernel<T>::Predict(
+// template <typename T>
+// PMStatus ExecutorMultiKernel<T>::Predict(
 //    const std::vector<std::pair<std::string, Tensor>> &inputs) {
 //  for (const auto &input : inputs) {
 //    SetInput(input.second, input.first);
@@ -463,8 +464,8 @@
 //  return this->Predict();
 //}
 //
-//template <typename T>
-//PMStatus ExecutorMultiKernel<T>::Predict(
+// template <typename T>
+// PMStatus ExecutorMultiKernel<T>::Predict(
 //    const std::vector<std::pair<std::string, LoDTensor>> &inputs) {
 //  for (const auto &input : inputs) {
 //    SetInput(input.second, input.first);
@@ -472,16 +473,16 @@
 //  return this->Predict();
 //}
 //
-//template <typename T>
-//std::vector<T> ExecutorMultiKernel<T>::Predict(
+// template <typename T>
+// std::vector<T> ExecutorMultiKernel<T>::Predict(
 //    const std::vector<T> &input, const std::vector<int64_t> &dims) {
 //  PADDLE_MOBILE_ENFORCE(feed_indices_.size() != 0,
-//                        "We don't know which tensor should be assign, since no "
-//                        "feed op found in this model");
+//                        "We don't know which tensor should be assign, since no
+//                        " "feed op found in this model");
 //
 //  PADDLE_MOBILE_ENFORCE(fetch_indices_.size() != 0,
-//                        "We don't know which tensor should be fetch out, since "
-//                        "no fetch op found in this model");
+//                        "We don't know which tensor should be fetch out, since
+//                        " "no fetch op found in this model");
 //  std::string input_name = feed_indices_.begin()->first;
 //  Tensor feed_tensor(input, make_ddim(dims));
 //  SetInput(feed_tensor, input_name);
@@ -496,8 +497,8 @@
 //  return output;
 //}
 //
-//template <typename T>
-//void ExecutorMultiKernel<T>::SetInput(const Tensor &input,
+// template <typename T>
+// void ExecutorMultiKernel<T>::SetInput(const Tensor &input,
 //                                      const std::string &var_name) {
 //  int index = 0;
 //  if (feed_indices_.find(var_name) != feed_indices_.end()) {
@@ -518,8 +519,8 @@
 //  target.ShareDataWith(input);
 //}
 //
-//template <typename T>
-//void ExecutorMultiKernel<T>::SetInput(const LoDTensor &input,
+// template <typename T>
+// void ExecutorMultiKernel<T>::SetInput(const LoDTensor &input,
 //                                      const std::string &var_name) {
 //  int index = 0;
 //  if (feed_indices_.find(var_name) != feed_indices_.end()) {
@@ -541,8 +542,8 @@
 //  target.set_lod(input.lod());
 //}
 //
-//template <typename T>
-//std::shared_ptr<LoDTensor> ExecutorMultiKernel<T>::GetOutput(
+// template <typename T>
+// std::shared_ptr<LoDTensor> ExecutorMultiKernel<T>::GetOutput(
 //    const std::string &var_name) {
 //  const auto &iter = fetch_indices_.find(var_name);
 //  if (var_name == "fetch" || iter != fetch_indices_.end()) {
@@ -552,7 +553,8 @@
 //    }
 //    auto *fetch_var = program_.scope->Var("fetch");
 //    framework::LoDTensor &target =
-//        fetch_var->template GetMutable<framework::LoDTensorArray>()->at(index);
+//        fetch_var->template
+//        GetMutable<framework::LoDTensorArray>()->at(index);
 //
 //    return std::make_shared<LoDTensor>(target);
 //  } else {
@@ -563,8 +565,8 @@
 //  }
 //}
 //
-//template <typename T>
-//PMStatus ExecutorMultiKernel<T>::Predict() {
+// template <typename T>
+// PMStatus ExecutorMultiKernel<T>::Predict() {
 //#if _OPENMP
 //  omp_set_num_threads(get_global_num_threads());
 //#endif
@@ -629,8 +631,8 @@
 ///*
 //
 //#ifdef PADDLE_MOBILE_CL
-//template <>
-//void ExecutorMultiKernel<GPU_CL, float>::InitNoPersistableMemory(
+// template <>
+// void ExecutorMultiKernel<GPU_CL, float>::InitNoPersistableMemory(
 //    const Tensor &input_tensor) {
 //  DLOG << "CL InitNoPersistableMemory ";
 //  for (const auto &block : program_desc_->Blocks()) {
@@ -664,16 +666,18 @@
 //  output->mutable_data<float>();
 //}
 //
-//template <>
-//void ExecutorMultiKernel<GPU_CL, float>::SetInput(const Tensor &input,
-//                                                  const std::string &var_name) {
+// template <>
+// void ExecutorMultiKernel<GPU_CL, float>::SetInput(const Tensor &input,
+//                                                  const std::string &var_name)
+//                                                  {
 //  int index = 0;
 //  if (feed_indices_.find(var_name) != feed_indices_.end()) {
 //    index = feed_indices_.find(var_name)->second;
 //  }
 //  auto *feed_var = program_.scope->Var("feed");
 //  framework::LoDTensor *target_tensor =
-//      &(feed_var->template GetMutable<framework::LoDTensorArray>()->at(index));
+//      &(feed_var->template
+//      GetMutable<framework::LoDTensorArray>()->at(index));
 //
 //  DLOG << "config_.load_when_predict   " << config_.load_when_predict;
 //  DLOG << "target_tensor->IsInitialized() " << target_tensor->IsInitialized();
@@ -697,12 +701,12 @@
 //  input_dim_last_ = static_cast<DDim>(dim);
 //}
 //
-//template <typename T>
-//void ExecutorMultiKernel<T>::LoadMemory(const VarDesc var_desc,
+// template <typename T>
+// void ExecutorMultiKernel<T>::LoadMemory(const VarDesc var_desc,
 //                                        float *tensorInput, char **data) {}
 //
-//template <>
-//void ExecutorMultiKernel<GPU_CL, float>::LoadMemory(const VarDesc var_desc,
+// template <>
+// void ExecutorMultiKernel<GPU_CL, float>::LoadMemory(const VarDesc var_desc,
 //                                                    float *tensorInput,
 //                                                    char **data) {
 //  // 1. version
@@ -778,8 +782,8 @@
 //  }
 //}
 //
-//template <>
-//void ExecutorMultiKernel<GPU_CL, float>::InitMemory() {
+// template <>
+// void ExecutorMultiKernel<GPU_CL, float>::InitMemory() {
 //  for (const auto &block : program_desc_->Blocks()) {
 //    for (const auto &var_desc : block->Vars()) {
 //      auto var = program_.scope->Var(var_desc->Name());
@@ -831,8 +835,8 @@
 //  }
 //}
 //
-//template <>
-//void ExecutorMultiKernel<GPU_CL, float>::InitCombineMemory() {
+// template <>
+// void ExecutorMultiKernel<GPU_CL, float>::InitCombineMemory() {
 //  DLOG << "CL InitCombineMemory---- "
 //       << "config_.load_when_predict: " << config_.load_when_predict;
 //  char *origin_data = nullptr;
@@ -898,7 +902,7 @@
 //#endif
 //*/
 //
-//template class ExecutorMultiKernel<float>;
+// template class ExecutorMultiKernel<float>;
 //
 //// template class ExecutorMultiKernel<FPGA, float>;
 ////

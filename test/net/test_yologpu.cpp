@@ -20,7 +20,7 @@ limitations under the License. */
 #include "../test_include.h"
 void t1() {
   paddle_mobile::PaddleMobile<paddle_mobile::GPU_CL> paddle_mobile_gpu;
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile_cpu;
+  paddle_mobile::PaddleMobile<float> paddle_mobile_cpu;
   paddle_mobile::PaddleTester<paddle_mobile::CPU> paddle_test_cpu;
   paddle_mobile::PaddleTester<paddle_mobile::GPU_CL> paddle_test_gpu;
   printf("cpu time:%f\n", paddle_test_cpu.CaculatePredictTime());
@@ -128,7 +128,7 @@ void t2() {
 }
 
 void t3() {
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile;
+  paddle_mobile::PaddleMobile<float> paddle_mobile;
   //    paddle_mobile.SetThreadNum(4);
   // #ifdef PADDLE_MOBILE_CL
   //  paddle_mobile.SetCLPath("/data/local/tmp/bin");

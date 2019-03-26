@@ -54,8 +54,8 @@ int TestMulOP() {
   AttributeMap attrs;
   attrs["x_num_col_dims"].Set<int>(1);
   attrs["y_num_col_dims"].Set<int>(1);
-  auto *op = new operators::MulOp<CPU, float>("mul", inputs, outputs, attrs,
-                                              scope.get());
+  auto *op =
+      new operators::MulOp<float>("mul", inputs, outputs, attrs, scope.get());
   op->InferShape();
   op->Run();
   auto output = output_var->template Get<framework::LoDTensor>();
@@ -94,7 +94,7 @@ int TestMulOP() {
 }  // namespace paddle_mobile
 
 int main() {
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile;
+  paddle_mobile::PaddleMobile<float> paddle_mobile;
   paddle_mobile.SetThreadNum(4);
   paddle_mobile::TestMulOP<int8_t, int32_t>();
   paddle_mobile::TestMulOP<float, float>();

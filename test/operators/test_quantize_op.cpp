@@ -114,8 +114,8 @@ int TestQuqntizeOp(const int batch_size, const int channel, const int height,
   auto output_scale_var = scope.get()->Var("output_scale");
 
   framework::AttributeMap attrs;
-  auto *op = new operators::QuantizeOp<CPU, float>("quantize", inputs, outputs,
-                                                   attrs, scope.get());
+  auto *op = new operators::QuantizeOp<float>("quantize", inputs, outputs,
+                                              attrs, scope.get());
   op->InferShape();
   op->Run();
 

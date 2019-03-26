@@ -48,10 +48,10 @@ class CastOp : public framework::OperatorWithKernels<T, CastParam> {
                                                      attrs, scope) {
     framework::OperatorWithKernels<T, CastParam>::kernels.insert(TYPE_GPU,
                                                                  kernelGpu_);
-    framework::OperatorWithKernels<T, CastParam>::kernels.insert(TYPE_CPU,
+    framework::OperatorWithKernels<T, CastParam>::kernels.insert(TYPE_
                                                                  kernelCpu_);
   }
-  Init(){
+  void Init(){
       kernelCpu_.Init(framework::OperatorWithKernels<T, CastParam>::param_);
 
   }

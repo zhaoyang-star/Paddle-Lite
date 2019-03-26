@@ -53,10 +53,10 @@ void GruCompute(const GruParam& param) {
   auto hidden_dims = hidden->dims();
 
   bool is_reverse = param.IsReverse();
-  math::LoDTensor2BatchFunctor<CPU, float> to_batch;
+  math::LoDTensor2BatchFunctor<float> to_batch;
   to_batch(*input, batch_gate, true, is_reverse);
   if (bias) {
-    math::RowwiseAdd<CPU, float> add_bias;
+    math::RowwiseAdd<float> add_bias;
     add_bias(*batch_gate, *bias, batch_gate);
   }
   int frame_size = hidden_dims[1];
@@ -70,7 +70,7 @@ void GruCompute(const GruParam& param) {
     // Since the batch computing for GRU reorders the input sequences
     // according to their length. The initialized cell state also needs
     // to reorder.
-    ReorderInitState<CPU, float>(*h0, order, &ordered_h0, true);
+    ReorderInitState<float>(*h0, order, &ordered_h0, true);
     gru_value.prev_out_value = ordered_h0.data<float>();
   } else {
     gru_value.prev_out_value = nullptr;
@@ -91,12 +91,12 @@ void GruCompute(const GruParam& param) {
     gru_value.gate_value = gate_t.data<float>();
     gru_value.reset_output_value = reset_hidden_prev_t.data<float>();
 
-    math::GRUUnitFunctor<CPU, float>::compute(
-        gru_value, frame_size, cur_batch_size, active_node, active_gate);
+    math::GRUUnitFunctor<float>::compute(gru_value, frame_size, cur_batch_size,
+                                         active_node, active_gate);
 
     gru_value.prev_out_value = gru_value.output_value;
   }
-  math::Batch2LoDTensorFunctor<CPU, float> to_seq;
+  math::Batch2LoDTensorFunctor<float> to_seq;
   batch_hidden->set_lod(batch_gate->lod());
   to_seq(*batch_hidden, hidden);
 }

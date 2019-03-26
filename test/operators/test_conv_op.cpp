@@ -181,8 +181,8 @@ int TestConvOp(int in_channels, int in_height, int in_width, int out_channels,
       std::vector<int>({dilation_h, dilation_w}));
   attrs["groups"].Set<int>(groups);
 
-  auto *op = new operators::ConvOp<CPU, float>("conv2d", inputs, outputs, attrs,
-                                               scope.get());
+  auto *op = new operators::ConvOp<float>("conv2d", inputs, outputs, attrs,
+                                          scope.get());
   op->InferShape();
   op->Init();
   //  struct timespec ts_begin, ts_end;

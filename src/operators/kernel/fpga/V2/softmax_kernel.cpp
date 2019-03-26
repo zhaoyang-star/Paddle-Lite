@@ -53,7 +53,7 @@ void SoftmaxKernel<FPGA, float>::Compute(const SoftmaxParam<FPGA> &param) {
       (void *)in_x->data<float>(),                           // NOLINT
       fpga::get_aligned_channel_num((int)in_x->dims()[1]) *  // NOLINT
           sizeof(float));
-  math::SoftmaxFuntor<CPU, float>()(in_x, out);
+  math::SoftmaxFuntor<float>()(in_x, out);
   fpga::fpga_flush(out->data<float>(), out->memory_size());
 }
 

@@ -63,7 +63,7 @@
 
 @interface  PaddleMobileCPU()
 {
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU, float> *pam_;
+  paddle_mobile::PaddleMobile<paddle_mobile:: float> *pam_;
   BOOL loaded_;
 }
 
@@ -79,7 +79,7 @@ static std::mutex shared_mutex;
   if (self = [super init]) {
     paddle_mobile::PaddleMobileConfigInternal configInternal;
     configInternal.load_when_predict = config.loadWhenPredict;
-    pam_ = new paddle_mobile::PaddleMobile<paddle_mobile::CPU, float>();
+    pam_ = new paddle_mobile::PaddleMobile<paddle_mobile:: float>();
     _config = config;
   }
   return self;
@@ -88,7 +88,7 @@ static std::mutex shared_mutex;
 -(instancetype)init {
   if (self = [super init]) {
     _config = [[PaddleMobileCPUConfig alloc] init];
-    pam_ = new paddle_mobile::PaddleMobile<paddle_mobile::CPU, float>();
+    pam_ = new paddle_mobile::PaddleMobile<paddle_mobile:: float>();
   }
   return self;
 }

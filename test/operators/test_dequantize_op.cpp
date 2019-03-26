@@ -50,8 +50,8 @@ int TestDequqntizeOp() {
   framework::AttributeMap attrs;
   attrs["weight_scale"].Set<float>(1.74);
 
-  auto* op = new operators::DequantizeOp<CPU, float>(
-      "dequantize", inputs, outputs, attrs, scope.get());
+  auto* op = new operators::DequantizeOp<float>("dequantize", inputs, outputs,
+                                                attrs, scope.get());
   op->InferShape();
   op->Run();
   auto output = output_var->template Get<framework::LoDTensor>();

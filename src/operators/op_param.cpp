@@ -17,7 +17,6 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef CONV_OP
-template <>
 Print &operator<<(Print &printer, const ConvParam &conv_param) {
   printer << "parameter of conv: "
           << "\n";

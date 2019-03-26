@@ -21,7 +21,7 @@ int main() {
   paddle_mobile::PaddleMobileConfigInternal config;
   config.load_when_predict = true;
 
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile(config);
+  paddle_mobile::PaddleMobile<float> paddle_mobile(config);
   //    paddle_mobile.SetThreadNum(4);
   auto time1 = paddle_mobile::time();
 #ifdef PADDLE_MOBILE_CL

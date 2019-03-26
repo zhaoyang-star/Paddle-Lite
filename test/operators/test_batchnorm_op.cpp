@@ -88,8 +88,8 @@ int TestBatchNormOp(const std::vector<int> input_shape) {
   attrs["epsilon"].Set<float>(eps);
   attrs["momentum"].Set<float>(0.f);
 
-  auto *op = new operators::BatchNormOp<CPU, float>(
-      "batch_norm", inputs, outputs, attrs, scope.get());
+  auto *op = new operators::BatchNormOp<float>("batch_norm", inputs, outputs,
+                                               attrs, scope.get());
   op->InferShape();
   op->Init();
   op->Run();

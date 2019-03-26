@@ -26,10 +26,11 @@ limitations under the License. */
 
 namespace paddle_mobile {
 
-template <typename Device, typename T = float>
+template <typename T = float>
 class PaddleTester {
  public:
-  double CaculatePredictTime(std::string *cl_path = nullptr);
+  double CaculateCpuPredictTime();
+  double CaculateGpuPredictTime(std::string *cl_path = nullptr);
 };
 
 }  // namespace paddle_mobile

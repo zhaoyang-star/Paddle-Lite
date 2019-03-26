@@ -39,7 +39,7 @@ class ConvOp
  private:
 };*/
 
-DECLARE_OPERATOR_WITH_PARAMS(Conv, ConvParam,ConvKernel);
+DECLARE_OPERATOR_WITH_PARAMS(Conv, ConvParam, ConvKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

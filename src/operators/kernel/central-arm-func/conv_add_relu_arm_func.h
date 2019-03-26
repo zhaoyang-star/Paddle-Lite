@@ -84,8 +84,8 @@ void ConvAddReluBasic(const FusionConvAddReluParam &param) {
   int32_t in_step = static_cast<int32_t>(input->dims()[1]) / groups;
   int32_t out_step = static_cast<int32_t>(output->dims()[1]) / groups;
 
-  math::Vol2ColFunctor<CPU, Itype> vol2col;
-  math::Im2ColFunctor<math::ColFormat::kCFO, CPU, Itype> im2col;
+  math::Vol2ColFunctor<Itype> vol2col;
+  math::Im2ColFunctor<math::ColFormat::kCFO, Itype> im2col;
 
   for (int32_t i = 0; i < batch_size; i++) {
     Tensor in_batch = input->Slice(i, i + 1).Resize(input_shape);

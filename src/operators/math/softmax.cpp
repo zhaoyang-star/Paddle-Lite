@@ -113,8 +113,8 @@ void SoftmaxBasic(const float *input, int num_classes, float *y) {
 }
 
 template <>
-void SoftmaxFuntor<CPU, float>::operator()(const framework::Tensor *X,
-                                           framework::Tensor *Y) {
+void SoftmaxFuntor<float>::operator()(const framework::Tensor *X,
+                                      framework::Tensor *Y) {
   const framework::DDim &dims = X->dims();
   int batch_size = dims[0];
   int num_classes = dims[dims.size() - 1];
@@ -134,8 +134,8 @@ void SoftmaxFuntor<CPU, float>::operator()(const framework::Tensor *X,
 }
 
 template <>
-void SequenceSoftmaxFuntor<CPU, float>::operator()(
-    const framework::LoDTensor *X, framework::LoDTensor *Y) {
+void SequenceSoftmaxFuntor<float>::operator()(const framework::LoDTensor *X,
+                                              framework::LoDTensor *Y) {
   const float *x = X->data<float>();
   const auto &lod = X->lod().back();
   float *y = Y->mutable_data<float>();

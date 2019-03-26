@@ -21,8 +21,8 @@ int main() {
   if (program.originProgram == nullptr) {
     DLOG << "program read file";
   }
-  Executor4Test<paddle_mobile::CPU,
-                paddle_mobile::operators::ReshapeOp<paddle_mobile::CPU, float>>
+  Executor4Test<
+      paddle_mobile::paddle_mobile::operators::ReshapeOp<paddle_mobile::float>>
       executor(program, "reshape");
   paddle_mobile::framework::Tensor input;
   SetupTensor<float>(&input, {2, 3, 3, 2}, static_cast<float>(0),
