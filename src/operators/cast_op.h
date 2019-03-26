@@ -55,7 +55,7 @@ class CastOp : public framework::OperatorWithKernels<T, CastParam> {
   CastKernelCpu<T> kernelCpu_;
   CastKernelGpu<T> kernelGpu_;
 };*/
-DECLARE_OPERATOR_WITH_PARAMS(Cast, CastParam);
+DECLARE_OPERATOR(Cast);
 
 }  // namespace operators
 }  // namespace paddle_mobile

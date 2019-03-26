@@ -23,7 +23,7 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef LESS_THAN_OP
-DECLARE_OPERATOR_WITH_PARAMS(LessThan, CompareParam);
+DECLARE_OPERATOR_WITH_PARAMS(LessThan, CompareParam, LessThanKernel);
 #endif  // LESS_THAN_OP
 
 }  // namespace operators

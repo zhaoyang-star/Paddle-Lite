@@ -43,7 +43,7 @@ namespace operators {
 // private:
 //};
 
-DECLARE_OPERATOR_WITH_PARAMS(ConvTranspose, ConvTransposeParam);
+DECLARE_OPERATOR_WITH_PARAMS(ConvTranspose, ConvTransposeParam,ConvTransposeKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

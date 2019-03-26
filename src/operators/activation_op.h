@@ -23,20 +23,20 @@ namespace paddle_mobile {
 namespace operators {
 
 #ifdef RELU_OP
-DECLARE_OPERATOR_WITH_PARAMS(Relu, ReluParam);
-DECLARE_OPERATOR_WITH_PARAMS(Relu6, ReluParam);
+DECLARE_OPERATOR_WITH_PARAMS(Relu, ReluParam, ReluKernel);
+DECLARE_OPERATOR_WITH_PARAMS(Relu6, ReluParam, Relu6Kernel);
 #endif
 
 #ifdef SIGMOID_OP
-DECLARE_OPERATOR_WITH_PARAMS(Sigmoid, SigmoidParam);
+DECLARE_OPERATOR_WITH_PARAMS(Sigmoid, SigmoidParam, SigmoidKernel);
 #endif
 
 #ifdef TANH_OP
-DECLARE_OPERATOR_WITH_PARAMS(Tanh, TanhParam);
+DECLARE_OPERATOR_WITH_PARAMS(Tanh, TanhParam, TanhKernel);
 #endif
 
 #ifdef LOG_OP
-DECLARE_OPERATOR_WITH_PARAMS(Log, ReluParam);
+DECLARE_OPERATOR_WITH_PARAMS(Log, ReluParam, Relu6Kernel);
 #endif
 
 }  // namespace operators

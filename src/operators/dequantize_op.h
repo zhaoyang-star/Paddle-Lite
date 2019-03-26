@@ -39,7 +39,7 @@ class DequantizeOp
   // inference output shape
   void InferShape() const override;
 };*/
-DECLARE_OPERATOR_WITH_PARAMS(Dequantize, DequantizeParam);
+DECLARE_OPERATOR(Dequantize);
 
 }  // namespace operators
 }  // namespace paddle_mobile
