@@ -20,18 +20,18 @@ namespace operators {
 
 template <typename T>
 void PolygonBoxTransformOp<T>::InferShape() const {
-  PADDLE_MOBILE_ENFORCE(this->param_.Input() != nullptr,
+  PADDLE_MOBILE_ENFORCE(this->param_.Input()->InnerLoDTensor() != nullptr,
                         "Input (Input) of get_shape op should not be null.");
-  PADDLE_MOBILE_ENFORCE(this->param_.Output() != nullptr,
+  PADDLE_MOBILE_ENFORCE(this->param_.Output()->InnerLoDTensor() != nullptr,
                         "Output (Output) of get_shape op should not be null.");
 
-  auto input_dims = this->param_.Input()->dims();
+  auto input_dims = this->param_.Input()->InnerLoDTensor()->dims();
 
   PADDLE_MOBILE_ENFORCE(input_dims.size() == 4, "input's rank must be 4.");
   PADDLE_MOBILE_ENFORCE(input_dims[1] % 2 == 0,
                         "input's second dimension must be even.");
 
-  this->param_.Output()->Resize(input_dims);
+  this->param_.Output()->InnerLoDTensor()->Resize(input_dims);
 }
 
 }  // namespace operators

@@ -26,12 +26,12 @@ namespace paddle_mobile {
 namespace operators {
 
 void DWConvBNReluBasic(const FusionDWConvBNReluParam &param) {
-  const Tensor *input = param.Input();
-  Tensor filter = *param.Filter();
-  Tensor new_bias = *param.NewBias();
-  Tensor new_scale = *param.NewScale();
+  const Tensor *input = param.Input()->InnerLoDTensor();
+  Tensor filter = *param.Filter()->InnerLoDTensor();
+  Tensor new_bias = *param.NewBias()->InnerLoDTensor();
+  Tensor new_scale = *param.NewScale()->InnerLoDTensor();
 
-  Tensor *output = param.Output();
+  Tensor *output = param.Output()->InnerLoDTensor();
   output->mutable_data<float>();
 
   int groups = param.Groups();
@@ -115,24 +115,24 @@ void DWConvBNReluBasic(const FusionDWConvBNReluParam &param) {
 }
 template <typename P>
 void DWConvBNReluCompute(const FusionDWConvBNReluParam &param) {
-  if (param.Groups() == param.Input()->dims()[1] &&
-      param.Input()->dims()[1] == param.Output()->dims()[1] &&
-      param.Filter()->dims()[2] == param.Filter()->dims()[3] &&
-      param.Filter()->dims()[2] == 3 && param.Strides()[0] == 1 &&
+  if (param.Groups() == param.Input()->InnerLoDTensor()->dims()[1] &&
+      param.Input()->InnerLoDTensor()->dims()[1] == param.Output()->InnerLoDTensor()->dims()[1] &&
+     param.Filter()->InnerLoDTensor()->dims()[2] ==param.Filter()->InnerLoDTensor()->dims()[3] &&
+     param.Filter()->InnerLoDTensor()->dims()[2] == 3 && param.Strides()[0] == 1 &&
       param.paddings_[0] == 1) {
-    math::DepthwiseConvAddBNRelu3x3s1p1(param.Input(), param.Filter(),
-                                        param.Output(), param.NewScale(),
-                                        param.NewBias(), true);
-  } else if (param.Groups() == param.Input()->dims()[1] &&
-             param.Input()->dims()[1] == param.Output()->dims()[1] &&
-             param.Filter()->dims()[2] == param.Filter()->dims()[3] &&
-             param.Filter()->dims()[2] == 3 && param.Strides()[0] == 2) {
-    //    math::DepthwiseConvAddBNRelu3x3s2p1(param.Input(), param.Filter(),
-    //                                        param.Output(), param.NewScale(),
-    //                                        param.NewBias(), 1);
-    math::DepthwiseConvAddBNRelu3x3s2p1v2(param.Input(), param.Filter(),
-                                          param.Output(), param.NewScale(),
-                                          param.NewBias(), true);
+    math::DepthwiseConvAddBNRelu3x3s1p1(param.Input()->InnerLoDTensor(),param.Filter()->InnerLoDTensor(),
+                                        param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
+                                        param.NewBias()->InnerLoDTensor(), true);
+  } else if (param.Groups() == param.Input()->InnerLoDTensor()->dims()[1] &&
+             param.Input()->InnerLoDTensor()->dims()[1] == param.Output()->InnerLoDTensor()->dims()[1] &&
+            param.Filter()->InnerLoDTensor()->dims()[2] ==param.Filter()->InnerLoDTensor()->dims()[3] &&
+            param.Filter()->InnerLoDTensor()->dims()[2] == 3 && param.Strides()[0] == 2) {
+    //    math::DepthwiseConvAddBNRelu3x3s2p1(param.Input()->InnerLoDTensor(),param.Filter()->InnerLoDTensor(),
+    //                                        param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
+    //                                        param.NewBias()->InnerLoDTensor(), 1);
+    math::DepthwiseConvAddBNRelu3x3s2p1v2(param.Input()->InnerLoDTensor(),param.Filter()->InnerLoDTensor(),
+                                          param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
+                                          param.NewBias()->InnerLoDTensor(), true);
   } else {
     DWConvBNReluBasic(param);
   }

@@ -23,21 +23,21 @@ namespace operators {
 template <>
 bool ConvAddBNKernel<FPGA, float>::Init(FusionConvAddBNParam<FPGA> *param) {
   bool relu_enabled = false;
-  auto input = const_cast<Tensor *>(param->Input());
+  auto input = const_cast<Tensor *>(param->Input()->InnerLoDTensor());
 
   auto bias = param->Bias();
   auto bias_ptr = bias->data<float>();
-  auto filter = const_cast<Tensor *>(param->Filter());
+  auto filter = const_cast<Tensor *>(param->Filter()->InnerLoDTensor());
 
-  auto out = param->Output();
+  auto out = param->Output()->InnerLoDTensor();
 
-  auto bn_mean_ptr = param->InputMean()->data<float>();
-  auto bn_var_ptr = param->InputVariance()->data<float>();
-  auto bn_scale_ptr = param->InputScale()->data<float>();
-  auto bn_bias_ptr = param->InputBias()->data<float>();
+  auto bn_mean_ptr = param->InputMean()->InnerLoDTensor()->data<float>();
+  auto bn_var_ptr = param->InputVariance()->InnerLoDTensor()->data<float>();
+  auto bn_scale_ptr = param->InputScale()->InnerLoDTensor()->data<float>();
+  auto bn_bias_ptr = param->InputBias()->InnerLoDTensor()->data<float>();
   const float epsilon = param->Epsilon();
   PADDLE_MOBILE_ENFORCE(out->dims()[1] == bias->dims()[0] &&
-                            bias->dims()[0] == param->InputBias()->dims()[0],
+                            bias->dims()[0] == param->InputBias()->InnerLoDTensor()->dims()[0],
                         "Output channel should be equal to bias number");
 
   const int channel = out->dims()[1];

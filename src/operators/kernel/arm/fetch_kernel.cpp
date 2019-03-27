@@ -22,7 +22,7 @@ bool FetchKernelCpu<float>::Init(FetchParam *param) {
 template <>
 void FetchKernelCpu<float>::Compute(const FetchParam &param) {
   int col = param.Col();
-  param.Out()->at(col).ShareDataWith(*(param.InputX()));
+  param.Out()->at(col).InnerLoDTensor()->ShareDataWith(*(param.InputX()->InnerLoDTensor()));
 }
 
 template class FetchKernelCpu<float>;

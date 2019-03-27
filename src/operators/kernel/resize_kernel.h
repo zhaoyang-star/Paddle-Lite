@@ -26,11 +26,11 @@ namespace operators {
 
 template <typename DeviceType>
 inline framework::DDim CalOutputShape(const ResizeParam<DeviceType> &param) {
-  const auto *input_x = param.InputX();
+  const auto *input_x = param.InputX()->InnerLoDTensor();
   const auto &input_x_dims = input_x->dims();
-  auto *out = param.Out();
+  auto *out = param.Out()->InnerLoDTensor();
   framework::DDim out_dims = out->dims();
-  const auto *input_shape = param.InputShape();
+  const auto *input_shape = param.InputShape()->InnerLoDTensor();
 
   if (input_shape) {
     input_x->dims()[0];

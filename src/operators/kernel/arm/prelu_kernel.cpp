@@ -36,9 +36,9 @@ struct PReluFunctor {
  * */
 template <>
 void PReluKernelCpu<float>::Compute(const PReluParam &param) {
-  auto *x = param.InputX();
+  auto *x = param.InputX()->InnerLoDTensor();
   auto *alpha = param.InputAlpha();
-  auto *out = param.Out();
+  auto *out = param.Out()->InnerLoDTensor();
   std::string mode = param.Mode();
   auto *x_ptr = x->data<float>();
   auto *o_ptr = out->mutable_data<float>();

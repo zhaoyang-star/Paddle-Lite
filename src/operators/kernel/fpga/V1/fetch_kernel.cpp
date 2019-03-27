@@ -57,9 +57,9 @@ void dealign(float *src, float *dst, int input_c, int input_h, int input_w) {
 }
 template <>
 void FetchKernel<FPGA, float>::Compute(const FetchParam<FPGA> &param) {
-  auto input = const_cast<LoDTensor *>(param.InputX());
+  auto input = const_cast<LoDTensor *>(param.InputX()->InnerLoDTensor());
   int col = param.Col();
-  LoDTensor *out = &param.Out()->at(col);
+  LoDTensor *out = &param.Out()->InnerLoDTensor()->at(col);
 
   fpga::BypassArgs args = param.fpga_bypass_args;
   auto input_address = (input->data<half>());

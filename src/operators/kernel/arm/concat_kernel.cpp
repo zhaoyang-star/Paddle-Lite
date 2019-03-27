@@ -32,7 +32,7 @@ void ConcatKernelCpu<float>::Compute(const ConcatParam &param) {
   } else {
     ConcatCompute<float>(param);
   }
-  param.Out()->set_lod(param.Inputs()[0]->lod());
+  param.Out()->InnerLoDTensor()->set_lod(param.Inputs()[0]->lod());
 }
 
 }  // namespace operators

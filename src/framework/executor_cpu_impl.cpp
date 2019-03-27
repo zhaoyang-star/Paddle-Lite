@@ -80,7 +80,9 @@ ExecutorCpu<T>::ExecutorCpu(const Program<T> &program,
     // infer shape to reshape inputs and outputs before predict,
     // but for lod mode, it still need to infer shape in runtime
     if (!lod_mode) {
+      DLOG << op_desc->Type() << "op    ---   > infershape start";
       op_handler->InferShape();
+      DLOG << op_desc->Type() << "op    ---   > infershape end";
     }
     ops_of_block0_.push_back(op_handler);
   }
@@ -253,9 +255,9 @@ void ExecutorCpu<T>::InitCombineMemory() {
         }
 
         DLOG << " init combine memory persistable: " << var_desc->Name();
-        auto tensor_wrapper = var->template GetMutable<TensorWrapper>();
-        LoDTensor *tensor = tensor_wrapper->MuteLodTensor();
-        LoadMemory(reinterpret_cast<void **>(&data), var_desc, tensor);
+        auto tensor_wrapper = var->template GetMutable<LoDTensor>();
+//        LoDTensor *tensor = tensor_wrapper->MuteLodTensor();
+        LoadMemory(reinterpret_cast<void **>(&data), var_desc, tensor_wrapper);
       } else {
         DLOG << " init combine memory no persistable: " << var_desc->Name();
         varInputMemory(var_desc, var);

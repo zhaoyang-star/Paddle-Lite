@@ -56,7 +56,7 @@ class ConcatFunctor {
 template <typename P>
 void ConcatCompute(const ConcatParam &param) {
   auto inputs = param.Inputs();
-  auto *out = param.Out();
+  auto *out = param.Out()->InnerLoDTensor();
   int axis = param.Axis();
   out->mutable_data<P>();
 

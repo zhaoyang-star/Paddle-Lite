@@ -27,9 +27,9 @@ namespace operators {
 
 template <typename T>
 inline void ElementwiseAddCompute(const ElementwiseAddParam &param) {
-  const framework::Tensor *input_x = param.InputX();
-  const framework::Tensor *input_y = param.InputY();
-  framework::Tensor *Out = param.Out();
+  framework::Tensor *input_x = param.InputX()->InnerLoDTensor();
+  framework::Tensor *input_y = param.InputY()->InnerLoDTensor();
+  framework::Tensor *Out = param.Out()->InnerLoDTensor();
   int axis = param.Axis();
 
   const auto &x_dims = input_x->dims();

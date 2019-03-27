@@ -241,7 +241,7 @@ void MultiClassNMSCompute(const MultiClassNMSParam& param) {
   const auto* input_scores = param.InputScores();
   const auto& input_scores_dims = input_scores->dims();
 
-  auto* outs = param.Out();
+  auto* outs = param.Out()->InnerLoDTensor();
   auto background_label = param.BackGroundLabel();
   auto nms_top_k = param.NMSTopK();
   auto keep_top_k = param.KeepTopK();

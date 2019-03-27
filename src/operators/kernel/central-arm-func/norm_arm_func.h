@@ -40,9 +40,9 @@ void NormCompute(const NormParam &param) {
   const float epsilon = param.Epsilon();
   int axis = param.Axis();
 
-  const framework::Tensor *input = param.InputX();
+  const framework::Tensor *input = param.InputX()->InnerLoDTensor();
   framework::Tensor *norm = param.OutputNorm();
-  framework::Tensor *out = param.Out();
+  framework::Tensor *out = param.Out()->InnerLoDTensor();
 
   auto x_dims = input->dims();
   if (axis < 0) {

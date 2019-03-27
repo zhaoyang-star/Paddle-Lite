@@ -22,11 +22,11 @@ namespace operators {
 template <>
 bool ConvAddReluKernel<FPGA, float>::Init(FusionConvAddReluParam<FPGA> *param) {
   bool relu_enabled = true;
-  auto input = const_cast<Tensor *>(param->Input());
+  auto input = const_cast<Tensor *>(param->Input()->InnerLoDTensor());
   const Tensor *bias = param->Bias();
   auto bias_ptr = bias->data<float>();
-  auto filter = const_cast<Tensor *>(param->Filter());
-  auto out = param->Output();
+  auto filter = const_cast<Tensor *>(param->Filter()->InnerLoDTensor());
+  auto out = param->Output()->InnerLoDTensor();
 
   PADDLE_MOBILE_ENFORCE(out->dims()[1] == bias->dims()[0],
                         "Output channel should be equal to bias number");

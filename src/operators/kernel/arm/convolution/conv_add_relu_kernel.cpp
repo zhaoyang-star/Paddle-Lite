@@ -48,7 +48,7 @@ void ConvAddReluKernelCpu<float>::Compute(const FusionConvAddReluParam &param) {
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",
                                     param.ExecMode());
   }
-  math::AddChannelWise<RELU>(param.Output(), param.Bias(), param.Output());
+  math::AddChannelWise<RELU>(param.Output()->InnerLoDTensor(), param.Bias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
 }
 
 template class ConvAddReluKernelCpu<float>;

@@ -90,11 +90,11 @@ bool SoftmaxKernel<FPGA, float>::Init(SoftmaxParam<FPGA> *param) {
 
 template <>
 void SoftmaxKernel<FPGA, float>::Compute(const SoftmaxParam<FPGA> &param) {
-  auto *in_x = (param.InputX());
+  auto *in_x = (param.InputX()->InnerLoDTensor());
   if (in_x->type() == typeid(half)) {
     fpga::PerformBypass(param.FpgaArgs());
     if (param.FpgaArgs().output.activation.activation_type != fpga::SOFTMAX) {
-      Tensor *out = param.Out();
+      Tensor *out = param.Out()->InnerLoDTensor();
       Tensor *in_x2 = param.FloatInput();
 
       fpga::fpga_invalidate(in_x2->data<float>(),
@@ -104,7 +104,7 @@ void SoftmaxKernel<FPGA, float>::Compute(const SoftmaxParam<FPGA> &param) {
     }
   } else {
     if (param.FpgaArgs().output.activation.activation_type != fpga::SOFTMAX) {
-      Tensor *out = param.Out();
+      Tensor *out = param.Out()->InnerLoDTensor();
       out->Resize(
           {in_x->dims()[0], out->dims()[1], out->dims()[2], out->dims()[3]});
       math::SoftmaxFuntor<float>()(in_x, out);

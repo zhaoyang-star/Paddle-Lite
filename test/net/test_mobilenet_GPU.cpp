@@ -18,7 +18,7 @@ limitations under the License. */
 #include "../test_include.h"
 
 int main() {
-  paddle_mobile::PaddleMobile<paddle_mobile::GPU_CL> paddle_mobile;
+  paddle_mobile::PaddleMobile<float> paddle_mobile;
   //    paddle_mobile.SetThreadNum(4);
   auto time1 = paddle_mobile::time();
 #ifdef PADDLE_MOBILE_CL

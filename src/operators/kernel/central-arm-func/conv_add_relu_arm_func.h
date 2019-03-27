@@ -28,12 +28,12 @@ namespace operators {
 
 template <typename Itype, typename Otype>
 void ConvAddReluBasic(const FusionConvAddReluParam &param) {
-  const Tensor *input = param.Input();
-  Tensor filter = *param.Filter();
-  Tensor bias = *param.Bias();
+  const Tensor *input = param.Input()->InnerLoDTensor();
+  Tensor filter = *param.Filter()->InnerLoDTensor();
+  Tensor bias = *param.Bias()->InnerLoDTensor();
   int32_t axis = param.Axis();
   Otype *bias_data = bias.data<Otype>();
-  Tensor *output = param.Output();
+  Tensor *output = param.Output()->InnerLoDTensor();
   output->mutable_data<Otype>();
 
   float alpha = 1.0f;
@@ -121,28 +121,28 @@ void ConvAddReluBasic(const FusionConvAddReluParam &param) {
 
 template <typename Itype, typename Otype>
 void ConvAddReluCompute(const FusionConvAddReluParam &param) {
-  param.Output()->mutable_data<float>();
-  if (param.Groups() == param.Input()->dims()[1] &&
-      param.Input()->dims()[1] == param.Output()->dims()[1] &&
-      param.Filter()->dims()[2] == param.Filter()->dims()[3] &&
-      param.Filter()->dims()[2] == 3 && param.Strides()[0] == 1 &&
+  param.Output()->InnerLoDTensor()->mutable_data<float>();
+  if (param.Groups() == param.Input()->InnerLoDTensor()->dims()[1] &&
+      param.Input()->InnerLoDTensor()->dims()[1] == param.Output()->InnerLoDTensor()->dims()[1] &&
+     param.Filter()->InnerLoDTensor()->dims()[2] ==param.Filter()->InnerLoDTensor()->dims()[3] &&
+     param.Filter()->InnerLoDTensor()->dims()[2] == 3 && param.Strides()[0] == 1 &&
       param.paddings_[0] == 1) {
-    math::DepthwiseConv3x3s1p1(param.Input(), param.Filter(), param.Output(),
-                               param.Bias(), true, true);
-  } else if (param.Groups() == param.Input()->dims()[1] &&
-             param.Input()->dims()[1] == param.Output()->dims()[1] &&
-             param.Filter()->dims()[2] == param.Filter()->dims()[3] &&
-             param.Filter()->dims()[2] == 3 && param.Strides()[0] == 2) {
-    //        math::DepthwiseConv3x3(param.Input(), param.Strides(),
+    math::DepthwiseConv3x3s1p1(param.Input()->InnerLoDTensor(),param.Filter()->InnerLoDTensor(), param.Output()->InnerLoDTensor(),
+                               param.Bias()->InnerLoDTensor(), true, true);
+  } else if (param.Groups() == param.Input()->InnerLoDTensor()->dims()[1] &&
+             param.Input()->InnerLoDTensor()->dims()[1] == param.Output()->InnerLoDTensor()->dims()[1] &&
+            param.Filter()->InnerLoDTensor()->dims()[2] ==param.Filter()->InnerLoDTensor()->dims()[3] &&
+            param.Filter()->InnerLoDTensor()->dims()[2] == 3 && param.Strides()[0] == 2) {
+    //        math::DepthwiseConv3x3(param.Input()->InnerLoDTensor(), param.Strides(),
     //        param.Paddings(),
-    //                               param.Filter(), param.Bias(),
-    //                               param.Output(), false);
+    //                              param.Filter()->InnerLoDTensor(), param.Bias()->InnerLoDTensor(),
+    //                               param.Output()->InnerLoDTensor(), false);
     if (param.Paddings()[0] == 0) {
-      math::DepthwiseConv3x3s2p0(param.Input(), param.Filter(), param.Output(),
-                                 param.Bias(), true, true);
+      math::DepthwiseConv3x3s2p0(param.Input()->InnerLoDTensor(),param.Filter()->InnerLoDTensor(), param.Output()->InnerLoDTensor(),
+                                 param.Bias()->InnerLoDTensor(), true, true);
     } else {
-      math::DepthwiseConv3x3s2p1v2(param.Input(), param.Filter(),
-                                   param.Output(), param.Bias(), true, true);
+      math::DepthwiseConv3x3s2p1v2(param.Input()->InnerLoDTensor(),param.Filter()->InnerLoDTensor(),
+                                   param.Output()->InnerLoDTensor(), param.Bias()->InnerLoDTensor(), true, true);
     }
   } else {
     ConvAddReluBasic<Itype, Otype>(param);

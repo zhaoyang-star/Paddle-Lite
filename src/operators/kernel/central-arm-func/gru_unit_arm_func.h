@@ -31,7 +31,7 @@ void GruUnitCompute(const GruUnitParam& param) {
   auto* input = param.InputInput();
   auto* hidden_prev = param.InputHiddenPrev();
   auto* weight = param.InputWeight();
-  auto* bias = param.InputBias();
+  auto* bias = param.InputBias()->InnerLoDTensor();
   // outputs
   auto* gate = param.OutGate();
   gate->mutable_data<P>();

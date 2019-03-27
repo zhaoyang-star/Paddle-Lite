@@ -28,7 +28,7 @@ template <typename P>
 void LookupCompute(const LookupParam &param) {
   auto *ids_t = param.InputIds();
   auto *table_t = param.InputW();
-  auto *output_t = param.Out();
+  auto *output_t = param.Out()->InnerLoDTensor();
   int64_t padding_idx = param.PaddingIdx();
   const framework::DDim &table_dim = table_t->dims();
   int64_t ids_numel;

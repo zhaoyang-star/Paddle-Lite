@@ -21,9 +21,9 @@ namespace operators {
 
 template <>
 bool PoolKernel<FPGA, float>::Init(PoolParam<FPGA> *param) {
-  auto *input = const_cast<Tensor *>(param->Input());
+  auto *input = const_cast<Tensor *>(param->Input()->InnerLoDTensor());
   auto input_ptr = input->data<float>();
-  Tensor *output = param->Output();
+  Tensor *output = param->Output()->InnerLoDTensor();
   int aligned_channel_num =
       fpga::get_aligned_channel_num((int)output->dims()[1]);  // NOLINT
   fpga::format_fp16_ofm(output, aligned_channel_num);

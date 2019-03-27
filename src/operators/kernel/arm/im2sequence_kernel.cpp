@@ -33,8 +33,8 @@ inline int Im2SeqOutputSize(int input_size, int filter_size, int padding_0,
 
 template <>
 void Im2SequenceKernelCpu<float>::Compute(const Im2SequenceParam &param) {
-  const Tensor *in_x = param.Input();
-  framework::LoDTensor *out = param.Output();
+  const Tensor *in_x = param.Input()->InnerLoDTensor();
+  framework::LoDTensor *out = param.Output()->InnerLoDTensor();
   out->mutable_data<float>();
 
   std::vector<int> kernels = param.Kernels();

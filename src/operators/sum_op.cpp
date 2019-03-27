@@ -51,7 +51,7 @@ void SumOp<T>::InferShape() const {
     }
   }
 
-  this->param_.Out()->Resize(in_dim);
+  this->param_.Out()->InnerLoDTensor()->Resize(in_dim);
 }
 
 }  // namespace operators

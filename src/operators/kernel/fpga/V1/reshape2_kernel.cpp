@@ -94,8 +94,8 @@ void reshape(LoDTensor *input, LoDTensor *output) {
 
 template <>
 void Reshape2Kernel<FPGA, float>::Compute(const Reshape2Param<FPGA> &param) {
-  auto input = const_cast<LoDTensor *>(param.InputX());
-  auto output = param.Out();
+  auto input = const_cast<LoDTensor *>(param.InputX()->InnerLoDTensor());
+  auto output = param.Out()->InnerLoDTensor();
   auto shape = param.Shape();
 
   auto num_in = framework::product(input->dims());

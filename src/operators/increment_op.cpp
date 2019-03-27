@@ -23,8 +23,8 @@ namespace operators {
 
 template <typename T>
 void IncrementOp<T>::InferShape() const {
-  auto input = this->param_.InputX();
-  auto out = this->param_.Out();
+  auto input = this->param_.InputX()->InnerLoDTensor();
+  auto out = this->param_.Out()->InnerLoDTensor();
   PADDLE_MOBILE_ENFORCE(input->numel() == 1, "input's numel should be 1");
   out->Resize(input->dims());
   out->set_lod(input->lod());

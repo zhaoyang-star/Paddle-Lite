@@ -64,7 +64,7 @@ void tanhFuntor(Tensor *input, Tensor *output) {
 template <>
 void TanhKernel<FPGA, float>::Compute(const TanhParam<FPGA> &param) {
   Tensor *in_x = param.FloatInput();
-  Tensor *out = param.Out();
+  Tensor *out = param.Out()->InnerLoDTensor();
 
   fpga::PerformBypass(param.FpgaArgs());
   fpga::fpga_invalidate((void *)in_x->data<float>(),

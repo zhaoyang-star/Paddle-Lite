@@ -21,8 +21,8 @@ namespace operators {
 
 template <>
 bool PoolKernel<FPGA, float>::Init(PoolParam<FPGA> *param) {
-  auto *input = const_cast<LoDTensor *>(param->Input());
-  auto *output = param->Output();
+  auto *input = const_cast<LoDTensor *>(param->Input()->InnerLoDTensor());
+  auto *output = param->Output()->InnerLoDTensor();
   vector<int> ksize = param->Ksize();
   vector<int> strides = param->Strides();
   vector<int> paddings = param->Paddings();
@@ -68,10 +68,10 @@ bool PoolKernel<FPGA, float>::Init(PoolParam<FPGA> *param) {
 
 template <>
 void PoolKernel<FPGA, float>::Compute(const PoolParam<FPGA> &param) {
-  auto *input = const_cast<LoDTensor *>(param.Input());
+  auto *input = const_cast<LoDTensor *>(param.Input()->InnerLoDTensor());
 
   if (input->type() == typeid(float)) {
-    auto *output = param.Output();
+    auto *output = param.Output()->InnerLoDTensor();
     auto in = input->data<float>();
     auto N = input->dims()[0];
     output->Resize(

@@ -25,10 +25,10 @@ namespace operators {
 
 template <>
 bool ConvBNAddReluKernelCpu<float>::Init(FusionConvBNAddReluParam *param) {
-  const Tensor *mean = param->InputMean();
-  const Tensor *variance = param->InputVariance();
-  const Tensor *scale = param->InputScale();
-  const Tensor *bias = param->InputBias();
+  const Tensor *mean = param->InputMean()->InnerLoDTensor();
+  const Tensor *variance = param->InputVariance()->InnerLoDTensor();
+  const Tensor *scale = param->InputScale()->InnerLoDTensor();
+  const Tensor *bias = param->InputBias()->InnerLoDTensor();
   const float epsilon = param->Epsilon();
 
   auto mean_ptr = mean->data<float>();
@@ -82,8 +82,8 @@ void ConvBNAddReluKernelCpu<float>::Compute(
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",
                                     param.ExecMode());
   }
-  math::ScaleAddChannelWise<RELU>(param.Output(), param.NewScale(),
-                                  param.NewBias(), param.Output());
+  math::ScaleAddChannelWise<RELU>(param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
+                                  param.NewBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
 }
 template class ConvBNAddReluKernelCpu<float>;
 

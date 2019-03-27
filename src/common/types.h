@@ -51,9 +51,19 @@ typedef DeviceType<kGPU_CL> GPU_CL;
 enum RunTimeType { UnSpecified = 1, TYPE_CPU = 0, TYPE_GPU = 1 };
 // typedef RunTimeType RunTimeType;
 typedef RunTimeType OpType;
-#define KERNEL_CPU 0
-#define KERNEL_GPU 1
-#define KERNEL_FPGA 2
+#define TYPE_CPU 0
+#define TYPE_GPU 1
+#define TYPE_FPGA 2
+
+#define KERNEL_CPU TYPE_CPU
+#define KERNEL_GPU TYPE_GPU
+#define KERNEL_FPGA TYPE_FPGA
+
+#define MEM_CPU KERNEL_CPU
+#define MEM_GPU KERNEL_GPU
+#define MEM_UNKNOWN -1
+
+
 //! data type
 enum DataType {
   PM_INVALID = -1,

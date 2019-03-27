@@ -21,9 +21,9 @@ namespace operators {
 
 template <typename P>
 void LrnCompute(const LrnParam &param) {
-  const Tensor *input_x = param.InputX();
+  const Tensor *input_x = param.InputX()->InnerLoDTensor();
   auto x_dims = input_x->dims();
-  Tensor *out = param.Out();
+  Tensor *out = param.Out()->InnerLoDTensor();
   out->mutable_data<float>();
   /// data_format = NCHW
   const int N = x_dims[0];

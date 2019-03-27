@@ -24,10 +24,10 @@ namespace operators {
 
 template <>
 void ScaleKernelCpu<float>::Compute(const ScaleParam &param) {
-  const auto input = param.InputX();
-  auto output = param.Out();
+  const auto input = param.InputX()->InnerLoDTensor();
+  auto output = param.Out()->InnerLoDTensor();
   const float scale = param.Scale();
-  const float bias = param.Bias();
+  const float bias = param.Bias()->InnerLoDTensor();
   const float *input_data = input->data<float>();
   float *output_data = output->mutable_data<float>();
 

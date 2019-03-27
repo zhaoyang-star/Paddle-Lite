@@ -32,7 +32,7 @@ void MultiClassNMSOp<T>::InferShape() const {
     LOG(kLOG_ERROR) << "Predict bboxes must be equal";
   }
   // pre size, will change in Compute.
-  this->param_.Out()->Resize(
+  this->param_.Out()->InnerLoDTensor()->Resize(
       framework::make_ddim({input_bboxes_dims[1], input_bboxes_dims[2] + 2}));
 }
 

@@ -30,7 +30,7 @@ void LookupOp<T>::InferShape() const {
 
   PADDLE_MOBILE_ENFORCE(ids_t != nullptr,
                         "Input(Ids) of LookupTableOp should not be null.");
-  PADDLE_MOBILE_ENFORCE(this->param_.Out() != nullptr,
+  PADDLE_MOBILE_ENFORCE(this->param_.Out()->InnerLoDTensor() != nullptr,
                         "Output(Out) of LookupTableOp should not be null.");
   //    this->param__.InputW()->
 
@@ -49,7 +49,7 @@ void LookupOp<T>::InferShape() const {
       framework::vectorize(framework::slice_ddim(ids_dims, 0, ids_rank - 1));
   output_dims.push_back(table_dims[1]);
 
-  this->param_.Out()->Resize(framework::make_ddim(output_dims));
+  this->param_.Out()->InnerLoDTensor()->Resize(framework::make_ddim(output_dims));
 }
 
 }  // namespace operators

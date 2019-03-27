@@ -19,14 +19,14 @@ namespace operators {
 
 template <typename T>
 void FeedOp<T>::InferShape() const {
-  auto out_dims = this->param_.Out()->dims();
+  auto out_dims = this->param_.Out()->InnerLoDTensor()->dims();
   out_dims[0] = this->param_.BatchSize();
   int col = this->param_.Col();
-  auto input_dims = this->param_.InputX()->at(col).dims();
+  auto input_dims = this->param_.InputX()->at(col).InnerLoDTensor()->dims();
   if (input_dims.size() == 4) {
-    this->param_.Out()->Resize(input_dims);
+    this->param_.Out()->InnerLoDTensor()->Resize(input_dims);
   } else {
-    this->param_.Out()->Resize(out_dims);
+    this->param_.Out()->InnerLoDTensor()->Resize(out_dims);
   }
 }
 

@@ -23,15 +23,15 @@ bool ConvBNReluKernel<FPGA, float>::Init(FusionConvBNReluParam<FPGA> *param) {
   paddle_mobile::fpga::ActivationType activation_enable =
       paddle_mobile::fpga::LEAKYRELU;
   int16_t leaky_relu_negative_slope = 0;
-  auto input = const_cast<LoDTensor *>(param->Input());
-  auto filter = const_cast<LoDTensor *>(param->Filter());
-  auto out = param->Output();
-  auto bn_mean_ptr = param->InputMean()->data<float>();
-  auto bn_var_ptr = param->InputVariance()->data<float>();
-  auto bn_scale_ptr = param->InputScale()->data<float>();
-  auto bn_bias_ptr = param->InputBias()->data<float>();
+  auto input = const_cast<LoDTensor *>(param->Input()->InnerLoDTensor());
+  auto filter = const_cast<LoDTensor *>(param->Filter()->InnerLoDTensor());
+  auto out = param->Output()->InnerLoDTensor();
+  auto bn_mean_ptr = param->InputMean()->InnerLoDTensor()->data<float>();
+  auto bn_var_ptr = param->InputVariance()->InnerLoDTensor()->data<float>();
+  auto bn_scale_ptr = param->InputScale()->InnerLoDTensor()->data<float>();
+  auto bn_bias_ptr = param->InputBias()->InnerLoDTensor()->data<float>();
   const float epsilon = param->Epsilon();
-  PADDLE_MOBILE_ENFORCE(out->dims()[1] == param->InputBias()->dims()[0],
+  PADDLE_MOBILE_ENFORCE(out->dims()[1] == param->InputBias()->InnerLoDTensor()->dims()[0],
                         "Output channel should be equal to bias number");
   const int channel = out->dims()[1];
   auto bs_ptr =
@@ -72,7 +72,7 @@ bool ConvBNReluKernel<FPGA, float>::Init(FusionConvBNReluParam<FPGA> *param) {
 template <>
 void ConvBNReluKernel<FPGA, float>::Compute(
     const FusionConvBNReluParam<FPGA> &param) {
-  if (param.Groups() == param.Output()->dims()[1]) {
+  if (param.Groups() == param.Output()->InnerLoDTensor()->dims()[1]) {
     fpga::ComputeDWConv(param.FpgaDwconvArgs());
   } else {
     fpga::ComputeFpgaConv(param.FpgaArgs());

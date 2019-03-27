@@ -25,10 +25,10 @@ namespace operators {
 
 template <>
 bool ConvAddBNReluKernelCpu<float>::Init(FusionConvAddBNReluParam *param) {
-  const Tensor *mean = param->InputMean();
-  const Tensor *variance = param->InputVariance();
-  const Tensor *scale = param->InputScale();
-  const Tensor *bias = param->InputBias();
+  const Tensor *mean = param->InputMean()->InnerLoDTensor();
+  const Tensor *variance = param->InputVariance()->InnerLoDTensor();
+  const Tensor *scale = param->InputScale()->InnerLoDTensor();
+  const Tensor *bias = param->InputBias()->InnerLoDTensor();
   const float epsilon = param->Epsilon();
 
   auto mean_ptr = mean->data<float>();
@@ -51,7 +51,9 @@ bool ConvAddBNReluKernelCpu<float>::Init(FusionConvAddBNReluParam *param) {
   auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
   LoDTensor *new_scale = new_scale_w->MuteLodTensor();
   LoDTensor *new_bias = new_bias_w->MuteLodTensor();
-
+ /* auto *new_scale = param->CreateNewScale<framework::LoDTensor>();
+  auto *new_bias = param->CreateNewBiase<framework::LoDTensor>();
+*/
   auto new_scale_ptr = new_scale->mutable_data<float>({C});
   auto new_bias_ptr = new_bias->mutable_data<float>({C});
   for (int i = 0; i < C; i++) {
@@ -86,8 +88,8 @@ void ConvAddBNReluKernelCpu<float>::Compute(
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",
                                     param.ExecMode());
   }
-  math::ScaleAddChannelWise<RELU>(param.Output(), param.NewScale(),
-                                  param.NewBias(), param.Output());
+  math::ScaleAddChannelWise<RELU>(param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
+                                  param.NewBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
 }
 
 template class ConvAddBNReluKernelCpu<float>;

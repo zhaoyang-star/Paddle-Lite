@@ -23,8 +23,8 @@ namespace operators {
 
 template <typename P>
 void IncrementCompute(const IncrementParam &param) {
-  const framework::Tensor *input = param.InputX();
-  framework::Tensor *out = param.Out();
+  const framework::Tensor *input = param.InputX()->InnerLoDTensor();
+  framework::Tensor *out = param.Out()->InnerLoDTensor();
   float step = param.Step();
 
   out->mutable_data<int64_t>();

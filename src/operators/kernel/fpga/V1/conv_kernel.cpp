@@ -24,9 +24,9 @@ bool ConvKernel<FPGA, float>::Init(ConvParam<FPGA> *param) {
   paddle_mobile::fpga::ActivationType activation_enable =
       paddle_mobile::fpga::NONE;
   int16_t leaky_relu_negative_slope = 0;
-  auto input = const_cast<LoDTensor *>(param->Input());
-  auto filter = const_cast<LoDTensor *>(param->Filter());
-  auto out = param->Output();
+  auto input = const_cast<LoDTensor *>(param->Input()->InnerLoDTensor());
+  auto filter = const_cast<LoDTensor *>(param->Filter()->InnerLoDTensor());
+  auto out = param->Output()->InnerLoDTensor();
   int channel = out->dims()[1];
   auto bs_ptr =
       (float *)fpga::fpga_malloc(2 * channel * sizeof(float));  // NOLINT

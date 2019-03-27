@@ -19,8 +19,8 @@ namespace operators {
 template <typename T>
 void FetchOp<T>::InferShape() const {
   int col = this->param_.Col();
-  auto x_dims = this->param_.InputX()->dims();
-  this->param_.Out()->at(col).Resize(x_dims);
+  auto x_dims = this->param_.InputX()->InnerLoDTensor()->dims();
+  this->param_.Out()->at(col).InnerLoDTensor()->Resize(x_dims);
 }
 
 }  // namespace operators

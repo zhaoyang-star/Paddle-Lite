@@ -82,14 +82,7 @@ struct DtypeTensorTrait<GPU_CL> {
   //  typedef framework::TensorWrapper wtype;
 };
 #endif*/
-static LoDTensor *UnpackToLodTensor(const framework::TensorWrapper &wrapper) {
-  return wrapper.getLoDTensor(const_cast<framework::TensorWrapper *>(&wrapper));
-}
-#ifdef PADDLE_MOBILE_CL
-static framework::CLImage *UnpackToClImage(framework::TensorWrapper *wrapper) {
-  return wrapper->getCLImage(wrapper);
-}
-#endif
+
 class OpParam {
  public:
   OpParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
@@ -456,6 +449,38 @@ class OpParam {
   }
 };
 
+/*template <>
+LoDTensor *OpParam::GetVarValue(const string &key,
+                                const VariableNameMap &var_map,
+                                const Scope &scope) {
+  PADDLE_MOBILE_ENFORCE(var_map.count(key) > 0,
+                        "%s is not contained in var_map", key.c_str())
+  auto var_vec = var_map.at(key);
+  if (!var_vec.empty()) {
+    auto var = scope.FindVar(var_vec[0]);
+    return var->GetMutable<framework::TensorWrapper>()->InnerLoDTensor();
+  } else {
+    return nullptr;
+  }
+}
+#ifdef PADDLE_MOBILE_CL
+
+template <>
+framework::CLImage *OpParam::GetVarValue(const string &key,
+                                         const VariableNameMap &var_map,
+                                         const Scope &scope) {
+  PADDLE_MOBILE_ENFORCE(var_map.count(key) > 0,
+                        "%s is not contained in var_map", key.c_str())
+  auto var_vec = var_map.at(key);
+  if (!var_vec.empty()) {
+    auto var = scope.FindVar(var_vec[0]);
+    return var->GetMutable<framework::TensorWrapper>()->InnerCLImage();
+  } else {
+    return nullptr;
+  }
+}
+#endif*/
+
 class ConvParam : public OpParam {
   typedef typename DtypeTensorTrait::gtype GType;
   typedef typename DtypeTensorTrait::rtype RType;
@@ -475,7 +500,7 @@ class ConvParam : public OpParam {
     groups = OpParam::GetAttr<int>("groups", attrs);
   }
 
-  const RType *Input() const { return input_; }
+  RType *Input() const { return input_; }
 
   RType *Filter() const { return filter_; }
 
@@ -563,9 +588,9 @@ class ElementwiseAddParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
-  const RType *InputY() const { return input_y_; }
+  RType *InputY() const { return input_y_; }
 
   RType *Out() const { return out_; }
 
@@ -608,9 +633,9 @@ class ElementwiseMulParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
-  const RType *InputY() const { return input_y_; }
+  RType *InputY() const { return input_y_; }
 
   RType *Out() const { return out_; }
 
@@ -652,9 +677,9 @@ class ElementwiseSubParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
-  const RType *InputY() const { return input_y_; }
+  RType *InputY() const { return input_y_; }
 
   RType *Out() const { return out_; }
 
@@ -685,9 +710,9 @@ class MulParam : public OpParam {
     y_num_col_dims_ = GetAttr<int>("y_num_col_dims", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
-  const RType *InputY() const { return input_y_; }
+  RType *InputY() const { return input_y_; }
 
   RType *Out() const { return out_; }
 
@@ -793,7 +818,7 @@ class LrnParam : public OpParam {
     data_format_ = GetStringAttr("data_format", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
   RType *Out() const { return out_; }
 
@@ -838,7 +863,7 @@ class NormParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
   RType *Out() const { return out_; }
 
@@ -878,17 +903,17 @@ class BatchNormParam : public OpParam {
     //    is_test_ = GetAttr<bool>("is_test", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
   RType *OutputY() const { return output_y_; }
 
-  const RType *InputBias() const { return input_bias_; }
+  RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const { return input_mean_; }
+  RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const { return input_scale_; }
+  RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const { return input_variance_; }
+  RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -902,9 +927,9 @@ class BatchNormParam : public OpParam {
 
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const { return new_scale_; }
+  RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const { return new_bias_; }
+  RType *NewBias() const { return new_bias_; }
 
  private:
   GType *input_x_;
@@ -943,7 +968,7 @@ class PoolParam : public OpParam {
     global_pooling_ = GetAttr<bool>("global_pooling", attrs);
   }
 
-  const RType *Input() const { return input_; }
+  RType *Input() const { return input_; }
 
   RType *Output() const { return output_; }
 
@@ -1011,9 +1036,9 @@ class PriorBoxParam : public OpParam {
     step_h_ = GetAttr<float>("step_h", attrs);
     offset_ = GetAttr<float>("offset", attrs);
   }
-  const RType *Input() const { return input_; }
+  RType *Input() const { return input_; }
 
-  const RType *InputImage() const { return input_image_; }
+  RType *InputImage() const { return input_image_; }
 
   RType *OutputBoxes() const { return output_boxes_; }
 
@@ -1075,11 +1100,11 @@ class BoxCoderParam : public OpParam {
     output_box_ = OutputBoxFrom<GType>(outputs, *scope);
     code_type_ = GetStringAttr("code_type", attrs);
   }
-  const RType *InputPriorBox() const { return input_priorbox_; }
+  RType *InputPriorBox() const { return input_priorbox_; }
 
-  const RType *InputPriorBoxVar() const { return input_priorboxvar_; }
+  RType *InputPriorBoxVar() const { return input_priorboxvar_; }
 
-  const RType *InputTargetBox() const { return input_targetbox_; }
+  RType *InputTargetBox() const { return input_targetbox_; }
 
   RType *OutputBox() const { return output_box_; }
 
@@ -1107,7 +1132,7 @@ class SoftmaxParam : public OpParam {
     input_x_ = InputXFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
   RType *Out() const { return out_; }
 
  private:
@@ -1144,7 +1169,7 @@ class SigmoidParam : public OpParam {
     input_x_ = InputXFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
   RType *Out() const { return out_; }
 
  private:
@@ -1229,7 +1254,7 @@ class PolygonBoxTransformParam : public OpParam {
     input_ = InputFrom<GType>(inputs, *scope);
     output_ = OutputFrom<GType>(outputs, *scope);
   }
-  const RType *Input() const { return input_; }
+  RType *Input() const { return input_; }
   RType *Output() const { return output_; }
 
  private:
@@ -1246,19 +1271,19 @@ class FeedParam : public OpParam {
   FeedParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
             const AttributeMap &attrs, Scope *scope)
       : OpParam(inputs, outputs, attrs, scope) {
-    input_x_ = InputXFrom<std::vector<LoDTensor>>(inputs, *scope);
+    input_x_ = InputXFrom<framework::TensorWrapperArray>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
     col_ = GetAttr<int>("col", attrs);
     auto var = scope->FindVar("batch_size");
     batch_size = var->GetValue<int>();
   }
-  const std::vector<LoDTensor> *InputX() const { return input_x_; }
+  framework::TensorWrapperArray *InputX() const { return input_x_; }
   RType *Out() const { return out_; }
   const int Col() const { return col_; }
   const int BatchSize() const { return batch_size; }
 
  private:
-  std::vector<LoDTensor> *input_x_;
+  framework::TensorWrapperArray *input_x_;
   GType *out_;
   int col_;
   int batch_size;
@@ -1273,17 +1298,17 @@ class FetchParam : public OpParam {
              const AttributeMap &attrs, Scope *scope)
       : OpParam(inputs, outputs, attrs, scope) {
     input_x_ = InputXFrom<GType>(inputs, *scope);
-    out_ = OutFrom<std::vector<LoDTensor>>(outputs, *scope);
+    out_ = OutFrom<framework::TensorWrapperArray>(outputs, *scope);
     col_ = GetAttr<int>("col", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
-  std::vector<LoDTensor> *Out() const { return out_; }
+  RType *InputX() const { return input_x_; }
+  framework::TensorWrapperArray *Out() const { return out_; }
   const int Col() const { return col_; }
 
  private:
   GType *input_x_;
-  std::vector<LoDTensor> *out_;
+  framework::TensorWrapperArray *out_;
   int col_;
 #ifdef PADDLE_MOBILE_FPGA
 
@@ -1344,7 +1369,7 @@ class TransposeParam : public OpParam {
     axis_ = GetAttr<vector<int>>("axis", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
   RType *Out() const { return out_; }
 
@@ -1373,7 +1398,7 @@ class Transpose2Param : public OpParam {
     axis_ = GetAttr<vector<int>>("axis", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
   RType *Out() const { return out_; }
 
@@ -1405,8 +1430,8 @@ class LookupParam : public OpParam {
     padding_idx_ = GetAttr<int64_t>("padding_idx", attrs);
   }
 
-  const RType *InputW() const { return input_w_; }
-  const RType *InputIds() const { return input_ids_; }
+  RType *InputW() const { return input_w_; }
+  RType *InputIds() const { return input_ids_; }
   RType *Out() const { return out_; }
   int64_t PaddingIdx() const { return padding_idx_; }
 
@@ -1437,11 +1462,11 @@ class CrfParam : public OpParam {
     output_viterbipath_ = OutputViterbiPathFrom<GType>(outputs, *scope);
     //    padding_idx_ = GetAttr<int64_t>("padding_idx", attrs);
   }
-  const RType *InputEmission() const { return input_emission_; }
-  const RType *InputTransition() const { return input_transition_; }
-  const RType *InputLabel() const { return input_label_; }
+  RType *InputEmission() const { return input_emission_; }
+  RType *InputTransition() const { return input_transition_; }
+  RType *InputLabel() const { return input_label_; }
   GType *outputVBP() const { return output_viterbipath_; }
-  //  const RType *InputIds() const { return input_ids_; }
+  //  RType *InputIds() const { return input_ids_; }
   //  RType *Out() const { return out_->template getInner<RType,Dtype>(); }
   //  int64_t PaddingIdx() const { return padding_idx_; }
 
@@ -1480,9 +1505,9 @@ class ReshapeParam : public OpParam {
     }
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
-  const RType *InputShape() const { return input_shape_; }
+  RType *InputShape() const { return input_shape_; }
 
   RType *Out() const { return out_; }
 
@@ -1521,9 +1546,9 @@ class Reshape2Param : public OpParam {
     }
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
-  const RType *InputShape() const { return input_shape_; }
+  RType *InputShape() const { return input_shape_; }
 
   RType *Out() const { return out_; }
 
@@ -1559,7 +1584,7 @@ class ScaleParam : public OpParam {
     bias_ = GetAttr<float>("bias", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
   RType *Out() const { return out_; }
 
@@ -1622,9 +1647,9 @@ class ResizeParam : public OpParam {
     out_width_scale_ = GetAttr<float>("out_width_scale", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
-  const RType *InputShape() const { return input_shape_; }
+  RType *InputShape() const { return input_shape_; }
 
   RType *Out() const { return out_; }
 
@@ -1667,7 +1692,7 @@ class ReluParamBase : public OpParam {
     out_ = OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
   RType *Out() const { return out_; }
 
@@ -1702,7 +1727,7 @@ class TanhParam : public OpParam {
     input_x_ = InputXFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
   RType *Out() const { return out_; }
 
  private:
@@ -1742,8 +1767,8 @@ class PReluParam : public OpParam {
     mode_ = GetStringAttr("mode", attrs);
     DLOG << "PReluParam mode after" << mode_;
   }
-  const RType *InputX() const { return input_x_; }
-  const RType *InputAlpha() const { return alpha_; }
+  RType *InputX() const { return input_x_; }
+  RType *InputAlpha() const { return alpha_; }
   RType *Out() const { return out_; }
   const std::string &Mode() const { return mode_; }
 
@@ -1861,7 +1886,7 @@ class FusionConvAddPReluParam : public ConvParam {
     axis_ = OpParam::GetAttr<int>("axis", attrs);
     this->output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputAlpha() const { return alpha_; }
+  RType *InputAlpha() const { return alpha_; }
   const std::string &Mode() const { return mode_; }
   RType *Bias() const { return bias_; }
   const int &Axis() const { return axis_; }
@@ -1900,9 +1925,9 @@ class FusionConvAddAddPReluParam : public ConvParam {
     }
     this->output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputAlpha() const { return alpha_; }
+  RType *InputAlpha() const { return alpha_; }
   const std::string &Mode() const { return mode_; }
-  const RType *Bias1() const { return bias1_; }
+  RType *Bias1() const { return bias1_; }
 
   RType *Bias() const { return bias_; }
 
@@ -1945,13 +1970,13 @@ class FusionConvAddBNReluParam : public ConvParam {
 
   const int &Axis() const { return axis_; }
 
-  const RType *InputBias() const { return input_bias_; }
+  RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const { return input_mean_; }
+  RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const { return input_scale_; }
+  RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const { return input_variance_; }
+  RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -1960,9 +1985,9 @@ class FusionConvAddBNReluParam : public ConvParam {
   void SetNewScale(GType *new_scale) { new_scale_ = new_scale; }
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const { return new_scale_; }
+  RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const { return new_bias_; }
+  RType *NewBias() const { return new_bias_; }
 
  protected:
   GType *bias_;
@@ -2011,13 +2036,13 @@ class FusionConvBNAddReluParam : public ConvParam {
 
   const int &Axis() const { return axis_; }
 
-  const RType *InputBias() const { return input_bias_; }
+  RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const { return input_mean_; }
+  RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const { return input_scale_; }
+  RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const { return input_variance_; }
+  RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2027,9 +2052,9 @@ class FusionConvBNAddReluParam : public ConvParam {
 
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const { return new_scale_; }
+  RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const { return new_bias_; }
+  RType *NewBias() const { return new_bias_; }
 
  protected:
   GType *bias_;
@@ -2068,13 +2093,13 @@ class FusionConvBNParam : public ConvParam {
     this->output_ = OpParam::OutputYFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputBias() const { return input_bias_; }
+  RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const { return input_mean_; }
+  RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const { return input_scale_; }
+  RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const { return input_variance_; }
+  RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2084,9 +2109,9 @@ class FusionConvBNParam : public ConvParam {
 
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const { return new_scale_; }
+  RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const { return new_bias_; }
+  RType *NewBias() const { return new_bias_; }
 
  protected:
   GType *input_bias_;
@@ -2125,13 +2150,13 @@ class FusionConvAddBNParam : public ConvParam {
 
   const int &Axis() const { return axis_; }
 
-  const RType *InputBias() const { return input_bias_; }
+  RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const { return input_mean_; }
+  RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const { return input_scale_; }
+  RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const { return input_variance_; }
+  RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2141,9 +2166,9 @@ class FusionConvAddBNParam : public ConvParam {
 
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const { return new_scale_; }
+  RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const { return new_bias_; }
+  RType *NewBias() const { return new_bias_; }
 
  protected:
   GType *bias_;
@@ -2179,13 +2204,13 @@ class FusionDWConvBNReluParam : public ConvParam {
     this->output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputBias() const { return input_bias_; }
+  RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const { return input_mean_; }
+  RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const { return input_scale_; }
+  RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const { return input_variance_; }
+  RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2195,9 +2220,9 @@ class FusionDWConvBNReluParam : public ConvParam {
 
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const { return new_scale_; }
+  RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const { return new_bias_; }
+  RType *NewBias() const { return new_bias_; }
 
  protected:
   GType *input_bias_;
@@ -2232,13 +2257,13 @@ class FusionConvBNReluParam : public ConvParam {
     this->output_ = OpParam::OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputBias() const { return input_bias_; }
+  RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const { return input_mean_; }
+  RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const { return input_scale_; }
+  RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const { return input_variance_; }
+  RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2248,9 +2273,9 @@ class FusionConvBNReluParam : public ConvParam {
 
   void SetNewBias(GType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const { return new_scale_; }
+  RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const { return new_bias_; }
+  RType *NewBias() const { return new_bias_; }
 
  protected:
   GType *input_bias_;
@@ -2282,7 +2307,7 @@ class Im2SequenceParam : public OpParam {
     paddings_ = GetAttr<vector<int>>("paddings", attrs);
   }
 
-  const RType *Input() const { return input_x_; }
+  RType *Input() const { return input_x_; }
 
   RType *Output() const { return out_; }
 
@@ -2317,7 +2342,7 @@ class DropoutParam : public OpParam {
     dropout_prob_ = GetAttr<float>("dropout_prob", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
 
   RType *Out() const { return out_; }
 
@@ -2351,9 +2376,9 @@ class ConvTransposeParam : public OpParam {
     groups = GetAttr<int>("groups", attrs);
   }
 
-  const RType *Input() const { return input_; }
+  RType *Input() const { return input_; }
 
-  const RType *Filter() const { return filter_; }
+  RType *Filter() const { return filter_; }
 
   RType *Output() const { return output_; }
 
@@ -2456,13 +2481,13 @@ class FusionDeconvAddBNParam : public ConvTransposeParam {
   }
   RType *Output() const { return output_; }
 
-  const RType *InputBias() const { return input_bias_; }
+  RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const { return input_mean_; }
+  RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const { return input_scale_; }
+  RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const { return input_variance_; }
+  RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2474,9 +2499,9 @@ class FusionDeconvAddBNParam : public ConvTransposeParam {
 
   void SetNewBias(RType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const { return new_scale_; }
+  RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const { return new_bias_; }
+  RType *NewBias() const { return new_bias_; }
 
  protected:
   RType *output_;
@@ -2512,13 +2537,13 @@ class FusionDeconvBNReluParam : public ConvTransposeParam {
   }
   RType *Output() const { return output_; }
 
-  const RType *InputBias() const { return input_bias_; }
+  RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const { return input_mean_; }
+  RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const { return input_scale_; }
+  RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const { return input_variance_; }
+  RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2530,9 +2555,9 @@ class FusionDeconvBNReluParam : public ConvTransposeParam {
 
   void SetNewBias(RType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const { return new_scale_; }
+  RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const { return new_bias_; }
+  RType *NewBias() const { return new_bias_; }
 
  protected:
   RType *output_;
@@ -2569,13 +2594,13 @@ class FusionDeconvAddBNReluParam : public ConvTransposeParam {
   }
   RType *Output() const { return output_; }
 
-  const RType *InputBias() const { return input_bias_; }
+  RType *InputBias() const { return input_bias_; }
 
-  const RType *InputMean() const { return input_mean_; }
+  RType *InputMean() const { return input_mean_; }
 
-  const RType *InputScale() const { return input_scale_; }
+  RType *InputScale() const { return input_scale_; }
 
-  const RType *InputVariance() const { return input_variance_; }
+  RType *InputVariance() const { return input_variance_; }
 
   const float &Epsilon() const { return epsilon_; }
 
@@ -2587,9 +2612,9 @@ class FusionDeconvAddBNReluParam : public ConvTransposeParam {
 
   void SetNewBias(RType *new_bias) { new_bias_ = new_bias; }
 
-  const RType *NewScale() const { return new_scale_; }
+  RType *NewScale() const { return new_scale_; }
 
-  const RType *NewBias() const { return new_bias_; }
+  RType *NewBias() const { return new_bias_; }
 
  protected:
   RType *output_;
@@ -2641,10 +2666,10 @@ class GruParam : public OpParam {
     gate_activation_ = GetStringAttr("gate_activation", attrs);
     is_reverse_ = GetAttr<bool>("is_reverse", attrs);
   }
-  const RType *InputInput() const { return input_input_; }
-  const RType *InputWeight() const { return input_weight_; }
-  const RType *InputH0() const { return input_h0_; }
-  const RType *InputBias() const { return input_bias_; }
+  RType *InputInput() const { return input_input_; }
+  RType *InputWeight() const { return input_weight_; }
+  RType *InputH0() const { return input_h0_; }
+  RType *InputBias() const { return input_bias_; }
   const std::string &Activation() const { return activation_; }
   const std::string &GateActivation() const { return gate_activation_; }
   const bool &IsReverse() const { return is_reverse_; }
@@ -2694,10 +2719,10 @@ class GruUnitParam : public OpParam {
     activation_ = GetAttr<int>("activation", attrs);
     gate_activation_ = GetAttr<int>("gate_activation", attrs);
   }
-  const RType *InputInput() const { return input_input_; }
-  const RType *InputWeight() const { return input_weight_; }
-  const RType *InputHiddenPrev() const { return input_hidden_prev_; }
-  const RType *InputBias() const { return input_bias_; }
+  RType *InputInput() const { return input_input_; }
+  RType *InputWeight() const { return input_weight_; }
+  RType *InputHiddenPrev() const { return input_hidden_prev_; }
+  RType *InputBias() const { return input_bias_; }
   const int &Activation() const { return activation_; }
   const int &GateActivation() const { return gate_activation_; }
 
@@ -2733,7 +2758,7 @@ class FlattenParam : public OpParam {
     out_ = OutFrom<GType>(outputs, *scope);
     axis = GetAttr<int>("axis", attrs);
   }
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
   RType *Out() const { return out_; }
   const int &Axis() const { return axis; }
 
@@ -2764,7 +2789,7 @@ class SplitParam : public OpParam {
     //      out_ts_.push_back(*scope.FindVar(outs_[i])->GetMutable());
     //    }
   }
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
   std::vector<GType *> Outs() const { return outs_; }
   int Axis() const { return axis; }
   int Num() const { return num; }
@@ -2807,8 +2832,8 @@ class BilinearInterpParam : public OpParam {
     out_h_ = GetAttr<int>("out_h", attrs);
     out_w_ = GetAttr<int>("out_w", attrs);
   }
-  const RType *InputX() const { return input_x_; }
-  const RType *InputOutPutSize() const { return input_outsize_; }
+  RType *InputX() const { return input_x_; }
+  RType *InputOutPutSize() const { return input_outsize_; }
   RType *Out() const { return out_; }
   int OutH() const { return out_h_; }
   int OutW() const { return out_w_; }
@@ -2835,7 +2860,7 @@ class ShapeParam : public OpParam {
     input_ = InputFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *Input() const { return input_; }
+  RType *Input() const { return input_; }
   RType *Out() const { return out_; }
 
  private:
@@ -3182,8 +3207,8 @@ class LogicalBinaryParam : public OpParam {
     output_ = OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputX() const { return input_x_; }
-  const RType *InputY() const { return input_y_; }
+  RType *InputX() const { return input_x_; }
+  RType *InputY() const { return input_y_; }
   RType *Out() const { return output_; }
 
  public:
@@ -3208,7 +3233,7 @@ class LogicalUnaryParam : public OpParam {
     output_ = OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
   RType *Out() const { return output_; }
 
  public:
@@ -3277,7 +3302,7 @@ class IsEmptyParam : public OpParam {
     output_ = OutFrom<GType>(outputs, *scope);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
   RType *Out() const { return output_; }
 
  public:
@@ -3301,7 +3326,7 @@ class IncrementParam : public OpParam {
     step_ = OpParam::GetAttr<float>("step", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
   RType *Out() const { return output_; }
   float Step() const { return step_; }
 
@@ -3324,7 +3349,7 @@ class Pad2dParam : public OpParam {
     input_x_ = InputXFrom<GType>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
   }
-  const RType *InputX() const { return input_x_; }
+  RType *InputX() const { return input_x_; }
   RType *Out() const { return out_; }
 
  private:

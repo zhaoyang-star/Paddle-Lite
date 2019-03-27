@@ -36,9 +36,9 @@ bool IsShuffleChannel(const std::vector<int> &axis) {
 
 void ShuffleChannelCompute(const Transpose2Param &param) {
   const std::vector<int> &axis = param.Axis();
-  const Tensor *input = param.InputX();
+  const Tensor *input = param.InputX()->InnerLoDTensor();
   const Dtype *input_ptr = input->data<Dtype>();
-  Tensor *output = param.Out();
+  Tensor *output = param.Out()->InnerLoDTensor();
   Dtype *output_ptr = output->mutable_data<Dtype>();
   // input and output's shape dimension must >= 2 && <= 6.
   const framework::DDim &in_dim = input->dims();
@@ -64,9 +64,9 @@ void ShuffleChannelCompute(const Transpose2Param &param) {
 
 void Transpose2Compute(const Transpose2Param &param) {
   const std::vector<int> &axis = param.Axis();
-  const Tensor *input = param.InputX();
+  const Tensor *input = param.InputX()->InnerLoDTensor();
   const Dtype *input_ptr = input->data<Dtype>();
-  Tensor *output = param.Out();
+  Tensor *output = param.Out()->InnerLoDTensor();
   Dtype *output_ptr = output->mutable_data<Dtype>();
   // input and output's shape dimension must >= 2 && <= 6.
   const framework::DDim &in_dim = input->dims();
@@ -124,13 +124,13 @@ void Transpose2KernelCpu<float>::Compute(const Transpose2Param &param) {
   const std::vector<int> &axis = param.Axis();
   bool shuffle_channel = IsShuffleChannel(axis);
   if (shuffle_channel) {
-    if (param.InputX()->type() == typeid(int8_t)) {
+    if (param.InputX()->InnerLoDTensor()->type() == typeid(int8_t)) {
       ShuffleChannelCompute<int8_t>(param);
     } else {
       ShuffleChannelCompute<float>(param);
     }
   } else {
-    if (param.InputX()->type() == typeid(int8_t)) {
+    if (param.InputX()->InnerLoDTensor()->type() == typeid(int8_t)) {
       Transpose2Compute<int8_t>(param);
     } else {
       Transpose2Compute<float>(param);

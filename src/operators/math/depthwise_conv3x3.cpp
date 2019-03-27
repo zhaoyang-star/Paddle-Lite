@@ -132,8 +132,8 @@ inline void DepthwiseConv3x3NormalRow(const float *input, const float *filter,
 }
 
 template <>
-void DepthwiseConv3x3S1<float, float>(const framework::Tensor &input,
-                                      const framework::Tensor &filter,
+void DepthwiseConv3x3S1<float, float>( framework::Tensor &input,
+                                       framework::Tensor &filter,
                                       const std::vector<int> &paddings,
                                       framework::Tensor *output) {
   const float *input_data = input.data<float>();
@@ -640,8 +640,8 @@ void DepthwiseConv3x3S1<float, float>(const framework::Tensor &input,
 }
 
 template <>
-void DepthwiseConv3x3S2<float, float>(const framework::Tensor &input,
-                                      const framework::Tensor &filter,
+void DepthwiseConv3x3S2<float, float>( framework::Tensor &input,
+                                       framework::Tensor &filter,
                                       const std::vector<int> &paddings,
                                       framework::Tensor *output) {
   const float *input_data = input.data<float>();

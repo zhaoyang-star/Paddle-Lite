@@ -28,14 +28,14 @@ namespace operators {
 template <typename P>
 void BatchnormCompute(const BatchNormParam &param) {
   const float epsilon = param.Epsilon();
-  const float *mean_ptr = param.InputMean()->data<float>();
-  const float *variance_ptr = param.InputVariance()->data<float>();
-  const float *scale_ptr = param.InputScale()->data<float>();
-  const float *bias_ptr = param.InputBias()->data<float>();
+  const float *mean_ptr = param.InputMean()->InnerLoDTensor()->data<float>();
+  const float *variance_ptr = param.InputVariance()->InnerLoDTensor()->data<float>();
+  const float *scale_ptr = param.InputScale()->InnerLoDTensor()->data<float>();
+  const float *bias_ptr = param.InputBias()->InnerLoDTensor()->data<float>();
 
-  const framework::Tensor *input = param.InputX();
+  framework::Tensor *input = param.InputX()->InnerLoDTensor();
   const float *input_ptr = input->data<float>();
-  framework::Tensor *output = param.OutputY();
+  framework::Tensor *output = param.OutputY()->InnerLoDTensor();
   float *output_ptr = output->mutable_data<float>();
   size_t spatial_size = output->dims()[2] * output->dims()[3];
   int channels = output->dims()[1];

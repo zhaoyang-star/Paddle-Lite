@@ -76,7 +76,7 @@ bool ElementwiseAddKernel<FPGA, float>::Init(ElementwiseAddParam<FPGA> *param) {
 }
 inline void ElementwiseAddCompute(const ElementwiseAddParam<FPGA> &param) {
   auto input_x = param.float_input_x;
-  auto input_y = param.InputY();
+  auto input_y = param.InputY()->InnerLoDTensor();
   auto Out = param.float_out;
   int axis = param.Axis();
 
@@ -117,11 +117,11 @@ inline void ElementwiseAddCompute(const ElementwiseAddParam<FPGA> &param) {
 template <>
 void ElementwiseAddKernel<FPGA, float>::Compute(
     const ElementwiseAddParam<FPGA> &param) {
-  auto input_y = const_cast<LoDTensor *>(param.InputY());
+  auto input_y = const_cast<LoDTensor *>(param.InputY()->InnerLoDTensor());
   if (input_y->type() != typeid(float)) {
     fpga::ComputeFpgaEWAdd(param.FpgaArgs());
   } else {
-    auto input_x = const_cast<LoDTensor *>(param.InputX());
+    auto input_x = const_cast<LoDTensor *>(param.InputX()->InnerLoDTensor());
     auto intput_x_float = const_cast<Tensor *>(&(param.float_input_x));
     fpga::BypassArgs args = {fpga::DATA_TYPE_FP16};
     args.input_data_type = fpga::DATA_TYPE_FP16;
@@ -170,7 +170,7 @@ void ElementwiseAddKernel<FPGA, float>::Compute(
    rslt); cnt++;
        }
    }*/
-    auto Out = param.Out();
+    auto Out = param.Out()->InnerLoDTensor();
     args.input_data_type = fpga::DATA_TYPE_FP32;
     args.output_data_type = fpga::DATA_TYPE_FP16;
     args.input_layout_type = fpga::LAYOUT_CHW;

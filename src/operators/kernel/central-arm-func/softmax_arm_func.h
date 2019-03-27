@@ -20,8 +20,8 @@ namespace paddle_mobile {
 namespace operators {
 template <typename P>
 void SoftmaxCompute(const SoftmaxParam &param) {
-  const Tensor *in_x = param.InputX();
-  Tensor *out = param.Out();
+  const Tensor *in_x = param.InputX()->InnerLoDTensor();
+  Tensor *out = param.Out()->InnerLoDTensor();
   auto x_dims = in_x->dims();
   out->Resize(x_dims);
   out->mutable_data<float>();

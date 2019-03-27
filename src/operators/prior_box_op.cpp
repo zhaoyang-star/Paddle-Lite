@@ -21,7 +21,7 @@ namespace operators {
 #ifdef PRIORBOX_OP
 template <typename T>
 void PriorBoxOp<T>::InferShape() const {
-  auto input_dims = this->param_.Input()->dims();
+  auto input_dims = this->param_.Input()->InnerLoDTensor()->dims();
   auto input_image_dims = this->param_.InputImage()->dims();
   auto min_sizes = this->param_.MinSizes();
   auto max_sizes = this->param_.MaxSizes();
@@ -49,7 +49,7 @@ void PriorBoxOp<T>::InferShape() const {
 #ifdef DENSITY_PRIORBOX_OP
 template <typename T>
 void DensityPriorBoxOp<T>::InferShape() const {
-  auto input_dims = this->param_.Input()->dims();
+  auto input_dims = this->param_.Input()->InnerLoDTensor()->dims();
   auto input_image_dims = this->param_.InputImage()->dims();
 
   auto &fixed_sizes = this->param_.FixedSizes();

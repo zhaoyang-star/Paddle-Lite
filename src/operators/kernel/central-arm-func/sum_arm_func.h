@@ -21,7 +21,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using LoDTensorArray = std::vector<LoDTensor>;
+using TensorWrapperArray = framework::TensorWrapperArray;
 
 template <typename P>
 void SumCompute(const SumParam &param) {

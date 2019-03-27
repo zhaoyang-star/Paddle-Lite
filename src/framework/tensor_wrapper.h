@@ -32,19 +32,13 @@ limitations under the License. */
 
 #include "framework/data_layout.h"
 #include "framework/lod_tensor.h"
-#include "framework/tensor_base.h"
+#include "framework/tensor.h"
 #include "memory/t_malloc.h"
 
 namespace paddle_mobile {
 namespace framework {
-/**
- * 包装 各种数据类型, 以便自由在读取数据时转换成相应的数据类型.
- * 设计初心:  初始时可以是任意一种内存形式, 取的时候可以根据需要去进行转换.
- *
- * 如果没初始化, 以第一次初始化为准
- *
- */
-class TensorWrapper : public LoDTensor {
+
+class TensorWrapper {
  public:
   //  // This is the type we obtained in variable.
   //  typedef framework::CLImage gtype;
@@ -52,56 +46,60 @@ class TensorWrapper : public LoDTensor {
   //  // or the same type.
   //  typedef framework::CLImage rtype;
 
-  RunTimeType GetRunTimeType() const { return mem_type_; }
+  int GetMemType() const {
+    if (holder_cpu_->is_init_) {
+      return MEM_CPU;
+    }
+#ifdef PADDLE_MOBILE_CL
 
-  void SetRunTimeType(paddle_mobile::RunTimeType &memType) {
-    mem_type_ = memType;
+    else if (holder_gpu_->is_init_) {
+      return MEM_GPU;
+    }
+#endif
+    else {
+      PADDLE_MOBILE_ENFORCE(false, "Mem get but not init!");
+      return MEM_UNKNOWN;
+    }
   }
+
+  //  void SetMemType(int memType) const { mem_type_ = memType; }
 
   bool IsInitialized() const { return holder_cpu_ != nullptr; }
 #ifdef PADDLE_MOBILE_CL
 
   framework::CLImage *MuteClImage() {
-    mem_type_ = TYPE_GPU;
     Clear();
-    return this->GetMutableGPU<framework::CLImage>();
+    return this->GetMutableGPU();
   }
 #endif
   framework::LoDTensor *MuteLodTensor() {
-    mem_type_ = TYPE_CPU;
     Clear();
-    return this->GetMutableCPU<framework::LoDTensor>();
-  }
-
-  template <typename T>
-  bool IsType() const {
-    return holder_cpu_ != nullptr && holder_cpu_->Type() == typeid(T);
+    return this->GetMutableCPU();
   }
 
   void Clear() {
     holder_cpu_.reset();
+    holder_cpu_->is_init_ = false;
+#ifdef PADDLE_MOBILE_CL
     holder_gpu_.reset();
+    holder_cpu_->is_init_ = false;
+#endif
   }
 #ifdef PADDLE_MOBILE_CL
-
-  static CLImage *getCLImage(TensorWrapper *wrapper) {
-    if (wrapper->GetRunTimeType() == TYPE_GPU) {
-      return const_cast<CLImage *>(wrapper->Get<CLImage>());
+  CLImage *InnerCLImage() {
+    if (this->GetMemType() == MEM_GPU) {
+      return const_cast<CLImage *>(this->GetGpu());
     } else {
       // conver cpu mem to gpu
-
       // cast gpu to cpu
-      const LoDTensor *input = wrapper->Get<LoDTensor>();
+      const LoDTensor *input = this->GetCpu();
       const float *input_data = input->data<float>();
-
-      CLImage *output = wrapper->GetMutableGPU<CLImage>();
-
+      CLImage *output = this->GetMutableGPU();
       cl_context context = CLEngine::Instance()->getContext();
       cl_command_queue command_queue =
           CLEngine::Instance()->getClCommandQueue();
       output->InitEmptyImage(context, command_queue, output->dims());
-      wrapper->cl_helper_.AddKernel("feed", "feed_kernel.cl");
-
+      this->cl_helper_.AddKernel("feed", "feed_kernel.cl");
       cl_mem output_image = output->GetCLImage();
       const int out_C = output->dims()[1];
       const int out_H = output->dims()[2];
@@ -109,18 +107,13 @@ class TensorWrapper : public LoDTensor {
       const int Stride2 = out_C * out_H * out_W;
       const int Stride1 = out_H * out_W;
       const int Stride0 = out_W;
-
-      framework::CLTensor input_cl_tensor(wrapper->cl_helper_.CLContext(),
-                                          wrapper->cl_helper_.CLCommandQueue());
+      framework::CLTensor input_cl_tensor(this->cl_helper_.CLContext(),
+                                          this->cl_helper_.CLCommandQueue());
       input_cl_tensor.Resize(input->dims());
       cl_mem inputBuffer = input_cl_tensor.mutable_with_data<float>(input_data);
-
-      auto kernel = wrapper->cl_helper_.KernelAt(0);
-
-      auto default_work_size = wrapper->cl_helper_.DefaultWorkSize(*(output));
-
+      auto kernel = this->cl_helper_.KernelAt(0);
+      auto default_work_size = this->cl_helper_.DefaultWorkSize(*(output));
       cl_int status;
-
       status = clSetKernelArg(kernel, 0, sizeof(cl_mem), &inputBuffer);
       CL_CHECK_ERRORS(status);
       status = clSetKernelArg(kernel, 1, sizeof(cl_mem), &output_image);
@@ -137,27 +130,23 @@ class TensorWrapper : public LoDTensor {
       CL_CHECK_ERRORS(status);
       status = clSetKernelArg(kernel, 7, sizeof(cl_int), &Stride2);
       CL_CHECK_ERRORS(status);
-
-      status =
-          clEnqueueNDRangeKernel(wrapper->cl_helper_.CLCommandQueue(), kernel,
-                                 default_work_size.size(), NULL,
-                                 default_work_size.data(), NULL, 0, NULL, NULL);
-
+      status = clEnqueueNDRangeKernel(
+          this->cl_helper_.CLCommandQueue(), kernel, default_work_size.size(),
+          NULL, default_work_size.data(), NULL, 0, NULL, NULL);
       CL_CHECK_ERRORS(status);
-
-      //      this->SetRunTimeType(TYPE_GPU);
+      this->holder_gpu_.reset();
+      this->holder_gpu_->is_init_ = false;
       return output;
     }
   }
 #endif
-  static framework::LoDTensor *getLoDTensor(TensorWrapper *wrapper) {
-    if (wrapper->GetRunTimeType() == TYPE_CPU) {
-      return const_cast<LoDTensor *>(wrapper->Get<LoDTensor>());
+  framework::LoDTensor *InnerLoDTensor() {
+    if (this->GetMemType() == TYPE_CPU) {
+      return const_cast<LoDTensor *>(this->GetCpu());
     }
 #ifdef PADDLE_MOBILE_CL
-
     else {
-      const CLImage *pClImage = wrapper->Get<CLImage>();
+      const CLImage *pClImage = this->GetGpu();
       // cast gpu to cpu
       CLImage *image_p = const_cast<CLImage *>(pClImage);
       int width = image_p->ImageDims()[0];
@@ -173,7 +162,7 @@ class TensorWrapper : public LoDTensor {
                                region, 0, 0, image_data, 0, NULL, NULL);
       CL_CHECK_ERRORS(err);
 
-      LoDTensor *pTensor = wrapper->GetMutableCPU<LoDTensor>();
+      LoDTensor *pTensor = this->GetMutableCPU();
       pTensor->Resize(image_p->dims());
       //      float *tensor_data = new float[image_p->numel()];
       auto converter = image_p->Converter();
@@ -181,6 +170,7 @@ class TensorWrapper : public LoDTensor {
                              image_p->ImageDims(), image_p->dims());
 
       delete[](image_data);
+      this->holder_cpu_->is_init_ = true;
       return pTensor;
     }
 #else
@@ -188,166 +178,34 @@ class TensorWrapper : public LoDTensor {
 #endif
   }
 
-  /* template <typename Type, typename RequestDeviceType>
-   Type *getInner() {
-     //    const Type *currentMem = this->Get<Type>();
-     //    return const_cast<Type *>(currentMem);
-     // 当前参数类型代表当前的kernel类型,
-     const Type *currentMem = this->Get<Type>();
-     if (std::is_same<GPU_CL, RequestDeviceType>::value &&
-         this->GetRunTimeType() == TYPE_GPU) {
-       // gpu kernel gpu mem
-       return const_cast<Type *>(currentMem);
-
-     } else if (std::is_same< RequestDeviceType>::value &&
-                this->GetRunTimeType() == TYPE_CPU) {
-       // cpu cpu mem
-       return const_cast<Type *>(currentMem);
-
-     } else if (std::is_same< RequestDeviceType>::value &&
-                this->GetRunTimeType() == TYPE_GPU) {
-       if (mem_type_ == TYPE_GPU) {
-         const CLImage *pClImage = this->Get<CLImage>();
-
-       } else if (mem_type_ == TYPE_CPU) {
-         const LoDTensor *pLoDTensor = this->Get<LoDTensor>();
-
-       } else {
-         return nullptr;
-       }
-
-       const CLImage *pClImage = this->Get<CLImage>();
-
-       // cast gpu to cpu
-       CLImage *image_p = const_cast<CLImage *>(pClImage);
-       int width = image_p->ImageDims()[0];
-       int height = image_p->ImageDims()[1];
-
-       half_t *image_data = new half_t[height * width * 4];
-       cl_int err;
-       cl_mem image = image_p->GetCLImage();
-       size_t origin[3] = {0, 0, 0};
-       size_t region[3] = {static_cast<size_t>(width),
-                           static_cast<size_t>(height), 1};
-       err = clEnqueueReadImage(image_p->CommandQueue(), image, CL_TRUE, origin,
-                                region, 0, 0, image_data, 0, NULL, NULL);
-       CL_CHECK_ERRORS(err);
-
-       LoDTensor *pTensor = this->GetMutableCPU<LoDTensor>();
-       pTensor->Resize(image_p->dims());
-       //      float *tensor_data = new float[image_p->numel()];
-       auto converter = image_p->Converter();
-       converter->ImageToNCHW(image_data, pTensor->data<float>(),
-                              image_p->ImageDims(), image_p->dims());
-       //           int stride = image_p->numel() / 20;
-       //           stride = stride > 0 ? stride : 1;
-
-       //      printer << " dims: " << image_p->dims() << "\n";
-       //      for (int i = 0; i < image_p->numel(); i += stride) {
-       //        printer << tensor_data[i] << " ";
-       //      }
-
-       //      delete[](tensor_data);
-       delete[](image_data);
-
-       // reinterpret_cast to suite template trash
-       return reinterpret_cast<Type *>(pTensor);
-
-     } else if (std::is_same<GPU_CL, RequestDeviceType>::value &&
-                this->GetRunTimeType() == TYPE_CPU) {
-       // cast gpu to cpu
-       const LoDTensor *input = this->Get<LoDTensor>();
-       const float *input_data = input->data<float>();
-
-       CLImage *output = this->GetMutableGPU<CLImage>();
-
-       cl_context context = CLEngine::Instance()->getContext();
-       cl_command_queue command_queue =
-           CLEngine::Instance()->getClCommandQueue();
-       output->InitEmptyImage(context, command_queue, output->dims());
-       this->cl_helper_.AddKernel("feed", "feed_kernel.cl");
-
-       cl_mem output_image = output->GetCLImage();
-       const int out_C = output->dims()[1];
-       const int out_H = output->dims()[2];
-       const int out_W = output->dims()[3];
-       const int Stride2 = out_C * out_H * out_W;
-       const int Stride1 = out_H * out_W;
-       const int Stride0 = out_W;
-
-       framework::CLTensor input_cl_tensor(this->cl_helper_.CLContext(),
-                                           this->cl_helper_.CLCommandQueue());
-       input_cl_tensor.Resize(input->dims());
-       cl_mem inputBuffer =
-   input_cl_tensor.mutable_with_data<float>(input_data);
-
-       auto kernel = this->cl_helper_.KernelAt(0);
-
-       auto default_work_size = this->cl_helper_.DefaultWorkSize(*(output));
-
-       cl_int status;
-
-       status = clSetKernelArg(kernel, 0, sizeof(cl_mem), &inputBuffer);
-       CL_CHECK_ERRORS(status);
-       status = clSetKernelArg(kernel, 1, sizeof(cl_mem), &output_image);
-       CL_CHECK_ERRORS(status);
-       status = clSetKernelArg(kernel, 2, sizeof(cl_int), &out_H);
-       CL_CHECK_ERRORS(status);
-       status = clSetKernelArg(kernel, 3, sizeof(cl_int), &out_W);
-       CL_CHECK_ERRORS(status);
-       status = clSetKernelArg(kernel, 4, sizeof(cl_int), &out_C);
-       CL_CHECK_ERRORS(status);
-       status = clSetKernelArg(kernel, 5, sizeof(cl_int), &Stride0);
-       CL_CHECK_ERRORS(status);
-       status = clSetKernelArg(kernel, 6, sizeof(cl_int), &Stride1);
-       CL_CHECK_ERRORS(status);
-       status = clSetKernelArg(kernel, 7, sizeof(cl_int), &Stride2);
-       CL_CHECK_ERRORS(status);
-
-       status = clEnqueueNDRangeKernel(
-           this->cl_helper_.CLCommandQueue(), kernel, default_work_size.size(),
-           NULL, default_work_size.data(), NULL, 0, NULL, NULL);
-
-       CL_CHECK_ERRORS(status);
-
-       return reinterpret_cast<Type *>(output);
-
-     } else {
-       PADDLE_MOBILE_ENFORCE(false, "undefined mem get via op params");
-     }
-   }*/
-
  private:
-  template <typename T>
-  const T *Get() const {
-    if (mem_type_ == RunTimeType::TYPE_CPU) {
-      return static_cast<const T *>(holder_cpu_->Ptr());
-    } else if (mem_type_ == RunTimeType::TYPE_GPU) {
-      return static_cast<const T *>(holder_gpu_->Ptr());
-    } else {
-      PADDLE_MOBILE_ENFORCE(false, "not support memtype pleae impl in Memtype");
+  bool IsTypeCpu() const {
+    return holder_cpu_ != nullptr && holder_cpu_->Type() == typeid(LoDTensor);
+  }
+  const inline LoDTensor *GetCpu() const {
+    PADDLE_MOBILE_ENFORCE(holder_cpu_->is_init_, "holder_cpu_ is not init");
+
+    return static_cast<const LoDTensor *>(holder_cpu_->Ptr());
+  }
+#ifdef PADDLE_MOBILE_CL
+
+  const inline CLImage *GetGpu() {
+    PADDLE_MOBILE_ENFORCE(holder_gpu_->is_init_, "holder_cpu_ is not init");
+    return static_cast<const CLImage *>(holder_gpu_->Ptr());
+  }
+#endif
+
+  LoDTensor *GetMutableCPU() {
+    if (!IsTypeCpu()) {
+      holder_cpu_.reset(new PlaceholderImpl<LoDTensor>(new LoDTensor()));
     }
+    holder_cpu_->is_init_ = true;
+
+    return static_cast<LoDTensor *>(holder_cpu_->Ptr());
   }
 
-  template <typename T>
-  T *GetMutableCPU() {
-    if (!IsType<T>()) {
-      holder_cpu_.reset(new PlaceholderImpl<T>(new T()));
-    }
-    return static_cast<T *>(holder_cpu_->Ptr());
-  }
-
-  template <typename T>
-  T *GetMutableGPU() {
-    if (!IsType<T>()) {
-      holder_gpu_.reset(new PlaceholderImpl<T>(new T()));
-    }
-    return static_cast<T *>(holder_gpu_->Ptr());
-  }
-
-  std::type_index Type() const { return holder_cpu_->Type(); }
-
-  struct Placeholder {
+  class Placeholder {
+   public:
     Placeholder() = default;
     virtual ~Placeholder() = default;
 
@@ -356,26 +214,169 @@ class TensorWrapper : public LoDTensor {
   };
 
   template <typename T>
-  struct PlaceholderImpl : public Placeholder {
-    explicit PlaceholderImpl(T *ptr) : ptr_(ptr), type_(typeid(T)) {}
+  class PlaceholderImpl : public Placeholder {
+   public:
+    PlaceholderImpl(T *ptr) : ptr_(ptr), type_(typeid(T)) {}
     virtual const std::type_info &Type() const { return type_; }
     virtual void *Ptr() const override {
       return static_cast<void *>(ptr_.get());
     }
     std::unique_ptr<T> ptr_;
     const std::type_info &type_;
+    bool is_init_ = false;
   };
 
-  std::unique_ptr<Placeholder> holder_cpu_;
-  std::unique_ptr<Placeholder> holder_gpu_;
-  // holoder others
+  std::unique_ptr<PlaceholderImpl<LoDTensor>> holder_cpu_;
 
-  paddle_mobile::RunTimeType mem_type_;
 #ifdef PADDLE_MOBILE_CL
-
+  std::unique_ptr<PlaceholderImpl<CLImage>> holder_gpu_;
   CLHelper cl_helper_;
+
+  bool IsTypeGpu() const {
+    return holder_gpu_ != nullptr && holder_gpu_->Type() == typeid(CLImage);
+  }
+  CLImage *GetMutableGPU() {
+    if (!IsTypeGpu()) {
+      holder_gpu_.reset(new PlaceholderImpl<CLImage>(new CLImage()));
+    }
+    holder_gpu_->is_init_ = true;
+    return static_cast<CLImage *>(holder_gpu_->Ptr());
+  }
+
 #endif
 };
+using TensorWrapperArray = std::vector<TensorWrapper>;
+
+/*template class PlaceholderImpl<LoDTensor>;
+template class PlaceholderImpl<CLImage>;*/
 
 }  // namespace framework
 }  // namespace paddle_mobile
+/* template <typename Type, typename RequestDeviceType>
+ Type *getInner() {
+   //    const Type *currentMem = this->Get<Type>();
+   //    return const_cast<Type *>(currentMem);
+   // 当前参数类型代表当前的kernel类型,
+   const Type *currentMem = this->Get<Type>();
+   if (std::is_same<GPU_CL, RequestDeviceType>::value &&
+       this->GetRunTimeType() == TYPE_GPU) {
+     // gpu kernel gpu mem
+     return const_cast<Type *>(currentMem);
+
+   } else if (std::is_same< RequestDeviceType>::value &&
+              this->GetRunTimeType() == TYPE_CPU) {
+     // cpu cpu mem
+     return const_cast<Type *>(currentMem);
+
+   } else if (std::is_same< RequestDeviceType>::value &&
+              this->GetRunTimeType() == TYPE_GPU) {
+     if (mem_type_ == TYPE_GPU) {
+       const CLImage *pClImage = this->Get<CLImage>();
+
+     } else if (mem_type_ == TYPE_CPU) {
+       const LoDTensor *pLoDTensor = this->Get<LoDTensor>();
+
+     } else {
+       return nullptr;
+     }
+
+     const CLImage *pClImage = this->Get<CLImage>();
+
+     // cast gpu to cpu
+     CLImage *image_p = const_cast<CLImage *>(pClImage);
+     int width = image_p->ImageDims()[0];
+     int height = image_p->ImageDims()[1];
+
+     half_t *image_data = new half_t[height * width * 4];
+     cl_int err;
+     cl_mem image = image_p->GetCLImage();
+     size_t origin[3] = {0, 0, 0};
+     size_t region[3] = {static_cast<size_t>(width),
+                         static_cast<size_t>(height), 1};
+     err = clEnqueueReadImage(image_p->CommandQueue(), image, CL_TRUE, origin,
+                              region, 0, 0, image_data, 0, NULL, NULL);
+     CL_CHECK_ERRORS(err);
+
+     LoDTensor *pTensor = this->GetMutableCPU<LoDTensor>();
+     pTensor->Resize(image_p->dims());
+     //      float *tensor_data = new float[image_p->numel()];
+     auto converter = image_p->Converter();
+     converter->ImageToNCHW(image_data, pTensor->data<float>(),
+                            image_p->ImageDims(), image_p->dims());
+     //           int stride = image_p->numel() / 20;
+     //           stride = stride > 0 ? stride : 1;
+
+     //      printer << " dims: " << image_p->dims() << "\n";
+     //      for (int i = 0; i < image_p->numel(); i += stride) {
+     //        printer << tensor_data[i] << " ";
+     //      }
+
+     //      delete[](tensor_data);
+     delete[](image_data);
+
+     // reinterpret_cast to suite template trash
+     return reinterpret_cast<Type *>(pTensor);
+
+   } else if (std::is_same<GPU_CL, RequestDeviceType>::value &&
+              this->GetMemType() == TYPE_CPU) {
+     // cast gpu to cpu
+     const LoDTensor *input = this->Get<LoDTensor>();
+     const float *input_data = input->data<float>();
+
+     CLImage *output = this->GetMutableGPU<CLImage>();
+
+     cl_context context = CLEngine::Instance()->getContext();
+     cl_command_queue command_queue =
+         CLEngine::Instance()->getClCommandQueue();
+     output->InitEmptyImage(context, command_queue, output->dims());
+     this->cl_helper_.AddKernel("feed", "feed_kernel.cl");
+
+     cl_mem output_image = output->GetCLImage();
+     const int out_C = output->dims()[1];
+     const int out_H = output->dims()[2];
+     const int out_W = output->dims()[3];
+     const int Stride2 = out_C * out_H * out_W;
+     const int Stride1 = out_H * out_W;
+     const int Stride0 = out_W;
+
+     framework::CLTensor input_cl_tensor(this->cl_helper_.CLContext(),
+                                         this->cl_helper_.CLCommandQueue());
+     input_cl_tensor.Resize(input->dims());
+     cl_mem inputBuffer =
+ input_cl_tensor.mutable_with_data<float>(input_data);
+
+     auto kernel = this->cl_helper_.KernelAt(0);
+
+     auto default_work_size = this->cl_helper_.DefaultWorkSize(*(output));
+
+     cl_int status;
+
+     status = clSetKernelArg(kernel, 0, sizeof(cl_mem), &inputBuffer);
+     CL_CHECK_ERRORS(status);
+     status = clSetKernelArg(kernel, 1, sizeof(cl_mem), &output_image);
+     CL_CHECK_ERRORS(status);
+     status = clSetKernelArg(kernel, 2, sizeof(cl_int), &out_H);
+     CL_CHECK_ERRORS(status);
+     status = clSetKernelArg(kernel, 3, sizeof(cl_int), &out_W);
+     CL_CHECK_ERRORS(status);
+     status = clSetKernelArg(kernel, 4, sizeof(cl_int), &out_C);
+     CL_CHECK_ERRORS(status);
+     status = clSetKernelArg(kernel, 5, sizeof(cl_int), &Stride0);
+     CL_CHECK_ERRORS(status);
+     status = clSetKernelArg(kernel, 6, sizeof(cl_int), &Stride1);
+     CL_CHECK_ERRORS(status);
+     status = clSetKernelArg(kernel, 7, sizeof(cl_int), &Stride2);
+     CL_CHECK_ERRORS(status);
+
+     status = clEnqueueNDRangeKernel(
+         this->cl_helper_.CLCommandQueue(), kernel, default_work_size.size(),
+         NULL, default_work_size.data(), NULL, 0, NULL, NULL);
+
+     CL_CHECK_ERRORS(status);
+
+     return reinterpret_cast<Type *>(output);
+
+   } else {
+     PADDLE_MOBILE_ENFORCE(false, "undefined mem get via op params");
+   }
+ }*/

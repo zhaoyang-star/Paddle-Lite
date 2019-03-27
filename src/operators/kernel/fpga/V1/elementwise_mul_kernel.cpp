@@ -42,7 +42,7 @@ bool ElementwiseMulKernel<FPGA, float>::Init(ElementwiseMulParam<FPGA> *param) {
 template <>
 void ElementwiseMulKernel<FPGA, float>::Compute(
     const ElementwiseMulParam<FPGA> &param) {
-  auto input_x = const_cast<LoDTensor *>(param.InputX());
+  auto input_x = const_cast<LoDTensor *>(param.InputX()->InnerLoDTensor());
   auto intput_x_float = const_cast<Tensor *>(&(param.float_input_x));
   // auto intput_x_32_ptr =
   // const_cast<float*>(param.float_input_x.data<float>());
@@ -63,7 +63,7 @@ void ElementwiseMulKernel<FPGA, float>::Compute(
   fpga::fpga_invalidate(args.output.address,
                         input_x->fpga_data_num * sizeof(float));
 
-  auto input_y = param.InputY();
+  auto input_y = param.InputY()->InnerLoDTensor();
   int axis = param.Axis();
   auto out_float = const_cast<Tensor *>(&(param.float_out));
   ElementwiseComputeEx<MulFunctor<float>, float>(
@@ -71,7 +71,7 @@ void ElementwiseMulKernel<FPGA, float>::Compute(
   fpga::fpga_flush(out_float->data<float>(),
                    input_x->fpga_data_num * sizeof(float));
 
-  Tensor *Out = param.Out();
+  Tensor *Out = param.Out()->InnerLoDTensor();
   args.input_data_type = fpga::DATA_TYPE_FP32;
   args.output_data_type = fpga::DATA_TYPE_FP16;
   args.input_layout_type = fpga::LAYOUT_CHW;

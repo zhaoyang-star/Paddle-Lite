@@ -31,14 +31,14 @@ namespace math {
 //                      framework::Tensor *output);
 
 template <typename Itype, typename Otype>
-void DepthwiseConv3x3S1(const framework::Tensor &input,
-                        const framework::Tensor &filter,
+void DepthwiseConv3x3S1( framework::Tensor &input,
+                         framework::Tensor &filter,
                         const std::vector<int> &paddings,
                         framework::Tensor *output);
 
 template <typename Itype, typename Otype>
-void DepthwiseConv3x3S2(const framework::Tensor &input,
-                        const framework::Tensor &filter,
+void DepthwiseConv3x3S2( framework::Tensor &input,
+                         framework::Tensor &filter,
                         const std::vector<int> &paddings,
                         framework::Tensor *output);
 

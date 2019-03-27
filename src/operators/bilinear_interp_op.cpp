@@ -20,12 +20,12 @@ namespace paddle_mobile {
 namespace operators {
 template <typename T>
 void BilinearInterpOp<T>::InferShape() const {
-  PADDLE_MOBILE_ENFORCE(this->param_.InputX() != nullptr,
+  PADDLE_MOBILE_ENFORCE(this->param_.InputX()->InnerLoDTensor() != nullptr,
                         "Input(X) of BilinearInterOp should not be null.");
-  PADDLE_MOBILE_ENFORCE(this->param_.Out() != nullptr,
+  PADDLE_MOBILE_ENFORCE(this->param_.Out()->InnerLoDTensor() != nullptr,
                         "Output(Out) of BilinearInterOp should not be null.");
 
-  auto dim_x = this->param_.InputX()->dims();  // NCHW format
+  auto dim_x = this->param_.InputX()->InnerLoDTensor()->dims();  // NCHW format
   int out_h = this->param_.OutH();
   int out_w = this->param_.OutW();
   PADDLE_MOBILE_ENFORCE(dim_x.size() == 4, "X's dimension must be 4");
@@ -38,7 +38,7 @@ void BilinearInterpOp<T>::InferShape() const {
     PADDLE_MOBILE_ENFORCE(out_size_dim[0] == 2, "OutSize's dim[0] must be 2");
   }
   std::vector<int64_t> dim_out({dim_x[0], dim_x[1], out_h, out_w});
-  this->param_.Out()->Resize(framework::make_ddim(dim_out));
+  this->param_.Out()->InnerLoDTensor()->Resize(framework::make_ddim(dim_out));
 }
 
 }  // namespace operators

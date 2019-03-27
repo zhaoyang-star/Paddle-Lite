@@ -24,7 +24,7 @@ bool FetchKernel<FPGA, float>::Init(FetchParam<FPGA> *param) {
 
 template <>
 void FetchKernel<FPGA, float>::Compute(const FetchParam<FPGA> &param) {
-  param.Out()->ShareDataWith(*(param.InputX()));
+  param.Out()->InnerLoDTensor()->ShareDataWith(*(param.InputX()->InnerLoDTensor()));
 }
 
 template class FetchKernel<FPGA, float>;

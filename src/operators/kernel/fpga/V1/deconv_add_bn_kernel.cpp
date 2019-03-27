@@ -27,11 +27,11 @@ bool DeconvAddBNKernel<FPGA, float>::Init(FusionDeconvAddBNParam<FPGA> *param) {
   paddle_mobile::fpga::ActivationType activation_enable =
       paddle_mobile::fpga::NONE;
   int16_t leaky_relu_negative_slope = 0;
-  auto input = const_cast<LoDTensor *>(param->Input());
-  const Tensor *bias = param->InputBias();
+  auto input = const_cast<LoDTensor *>(param->Input()->InnerLoDTensor());
+  const Tensor *bias = param->InputBias()->InnerLoDTensor();
   auto bias_ptr = bias->data<float>();
-  auto filter = const_cast<LoDTensor *>(param->Filter());
-  auto out = param->Output();
+  auto filter = const_cast<LoDTensor *>(param->Filter()->InnerLoDTensor());
+  auto out = param->Output()->InnerLoDTensor();
 
   PADDLE_MOBILE_ENFORCE(out->dims()[1] == bias->dims()[0],
                         "Output channel should be equal to bias number");
@@ -77,7 +77,7 @@ template <>
 void DeconvAddBNKernel<FPGA, float>::Compute(
     const FusionDeconvAddBNParam<FPGA> &param) {
   // fpga::ComputeFpgaDeconv(param.FpgaArgs());
-  if (param.Groups() == param.Output()->dims()[1]) {
+  if (param.Groups() == param.Output()->InnerLoDTensor()->dims()[1]) {
     fpga::ComputeDWDeconv(param.FpgaDWDconvArgs());
   } else {
     fpga::ComputeFpgaDeconv(param.FpgaArgs());

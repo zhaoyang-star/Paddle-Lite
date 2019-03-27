@@ -20,8 +20,6 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using namespace framework;
-
 /*template <typename T>
 class FetchKernel
     : public framework::OpKernelBase<DeviceType, FetchParam<DeviceType>> {

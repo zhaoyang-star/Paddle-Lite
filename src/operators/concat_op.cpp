@@ -56,7 +56,7 @@ void ConcatOp<T>::InferShape() const {
     out_dims[axis] = -1;
   }
 
-  this->param_.Out()->Resize(out_dims);
+  this->param_.Out()->InnerLoDTensor()->Resize(out_dims);
 }
 
 }  // namespace operators

@@ -20,8 +20,8 @@ namespace operators {
 
 template <typename T>
 void FusionFcReluOp<T>::InferShape() const {
-  auto x_dims = this->param_.InputX()->dims();
-  auto y_dims = this->param_.InputY()->dims();
+  auto x_dims = this->param_.InputX()->InnerLoDTensor()->dims();
+  auto y_dims = this->param_.InputY()->InnerLoDTensor()->dims();
   int x_num_col_dims = this->param_.XNumColDims();
   int y_num_col_dims = this->param_.YNumColDims();
 
@@ -47,7 +47,7 @@ void FusionFcReluOp<T>::InferShape() const {
   }
 
   framework::DDim ddim = framework::make_ddim(output_dims);
-  this->param_.Out()->Resize(ddim);
+  this->param_.Out()->InnerLoDTensor()->Resize(ddim);
 }
 
 }  // namespace operators

@@ -22,8 +22,8 @@ namespace operators {
 
 template <typename T>
 void FusionConvAddOp<T>::InferShape() const {
-  auto in_dims = this->param_.Input()->dims();
-  auto filter_dims = this->param_.Filter()->dims();
+  auto in_dims = this->param_.Input()->InnerLoDTensor()->dims();
+  auto filter_dims = this->param_.Filter()->InnerLoDTensor()->dims();
   const std::vector<int> &strides = this->param_.Strides();
   std::vector<int> paddings = this->param_.Paddings();
   int groups = this->param_.Groups();
@@ -42,7 +42,7 @@ void FusionConvAddOp<T>::InferShape() const {
   }
 
   framework::DDim ddim = framework::make_ddim(output_shape);
-  this->param_.Output()->Resize(ddim);
+  this->param_.Output()->InnerLoDTensor()->Resize(ddim);
 }
 
 }  // namespace operators

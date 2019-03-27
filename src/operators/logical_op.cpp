@@ -20,8 +20,8 @@ namespace operators {
 #define DEFINE_LOGICAL_INFERSHAPE(OpName)                   \
   template <typename T>                                     \
   void OpName##Op<T>::InferShape() const {                  \
-    const auto &input_dims = this->param_.InputX()->dims(); \
-    this->param_.Out()->Resize(input_dims);                 \
+    const auto &input_dims = this->param_.InputX()->InnerLoDTensor()->dims(); \
+    this->param_.Out()->InnerLoDTensor()->Resize(input_dims);                 \
   }
 
 #ifdef LOGICAL_AND_OP

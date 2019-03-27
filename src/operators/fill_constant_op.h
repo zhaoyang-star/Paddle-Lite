@@ -78,10 +78,10 @@ class FillConstantOp : public framework::OperatorBase {
 
   void InferShape() const {
     PADDLE_MOBILE_ENFORCE(
-        param_.Out() != nullptr,
+        param_.Out()->InnerLoDTensor() != nullptr,
         "Output (Out) of fill_constant op should not be null.");
     framework::DDim ddim = framework::make_ddim(param_.Shape());
-    param_.Out()->Resize(ddim);
+    param_.Out()->InnerLoDTensor()->Resize(ddim);
   }
   FillConstantParam param_;
 };

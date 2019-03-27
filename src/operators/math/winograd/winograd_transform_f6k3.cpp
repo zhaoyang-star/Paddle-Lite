@@ -27,7 +27,7 @@ namespace operators {
 namespace math {
 
 template <>
-void winograd_transform_weight<8, 3>(const framework::Tensor &weight,
+void winograd_transform_weight<8, 3>(framework::Tensor &weight,
                                      framework::Tensor *output) {
   /*
    * w0 = g0
@@ -57,7 +57,7 @@ void winograd_transform_weight<8, 3>(const framework::Tensor &weight,
 #else
   int remain_start = out_channel & 0xFFFC;
 
-  #pragma omp parallel for
+#pragma omp parallel for
   for (int oc = 0; oc < out_channel - 3; oc += 4) {
     float gw[96];  // gw[3][8][4]
     const float *inptr0 = inptr + oc * in_channel * 9;
@@ -262,8 +262,8 @@ void winograd_transform_weight<8, 3>(const framework::Tensor &weight,
   }
 #endif  // __aarch64__
 
-  // remain output channel
-  #pragma omp parallel for
+// remain output channel
+#pragma omp parallel for
   for (int oc = remain_start; oc < out_channel; ++oc) {
     float gw[3][8];                                     // gw[3][8]
     const float *inptr0 = inptr + oc * in_channel * 9;  //
@@ -313,7 +313,7 @@ void winograd_transform_weight<8, 3>(const framework::Tensor &weight,
 }
 
 template <>
-void winograd_transform_input<8, 3>(const framework::Tensor &input,
+void winograd_transform_input<8, 3>(framework::Tensor &input,
                                     framework::Tensor *output) {
   /*
    * x0 = (d0 - d6) + (d4 - d2) * 5.25
@@ -352,7 +352,7 @@ void winograd_transform_input<8, 3>(const framework::Tensor &input,
   size_t image_size = height * width;
   const float transform_matrix[8] = {5.25f, -5.f,   -4.25f, -2.5f,
                                      2.f,   -1.25f, 0.5f,   0.25f};
-  #pragma omp parallel for
+#pragma omp parallel for
   for (int c = 0; c < channel; ++c) {
     const float *in = inptr + c * image_size;
     float d_bt[64];  // d * B_t
@@ -765,8 +765,8 @@ void winograd_transform_input<8, 3>(const framework::Tensor &input,
 }
 
 template <>
-void winograd_transform_output<8, 3>(const framework::Tensor &input,
-                                     const framework::Tensor &weight,
+void winograd_transform_output<8, 3>(framework::Tensor &input,
+                                     framework::Tensor &weight,
                                      framework::Tensor *output) {
   // weight shape is [out_channel/4, 64, in_channel, 4],
   // input shape is [hw/8, 64, in_channel, 8]
@@ -782,7 +782,7 @@ void winograd_transform_output<8, 3>(const framework::Tensor &input,
   const float *input_ptr = input.data<float>();
   const float *weight_ptr = weight.data<float>();
 
-  #pragma omp parallel for
+#pragma omp parallel for
   for (int i = 0; i < out_channel; ++i) {
     float *uv_ptr = uv_trans_ptr + (i * tiles * 64 * 32);
     for (int j = 0; j < tiles; ++j) {
@@ -942,7 +942,7 @@ void winograd_transform_output<8, 3>(const framework::Tensor &input,
   float *output_ptr = output->mutable_data<float>();
   float transform_matrix[8] = {2.f, 4.f, 8.f, 16.f};
 
-  #pragma omp parallel for
+#pragma omp parallel for
   for (int oc = 0; oc < output->dims()[1]; ++oc) {
     float at_m[48];        // [6][8]
     float output_tmp[36];  // [6][6], temporarily restore results

@@ -21,7 +21,7 @@ namespace operators {
 
 template <typename T>
 void SplitOp<T>::InferShape() const {
-  PADDLE_MOBILE_ENFORCE(this->param_.InputX() != nullptr,
+  PADDLE_MOBILE_ENFORCE(this->param_.InputX()->InnerLoDTensor() != nullptr,
                         "Input(X) of SplitOp should not be null.");
   //  std::string str;
   //  str.size()
@@ -29,7 +29,7 @@ void SplitOp<T>::InferShape() const {
   PADDLE_MOBILE_ENFORCE(outs.size() >= 1UL,
                         "Outputs(Out) of SplitOp should not be empty.");
 
-  auto in_dims = this->param_.InputX()->dims();
+  auto in_dims = this->param_.InputX()->InnerLoDTensor()->dims();
   size_t axis = static_cast<size_t>(this->param_.Axis());
   size_t num = static_cast<size_t>(this->param_.Num());
 

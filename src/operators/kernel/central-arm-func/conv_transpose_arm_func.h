@@ -28,9 +28,9 @@ namespace operators {
 
 template <typename P>
 void ConvTransposeCompute(const ConvTransposeParam &param) {
-  const Tensor *input = param.Input();
-  Tensor filter = *param.Filter();
-  Tensor *output = param.Output();
+  const Tensor *input = param.Input()->InnerLoDTensor();
+  Tensor filter = *param.Filter()->InnerLoDTensor();
+  Tensor *output = param.Output()->InnerLoDTensor();
   output->mutable_data<P>();
 
   auto strides = param.Strides();

@@ -23,8 +23,8 @@ namespace operators {
 
 template <typename P>
 void BilinearInterpCompute(const BilinearInterpParam& param) {
-  auto out_dims = param.Out()->dims();
-  auto* input = param.InputX()->data<float>();
+  auto out_dims = param.Out()->InnerLoDTensor()->dims();
+  auto* input = param.InputX()->InnerLoDTensor()->data<float>();
   auto out_size_t = param.InputOutPutSize();
 
   int out_h = param.OutH();
@@ -34,12 +34,12 @@ void BilinearInterpCompute(const BilinearInterpParam& param) {
     out_h = out_size_data[0];
     out_w = out_size_data[1];
   }
-  auto* output = param.Out()->mutable_data<float>(
+  auto* output = param.Out()->InnerLoDTensor()->mutable_data<float>(
       {out_dims[0], out_dims[1], out_h, out_w});
-  auto batch_size = param.InputX()->dims()[0];
-  auto channels = param.InputX()->dims()[1];
-  auto in_h = param.InputX()->dims()[2];
-  auto in_w = param.InputX()->dims()[3];
+  auto batch_size = param.InputX()->InnerLoDTensor()->dims()[0];
+  auto channels = param.InputX()->InnerLoDTensor()->dims()[1];
+  auto in_h = param.InputX()->InnerLoDTensor()->dims()[2];
+  auto in_w = param.InputX()->InnerLoDTensor()->dims()[3];
 
   auto in_hw = in_h * in_w;
   auto out_hw = out_h * out_w;
@@ -52,7 +52,7 @@ void BilinearInterpCompute(const BilinearInterpParam& param) {
       (out_w > 1) ? static_cast<float>(in_w - 1) / (out_w - 1) : 0.f;
 
   if (in_h == out_h && in_w == out_w) {
-    memcpy(output, input, param.InputX()->numel() * sizeof(float));
+    memcpy(output, input, param.InputX()->InnerLoDTensor()->numel() * sizeof(float));
   } else {
     for (int k = 0; k < batch_size; ++k) {  // loop for batches
       for (int i = 0; i < out_h; ++i) {     // loop for images

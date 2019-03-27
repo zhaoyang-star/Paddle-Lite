@@ -23,8 +23,8 @@ namespace operators {
 
 template <typename T>
 void NormOp<T>::InferShape() const {
-  auto x_dims = this->param_.InputX()->dims();
-  this->param_.Out()->Resize(x_dims);
+  auto x_dims = this->param_.InputX()->InnerLoDTensor()->dims();
+  this->param_.Out()->InnerLoDTensor()->Resize(x_dims);
 
   int axis = this->param_.Axis();
   if (axis < 0) {

@@ -40,7 +40,7 @@ void GruCompute(const GruParam& param) {
   auto* h0 = param.InputH0();
   auto* weight = param.InputWeight();
   const auto* weight_data = weight->data<float>();
-  auto* bias = param.InputBias();
+  auto* bias = param.InputBias()->InnerLoDTensor();
   auto* batch_gate = param.OutBatchGate();
   batch_gate->mutable_data<float>();
   auto* batch_reset_hidden_prev = param.OutBatchResetHiddenPrev();

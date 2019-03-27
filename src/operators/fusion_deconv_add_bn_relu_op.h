@@ -66,10 +66,10 @@ class FusionDeconvAddBNReluOp
             type, inputs, outputs, attrs, scope) {}
 
   void InferShape() const {
-    auto input = this->param_.Input();
+    auto input = this->param_.Input()->InnerLoDTensor();
     auto in_dims = input->dims();
 
-    auto filter = this->param_.Filter();
+    auto filter = this->param_.Filter()->InnerLoDTensor();
     auto filter_dims = filter->dims();
 
     std::vector<int> strides = this->param_.Strides();
@@ -106,7 +106,7 @@ class FusionDeconvAddBNReluOp
       output_shape.push_back((in_dims[i + 2] - 1) * strides[i] -
                              2 * paddings[i] + filter_extent);
     }
-    this->param_.Output()->Resize(framework::make_ddim(output_shape));
+    this->param_.Output()->InnerLoDTensor()->Resize(framework::make_ddim(output_shape));
   }
 
  protected:

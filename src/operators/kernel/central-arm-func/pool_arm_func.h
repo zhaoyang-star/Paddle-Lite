@@ -26,8 +26,8 @@ namespace operators {
 
 template <typename P>
 void PoolCompute(const PoolParam &param) {
-  const framework::Tensor *input = param.Input();
-  framework::Tensor *output = param.Output();
+  const framework::Tensor *input = param.Input()->InnerLoDTensor();
+  framework::Tensor *output = param.Output()->InnerLoDTensor();
   const std::string &pooling_type = param.PoolingType();
   std::vector<int> ksize = param.Ksize();
   std::vector<int> strides = param.Strides();

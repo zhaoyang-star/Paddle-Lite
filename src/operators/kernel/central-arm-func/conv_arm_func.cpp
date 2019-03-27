@@ -49,9 +49,9 @@ bool IsExpand(const std::vector<int64_t> &filter_dim,
 
 template <typename Itype, typename Otype>
 void GemmConv(const ConvParam &param) {
-  const Tensor *input = param.Input();
-  Tensor filter = *param.Filter();
-  Tensor *output = param.Output();
+  const Tensor *input = param.Input()->InnerLoDTensor();
+  Tensor filter = *param.Filter()->InnerLoDTensor();
+  Tensor *output = param.Output()->InnerLoDTensor();
   output->mutable_data<Otype>();
 
   int groups = param.Groups();
@@ -136,9 +136,9 @@ void GemmConv(const ConvParam &param) {
 
 template <int tile, int kernel>
 void WinogradConv3x3(const ConvParam &param) {
-  const Tensor *input = param.Input();
-  const Tensor *filter = param.TransformedFilter();
-  Tensor *output = param.Output();
+   Tensor *input = param.Input()->InnerLoDTensor();
+   Tensor *filter = param.TransformedFilter()->InnerLoDTensor();
+  Tensor *output = param.Output()->InnerLoDTensor();
   output->mutable_data<float>();
   int batch_size = input->dims()[0];
   int groups = param.Groups();
@@ -182,12 +182,12 @@ void WinogradConv3x3(const ConvParam &param) {
 
 template <typename Itype, typename Otype>
 void DepthwiseConv3x3(const ConvParam &param) {
-  const Tensor *input = param.Input();
-  const Tensor *filter = param.Filter();
+   Tensor *input = param.Input()->InnerLoDTensor();
+   Tensor *filter =param.Filter()->InnerLoDTensor();
   const std::vector<int> &paddings = param.Paddings();
   const std::vector<int> &strides = param.Strides();
   const int batch_size = input->dims()[0];
-  Tensor *output = param.Output();
+  Tensor *output = param.Output()->InnerLoDTensor();
   output->mutable_data<Otype>();
 
   if (strides[0] == 1) {
@@ -211,12 +211,12 @@ void DepthwiseConv3x3(const ConvParam &param) {
 
 template <typename Itype, typename Otype>
 void DepthwiseConv5x5(const ConvParam &param) {
-  const Tensor *input = param.Input();
-  const Tensor *filter = param.Filter();
+  const Tensor *input = param.Input()->InnerLoDTensor();
+  const Tensor *filter =param.Filter()->InnerLoDTensor();
   const std::vector<int> &paddings = param.Paddings();
   const std::vector<int> &strides = param.Strides();
   const int batch_size = input->dims()[0];
-  Tensor *output = param.Output();
+  Tensor *output = param.Output()->InnerLoDTensor();
   output->mutable_data<Otype>();
 
   if (strides[0] == 1) {

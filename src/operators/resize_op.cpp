@@ -22,7 +22,7 @@ namespace operators {
 template <typename T>
 void ResizeOp<T>::InferShape() const {
   auto out_dims = CalOutputShape(this->param_);
-  this->param_.Out()->Resize(out_dims);
+  this->param_.Out()->InnerLoDTensor()->Resize(out_dims);
 }
 
 }  // namespace operators

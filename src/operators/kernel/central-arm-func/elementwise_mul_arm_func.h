@@ -28,9 +28,9 @@ struct MulFunctor {
 
 template <typename P>
 void ElementwiseMulCompute(const ElementwiseMulParam &param) {
-  const Tensor *input_x = param.InputX();
-  const Tensor *input_y = param.InputY();
-  Tensor *Out = param.Out();
+  const Tensor *input_x = param.InputX()->InnerLoDTensor();
+  const Tensor *input_y = param.InputY()->InnerLoDTensor();
+  Tensor *Out = param.Out()->InnerLoDTensor();
   Out->mutable_data<float>();
   int axis = param.Axis();
   ElementwiseComputeEx<MulFunctor<float>, float>(input_x, input_y, axis,

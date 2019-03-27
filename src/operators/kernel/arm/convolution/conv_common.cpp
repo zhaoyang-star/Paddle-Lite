@@ -19,16 +19,16 @@ namespace paddle_mobile {
 namespace operators {
 
 void InitBaseConvKernel(ConvParam *param) {
-  bool conv3x3 = param->Filter()->dims()[2] == param->Filter()->dims()[3] &&
-                 param->Filter()->dims()[2] == 3;
-  bool conv5x5 = param->Filter()->dims()[2] == param->Filter()->dims()[3] &&
-                 param->Filter()->dims()[2] == 5;
-  bool depth3x3 = conv3x3 && param->Groups() == param->Input()->dims()[1] &&
-                  param->Input()->dims()[1] == param->Output()->dims()[1];
+  bool conv3x3 = param->Filter()->InnerLoDTensor()->dims()[2] == param->Filter()->InnerLoDTensor()->dims()[3] &&
+                 param->Filter()->InnerLoDTensor()->dims()[2] == 3;
+  bool conv5x5 = param->Filter()->InnerLoDTensor()->dims()[2] == param->Filter()->InnerLoDTensor()->dims()[3] &&
+                 param->Filter()->InnerLoDTensor()->dims()[2] == 5;
+  bool depth3x3 = conv3x3 && param->Groups() == param->Input()->InnerLoDTensor()->dims()[1] &&
+                  param->Input()->InnerLoDTensor()->dims()[1] == param->Output()->InnerLoDTensor()->dims()[1];
 
-  bool depth5x5 = conv5x5 && param->Groups() == param->Input()->dims()[1] &&
-                  param->Input()->dims()[1] == param->Output()->dims()[1];
-  if (param->Filter()->type() == typeid(int8_t)) {
+  bool depth5x5 = conv5x5 && param->Groups() == param->Input()->InnerLoDTensor()->dims()[1] &&
+                  param->Input()->InnerLoDTensor()->dims()[1] == param->Output()->InnerLoDTensor()->dims()[1];
+  if (param->Filter()->InnerLoDTensor()->type() == typeid(int8_t)) {
 #ifndef __aarch64__
     if (depth3x3 && param->Strides()[0] < 3 &&
         param->Strides()[0] == param->Strides()[1]) {
@@ -57,19 +57,18 @@ void InitBaseConvKernel(ConvParam *param) {
                param->Dilations()[0] == param->Dilations()[1] &&
                param->Strides()[0] == 1 && param->Dilations()[0] == 1
 #if 0
-               && param->Output()->dims()[1] >= 16 &&
-               param->Input()->dims()[1] >= 16 &&
-               param->Input()->dims()[2] <= 140 */ /* refered from ncnn */
+               && param->Output()->InnerLoDTensor()->dims()[1] >= 16 &&
+               param->Input()->InnerLoDTensor()->dims()[1] >= 16 &&
+               param->Input()->InnerLoDTensor()->dims()[2] <= 140 */ /* refered from ncnn */
 #endif
     ) {
       param->ExecMode() = ConvParam::EXEC_WINOGRAD3X3_FLOAT;
       // transform weight
-      framework::TensorWrapper *tensorWrapper = new framework::TensorWrapper;
-      param->transformed_filter_ = tensorWrapper;
+      param->transformed_filter_ = new framework::TensorWrapper;
 
       //      param->transformed_filter_ = new framework::LoDTensor;
       operators::math::winograd_transform_weight<8, 3>(
-          *param->Filter(), param->TransformedFilter());
+          *(param->Filter()->InnerLoDTensor()), param->TransformedFilter()->InnerLoDTensor());
     } else {
       param->ExecMode() = ConvParam::EXEC_GEMM_FLOAT;
     }
