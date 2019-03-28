@@ -19,6 +19,7 @@ limitations under the License. */
 #include <string>
 #include <utility>
 #include <vector>
+#include <framework/executor.h>
 #include "common/types.h"
 #include "framework/executor_common_impl.h"
 #include "framework/load_ops.h"
@@ -103,7 +104,7 @@ class PaddleMobile {
 
  private:
   std::shared_ptr<framework::Loader<T>> loader_;
-  std::shared_ptr<framework::ExecutorCpu<T>> executor_;
+  std::shared_ptr<framework::Executor<T>> executor_;
   PaddleMobileConfigInternal config_;
 };
 

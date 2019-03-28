@@ -45,7 +45,7 @@ PMStatus PaddleMobile<T>::Load(const std::string &dirname, bool optimize,
   }
 
   if (executor_.get() == nullptr) {
-    executor_ = std::make_shared<framework::ExecutorCpu<T>>(
+    executor_ = std::make_shared<framework::Executor<T>>(
         loader_->Load(dirname, optimize, quantification), config_, batch_size,
         optimize, lod_mode);
   } else {
@@ -67,7 +67,7 @@ PMStatus PaddleMobile<T>::Load(const std::string &model_path,
   }
 
   if (executor_.get() == nullptr) {
-    executor_ = std::make_shared<framework::ExecutorCpu<T>>(
+    executor_ = std::make_shared<framework::Executor<T>>(
         loader_->Load(model_path, para_path, optimize, quantification), config_,
         batch_size, optimize, lod_mode);
   } else {
@@ -105,7 +105,7 @@ bool PaddleMobile<T>::LoadCombinedMemory(size_t model_len,
     LOG(kLOG_INFO) << "loader inited";
   }
   if (executor_.get() == nullptr) {
-    executor_ = std::make_shared<framework::ExecutorCpu<T>>(
+    executor_ = std::make_shared<framework::Executor<T>>(
         loader_->LoadCombinedMemory(model_len, model_buf, combined_params_len,
                                     combined_params_buf, optimize,
                                     quantification),
