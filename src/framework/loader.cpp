@@ -29,7 +29,7 @@ void Loader<T>::InitMemoryFromProgram(
     const std::shared_ptr<ProgramDesc> &originProgramDesc,
     const std::shared_ptr<Scope> &scope) {
 #ifdef PADDLE_MOBILE_CL
-  if (is_cl_gpu_) {
+  if (0) {
     for (const auto &block : originProgramDesc.get()->Blocks()) {
       for (const auto &var_desc : block->Vars()) {
         auto var = scope.get()->Var(var_desc->Name());

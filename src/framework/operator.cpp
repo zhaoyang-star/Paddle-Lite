@@ -57,8 +57,7 @@ void OperatorBase::CheckAllInputOutputSet() const {}
 
 void OperatorBase::Run() {
 #ifdef PADDLE_MOBILE_DEBUG
-  DLOG << "-------------" << type_
-       << "    runing start--------------------------";
+  DLOG << "-------------" << type_ << "--------------------------";
 #endif
   RunImpl();
 
@@ -70,8 +69,8 @@ void OperatorBase::Run() {
       auto var = this->scope_->FindVar(var_vec_in[i]);
       if (var->IsInitialized() &&
           var->template IsType<framework::TensorWrapper>()) {
-        auto tensor_w = var->template Get<TensorWrapper>();
-        LoDTensor *const tensor = tensor_w->InnerLoDTensor();
+        TensorWrapper* tensor_w = const_cast<TensorWrapper *>(var->template Get<TensorWrapper>());
+        auto * tensor = tensor_w->InnerLoDTensor();
         if (tensor) DLOG << type_ << " input- " << key << "=" << *tensor;
       }
     }
@@ -82,15 +81,13 @@ void OperatorBase::Run() {
       auto var = scope_->FindVar(var_vec_out[i]);
       if (var->IsInitialized() &&
           var->template IsType<framework::TensorWrapper>()) {
-        auto *tensor_w = var->template Get<framework::TensorWrapper>();
-        const LoDTensor *tensor = tensor_w->InnerLoDTensor();
+        TensorWrapper* tensor_w = const_cast<TensorWrapper *>(var->template Get<TensorWrapper>());
+        auto *tensor = tensor_w->InnerLoDTensor();
         if (tensor) DLOG << type_ << " output- " << key << "=" << *tensor;
       }
     }
   }
-  DLOG << "-------------" << type_
-       << "    runing end----------------------------";
-
+  
 #endif
 }
 

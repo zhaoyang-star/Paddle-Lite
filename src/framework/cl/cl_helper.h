@@ -39,14 +39,14 @@ class CLHelper {
     kernels.emplace_back(std::move(kernel));
   }
 
-  cl_kernel KernelAt(const int index) {
+  cl_kernel KernelAt(const int index) const{
     DLOG << " kernel count: " << kernels.size();
     return kernels[index].get();
   }
 
-  cl_command_queue CLCommandQueue() { return scope_->CommandQueue(); }
+  cl_command_queue CLCommandQueue() const { return scope_->CommandQueue(); }
 
-  cl_context CLContext() { return scope_->Context(); }
+  cl_context CLContext() const{ return scope_->Context(); }
 
   std::vector<size_t> DefaultWorkSize(const CLImage &image) {
     // n c h w

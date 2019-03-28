@@ -107,7 +107,6 @@ class OpParam {
 
   VariableNameMap inputs_;
   Scope *scope_pointer_ = nullptr;
-  RunTimeType compute_type_;
 
  protected:
   template <typename T>

@@ -56,7 +56,7 @@ class OpDesc {
 
   AttributeMap &GetAttrMap();
 
-  RunTimeType &GetComputeType() { return compute_type_; }
+  int &GetComputeType() { return compute_type_; }
 
   const std::string &Type() { return type_; }
 
@@ -66,13 +66,13 @@ class OpDesc {
 
   void SetAttrMap(AttributeMap attrs) { attrs_ = attrs; }
 
-  void SetComputeType(RunTimeType compute_type) {
+  void SetComputeType(int compute_type) {
     compute_type_ = compute_type;
   }
 
  private:
   std::string type_;
-  RunTimeType compute_type_;
+  int compute_type_;
   VariableNameMap inputs_;
   VariableNameMap outputs_;
   AttributeMap attrs_;

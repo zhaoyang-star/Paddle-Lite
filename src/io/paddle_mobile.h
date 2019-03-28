@@ -34,19 +34,9 @@ namespace paddle_mobile {
 template <typename T = float>
 class PaddleMobile {
  public:
-  explicit PaddleMobile(PaddleMobileConfigInternal config) : config_(config) {
-    //#ifndef PADDLE_MOBILE_CL
-    //    bool is_gpu = std::is_same<DeviceType<kGPU_CL>, Device>::value;
-    //    PADDLE_MOBILE_ENFORCE(!is_gpu, "Please recompile with GPU_CL is on");
-    //#endif
-  }
+  explicit PaddleMobile(PaddleMobileConfigInternal config) : config_(config) {}
 
-  PaddleMobile() {
-    //#ifndef PADDLE_MOBILE_CL
-    //    bool is_gpu = std::is_same<DeviceType<kGPU_CL>, Device>::value;
-    //    PADDLE_MOBILE_ENFORCE(!is_gpu, "Please recompile with GPU_CL is on");
-    //#endif
-  }
+  PaddleMobile() {}
   virtual ~PaddleMobile() { Clear(); }
 
   PMStatus Load(const std::string &dirname, const bool optimize = false,

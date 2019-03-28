@@ -41,34 +41,35 @@ namespace framework {
 class TensorWrapper {
  public:
 #ifdef PADDLE_MOBILE_CL
-  TensorWrapper() : holder_cpu_(new LoDTensor()), holder_gpu_(new CLImage()) {}
+  TensorWrapper() : holder_cpu_(new LoDTensor()), holder_gpu_(new CLImage()) {
+    this->cl_helper_.AddKernel("feed", "feed_kernel.cl");
+  }
 #else
   TensorWrapper() : holder_cpu_(new LoDTensor()) {}
 #endif
 
   int GetMemType() const {
-    if (holder_cpu_) {
+    if (holder_cpu_ && mem_type == MEM_CPU) {
       return MEM_CPU;
     }
 #ifdef PADDLE_MOBILE_CL
 
-    else if (holder_gpu_) {
+    else if (holder_gpu_ && mem_type == MEM_GPU) {
       return MEM_GPU;
     }
 #endif
     else {
-
       // todo ---> 这里应该知道是什么op了.  内存应该预先处理一次
-      //  PADDLE_MOBILE_ENFORCE(false, "Mem get but not init!");
+      PADDLE_MOBILE_ENFORCE(false, "Mem get but not init!");
       return MEM_UNKNOWN;
     }
   }
 
 #ifdef PADDLE_MOBILE_CL
 
-  framework::CLImage *MuteClImage() const { return this->GetGpu(); }
+  framework::CLImage *MuteClImage() { return this->InnerCLImage(); }
 #endif
-  framework::LoDTensor *MuteLodTensor() const { return this->GetCpu(); }
+  framework::LoDTensor *MuteLodTensor() { return this->InnerLoDTensor(); }
 
 #ifdef PADDLE_MOBILE_CL
   CLImage *InnerCLImage() {
@@ -84,7 +85,7 @@ class TensorWrapper {
       cl_command_queue command_queue =
           CLEngine::Instance()->getClCommandQueue();
       output->InitEmptyImage(context, command_queue, output->dims());
-      this->cl_helper_.AddKernel("feed", "feed_kernel.cl");
+      this->ClHelper().AddKernel("feed", "feed_kernel.cl");
       cl_mem output_image = output->GetCLImage();
       const int out_C = output->dims()[1];
       const int out_H = output->dims()[2];
@@ -97,7 +98,7 @@ class TensorWrapper {
       input_cl_tensor.Resize(input->dims());
       cl_mem inputBuffer = input_cl_tensor.mutable_with_data<float>(input_data);
       auto kernel = this->cl_helper_.KernelAt(0);
-      auto default_work_size = this->cl_helper_.DefaultWorkSize(*(output));
+      auto default_work_size = this->ClHelper().DefaultWorkSize(*(output));
       cl_int status;
       status = clSetKernelArg(kernel, 0, sizeof(cl_mem), &inputBuffer);
       CL_CHECK_ERRORS(status);
@@ -116,19 +117,19 @@ class TensorWrapper {
       status = clSetKernelArg(kernel, 7, sizeof(cl_int), &Stride2);
       CL_CHECK_ERRORS(status);
       status = clEnqueueNDRangeKernel(
-          this->cl_helper_.CLCommandQueue(), kernel, default_work_size.size(),
+          this->ClHelper().CLCommandQueue(), kernel, default_work_size.size(),
           NULL, default_work_size.data(), NULL, 0, NULL, NULL);
       CL_CHECK_ERRORS(status);
-      this->holder_gpu_.reset();
+      mem_type = MEM_GPU;
       return output;
     }
   }
 #endif
-  framework::LoDTensor *InnerLoDTensor() const {
-    if (this->GetMemType() == MEM_UNKNOWN) {
+  framework::LoDTensor *InnerLoDTensor() {
+    /*   if (this->GetMemType() == MEM_UNKNOWN) {
       DLOG << "tensor wrapper got MEM_UNKNOWN";
       return this->MuteLodTensor();
-    } else if (this->GetMemType() == MEM_CPU) {
+    } else*/ if (this->GetMemType() == MEM_CPU) {
       return this->GetCpu();
     }
 #ifdef PADDLE_MOBILE_CL
@@ -156,6 +157,7 @@ class TensorWrapper {
                              image_p->ImageDims(), image_p->dims());
 
       delete[](image_data);
+      mem_type = MEM_GPU;
       return pTensor;
     }
 #else
@@ -178,9 +180,11 @@ class TensorWrapper {
 #endif
 
   std::shared_ptr<LoDTensor> holder_cpu_;
+  int mem_type = MEM_CPU;
 
 #ifdef PADDLE_MOBILE_CL
   std::shared_ptr<CLImage> holder_gpu_;
+  CLHelper ClHelper() const { return cl_helper_; }
   CLHelper cl_helper_;
 #endif
 };

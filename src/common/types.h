@@ -48,9 +48,9 @@ typedef DeviceType<kCPU> CPU;
 typedef DeviceType<kFPGA> FPGA;
 typedef DeviceType<kGPU_CL> GPU_CL;
 
-enum RunTimeType { UnSpecified = 1, TYPE_CPU = 0, TYPE_GPU = 1 };
+//enum RunTimeType { UnSpecified = 1, TYPE_CPU = 0, TYPE_GPU = 1 };
 // typedef RunTimeType RunTimeType;
-typedef RunTimeType OpType;
+//typedef RunTimeType OpType;
 #define TYPE_CPU 0
 #define TYPE_GPU 1
 #define TYPE_FPGA 2
@@ -120,6 +120,7 @@ enum PoolingType {
 
 struct PaddleMobileConfigInternal {
   bool load_when_predict = false;
+  int running_mode  = TYPE_CPU;
 };
 
 extern const char *G_OP_TYPE_CONV;
