@@ -56,17 +56,22 @@ OperatorBase::OperatorBase(const std::string &type,
 void OperatorBase::CheckAllInputOutputSet() const {}
 
 void OperatorBase::Run() {
-  RunImpl();
 #ifdef PADDLE_MOBILE_DEBUG
-  DLOG << "-------------" << type_ << "----------------------------";
+  DLOG << "-------------" << type_
+       << "    runing start--------------------------";
+#endif
+  RunImpl();
+
+#ifdef PADDLE_MOBILE_DEBUG
   vector<string> input_keys = GetInputKeys();
   for (const auto key : input_keys) {
     auto var_vec_in = inputs_.at(key);
     for (int i = 0; i < var_vec_in.size(); ++i) {
       auto var = this->scope_->FindVar(var_vec_in[i]);
       if (var->IsInitialized() &&
-          var->template IsType<framework::LoDTensor>()) {
-        const Tensor *tensor = var->template Get<framework::LoDTensor>();
+          var->template IsType<framework::TensorWrapper>()) {
+        auto tensor_w = var->template Get<TensorWrapper>();
+        LoDTensor *const tensor = tensor_w->InnerLoDTensor();
         if (tensor) DLOG << type_ << " input- " << key << "=" << *tensor;
       }
     }
@@ -76,12 +81,16 @@ void OperatorBase::Run() {
     for (int i = 0; i < var_vec_out.size(); ++i) {
       auto var = scope_->FindVar(var_vec_out[i]);
       if (var->IsInitialized() &&
-          var->template IsType<framework::LoDTensor>()) {
-        const Tensor *tensor = var->template Get<framework::LoDTensor>();
+          var->template IsType<framework::TensorWrapper>()) {
+        auto *tensor_w = var->template Get<framework::TensorWrapper>();
+        const LoDTensor *tensor = tensor_w->InnerLoDTensor();
         if (tensor) DLOG << type_ << " output- " << key << "=" << *tensor;
       }
     }
   }
+  DLOG << "-------------" << type_
+       << "    runing end----------------------------";
+
 #endif
 }
 

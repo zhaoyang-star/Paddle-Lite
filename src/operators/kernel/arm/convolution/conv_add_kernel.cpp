@@ -34,8 +34,9 @@ void ConvAddKernelCpu<float>::Compute(const FusionConvAddParam &param) {
     case ConvParam::EXEC_DEPTHWISE3x3S1_FLOAT:
       break;
     case ConvParam::EXEC_DEPTHWISE3x3S2_FLOAT:
-      math::DepthwiseConv3x3S2<float, float>(*(param.Input()->InnerLoDTensor()), *param.Filter()->InnerLoDTensor(),
-                                             param.Paddings(), param.Output()->InnerLoDTensor());
+      math::DepthwiseConv3x3S2<float, float>(
+          *(param.Input()->InnerLoDTensor()), *param.Filter()->InnerLoDTensor(),
+          param.Paddings(), param.Output()->InnerLoDTensor());
       break;
     case ConvParam::EXEC_DEPTHWISE5x5_FLOAT:
       DepthwiseConv5x5<float, float>(param);
@@ -50,7 +51,9 @@ void ConvAddKernelCpu<float>::Compute(const FusionConvAddParam &param) {
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",
                                     param.ExecMode());
   }
-  math::AddChannelWise<IDENTITY>(param.Input()->InnerLoDTensor(), param.Bias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
+  math::AddChannelWise<IDENTITY>(param.Output()->InnerLoDTensor(),
+                                 param.Bias()->InnerLoDTensor(),
+                                 param.Output()->InnerLoDTensor());
 }
 
 template class ConvAddKernelCpu<float>;

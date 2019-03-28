@@ -122,18 +122,21 @@ void ExecutorCpu<T>::InitFeedFetchList() {
   fetch_indices_.swap(fetch_indices);
 
   auto *feed_var = program_.scope->Var("feed");
-  auto *feed_list = feed_var->template GetMutable<framework::LoDTensorArray>();
+  auto *feed_list =
+      feed_var->template GetMutable<framework::TensorWrapperArray>();
   feed_list->resize(feed_indices_.size());
 
   auto *fetch_var = program_.scope->Var("fetch");
   auto *fetch_list =
-      fetch_var->template GetMutable<framework::LoDTensorArray>();
+      fetch_var->template GetMutable<framework::TensorWrapperArray>();
   fetch_list->resize(fetch_indices_.size());
 }
 
 template <typename T>
 static void LoadMemInternal(void **data, LoDTensor *tensor,
                             bool quant_uint8 = false) {
+  DLOG << "LoadMemInternal ";
+
   char **data_buf = reinterpret_cast<char **>(data);
   int64_t size = tensor->numel();
   T *tensor_data = tensor->mutable_data<T>();
@@ -160,6 +163,8 @@ template <typename T>
 void ExecutorCpu<T>::LoadMemory(void **data,
                                 const std::shared_ptr<VarDesc> var_desc,
                                 LoDTensor *tensor) {
+  DLOG << "lod memory of " << var_desc->Name();
+
   char **data_buf = reinterpret_cast<char **>(data);
   // version
   uint32_t version = *(reinterpret_cast<uint32_t *>(*data_buf));
@@ -213,16 +218,18 @@ void ExecutorCpu<T>::InitMemory() {
   for (const auto &block : program_desc_->Blocks()) {
     for (const auto &var_desc : block->Vars()) {
       auto var = program_.scope->Var(var_desc->Name());
+      DLOG << "init memory of " << var_desc->Name();
       if (var_desc->Persistable()) {
         if (var_desc->Name() == "feed" || var_desc->Name() == "fetch") {
-          var->template GetMutable<framework::LoDTensorArray>();
+          var->template GetMutable<framework::TensorWrapperArray>();
           continue;
         }
         char *origin_data =
             ReadFileToBuff(program_.model_path + "/" + var_desc->Name());
         char *data = origin_data;
-        auto tensor = var->template GetMutable<LoDTensor>();
-        LoadMemory(reinterpret_cast<void **>(&data), var_desc, tensor);
+        auto tensor_w = var->template GetMutable<TensorWrapper>();
+        LoadMemory(reinterpret_cast<void **>(&data), var_desc,
+                   tensor_w->MuteLodTensor());
         delete[] origin_data;
       } else {
         DLOG << "init no persistable var: " << var_desc->Name();
@@ -250,14 +257,15 @@ void ExecutorCpu<T>::InitCombineMemory() {
       auto var = program_.scope->Var(var_desc->Name());
       if (var_desc->Persistable()) {
         if (var_desc->Name() == "feed" || var_desc->Name() == "fetch") {
-          var->template GetMutable<framework::LoDTensorArray>();
+          var->template GetMutable<framework::TensorWrapperArray>();
           continue;
         }
 
         DLOG << " init combine memory persistable: " << var_desc->Name();
-        auto tensor_wrapper = var->template GetMutable<LoDTensor>();
-//        LoDTensor *tensor = tensor_wrapper->MuteLodTensor();
-        LoadMemory(reinterpret_cast<void **>(&data), var_desc, tensor_wrapper);
+        auto tensor_wrapper = var->template GetMutable<TensorWrapper>();
+        //        LoDTensor *tensor = tensor_wrapper->MuteLodTensor();
+        LoadMemory(reinterpret_cast<void **>(&data), var_desc,
+                   tensor_wrapper->MuteLodTensor());
       } else {
         DLOG << " init combine memory no persistable: " << var_desc->Name();
         varInputMemory(var_desc, var);
@@ -275,10 +283,11 @@ void ExecutorCpu<T>::InitNoPersistableMemory(const Tensor &input_tensor) {
   for (const auto &block : program_desc_->Blocks()) {
     for (const auto &var_desc : block->Vars()) {
       auto var = program_.scope->Var(var_desc->Name());
-      auto tensor = var->template GetMutable<LoDTensor>();
+      auto tensor_w = var->template GetMutable<TensorWrapper>();
+      LoDTensor *const tensor = tensor_w->MuteLodTensor();
       if (var_desc->Persistable()) {
         if (var_desc->Name() == "feed" || var_desc->Name() == "fetch") {
-          var->template GetMutable<framework::LoDTensorArray>();
+          var->template GetMutable<framework::TensorWrapperArray>();
           continue;
         }
       } else {
@@ -328,16 +337,19 @@ bool ExecutorCpu<T>::varInputMemory(const std::shared_ptr<VarDesc> &var_desc,
   };
 
   auto type = var_desc->Type();
+  DLOG << "var_desc->Type():  " << type;
   if (type == VARTYPE_TYPE_LOD_TENSOR) {
     auto data_type = var_desc->Tensor_desc().DataType();
-    framework::LoDTensor *tensor = var->template GetMutable<LoDTensor>();
+    auto *tensor_w = var->template GetMutable<TensorWrapper>();
+    LoDTensor *tensor = tensor_w->MuteLodTensor();
     tensor->mutable_data(TypeId(data_type));
   } else if (type == VARTYPE_TYPE_STEP_SCOPES) {
     std::vector<framework::Scope *> *step_scopes =
         var->template GetMutable<std::vector<framework::Scope *>>();
   } else if (type == VARTYPE_TYPE_STEP_LOD_TENSOR_ARRAY) {
-    framework::LoDTensorArray *tensor_array =
-        var->template GetMutable<framework::LoDTensorArray>();
+    framework::TensorWrapperArray *tensor_array =
+        var->template GetMutable<framework::TensorWrapperArray>();
+
   } else {
     PADDLE_MOBILE_THROW_EXCEPTION("got unhandled var type `%d`", type);
   }
@@ -394,7 +406,9 @@ void ExecutorCpu<T>::SetInput(const Tensor &input,
   }
   auto *feed_var = program_.scope->Var("feed");
   framework::LoDTensor &target =
-      feed_var->template GetMutable<framework::LoDTensorArray>()->at(index);
+      *feed_var->template GetMutable<framework::TensorWrapperArray>()
+           ->at(index)
+           .MuteLodTensor();
 
   if (config_.load_when_predict) {
     if (input_dim_last_ != input.dims()) {
@@ -416,7 +430,9 @@ void ExecutorCpu<T>::SetInput(const LoDTensor &input,
   }
   auto *feed_var = program_.scope->Var("feed");
   framework::LoDTensor &target =
-      feed_var->template GetMutable<framework::LoDTensorArray>()->at(index);
+      *feed_var->template GetMutable<framework::TensorWrapperArray>()
+           ->at(index)
+           .MuteLodTensor();
 
   if (config_.load_when_predict) {
     if (input_dim_last_ != input.dims()) {
@@ -441,7 +457,9 @@ std::shared_ptr<LoDTensor> ExecutorCpu<T>::GetOutput(
     }
     auto *fetch_var = program_.scope->Var("fetch");
     framework::LoDTensor &target =
-        fetch_var->template GetMutable<framework::LoDTensorArray>()->at(index);
+        *fetch_var->template GetMutable<framework::TensorWrapperArray>()
+             ->at(index)
+             .MuteLodTensor();
 
     return std::make_shared<LoDTensor>(target);
   } else {

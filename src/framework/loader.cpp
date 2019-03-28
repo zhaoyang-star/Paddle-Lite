@@ -19,6 +19,7 @@ limitations under the License. */
 #ifdef PADDLE_MOBILE_CL
 #include "framework/cl/cl_image.h"
 #endif
+#include "framework/tensor_wrapper.h"
 
 namespace paddle_mobile {
 namespace framework {
@@ -35,7 +36,8 @@ void Loader<T>::InitMemoryFromProgram(
         if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
           if (var_desc->Persistable()) {
             auto dim = var_desc->Tensor_desc().Dims();
-            auto cl_image = var->GetMutable<framework::CLImage>();
+            auto cl_image_w = var->GetMutable<TensorWrapper>();
+            CLImage *cl_image = cl_image_w->MuteClImage();
             cl_image->Resize(make_ddim(dim));
           } else {
             auto dim = var_desc->Tensor_desc().Dims();
@@ -57,12 +59,14 @@ void Loader<T>::InitMemoryFromProgram(
         if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
           if (var_desc->Persistable()) {
             auto dim = var_desc->Tensor_desc().Dims();
-            auto tensor = var->GetMutable<LoDTensor>();
+            auto tensor_w = var->GetMutable<TensorWrapper>();
+            LoDTensor *const tensor = tensor_w->MuteLodTensor();
             tensor->Resize(make_ddim(dim));
           } else {
             auto dim = var_desc->Tensor_desc().Dims();
             if (dim.size() == 0) {
-              auto tensor = var->GetMutable<LoDTensor>();
+              auto tensor_w = var->GetMutable<TensorWrapper>();
+              LoDTensor *const tensor = tensor_w->MuteLodTensor();
               framework::DDim dDim = {0};
               tensor->Resize(dDim);
             } else {
@@ -71,7 +75,8 @@ void Loader<T>::InitMemoryFromProgram(
                   d *= -1;
                 }
               }
-              auto tensor = var->GetMutable<LoDTensor>();
+              auto tensor_w = var->GetMutable<TensorWrapper>();
+              LoDTensor *tensor = tensor_w->MuteLodTensor();
               tensor->Resize(make_ddim(dim));
             }
           }

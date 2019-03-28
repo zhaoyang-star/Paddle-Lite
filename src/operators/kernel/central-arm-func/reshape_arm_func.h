@@ -28,9 +28,9 @@ void ReshapeCompute(const ReshapeParam &param) {
   const auto &input_x_dims = input_x->dims();
   auto *out = param.Out()->InnerLoDTensor();
   framework::DDim out_dims = out->dims();
-  const auto *input_shape = param.InputShape()->InnerLoDTensor();
-
-  if (input_shape) {
+  auto shape_wrapper = param.InputShape();
+  if (shape_wrapper) {
+    auto *input_shape = shape_wrapper->InnerLoDTensor();
     auto *shape_data = input_shape->data<int>();
     framework::Tensor cpu_shape_tensor;
     auto shape =
