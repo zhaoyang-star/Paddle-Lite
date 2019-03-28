@@ -28,7 +28,8 @@ bool FusionFcKernelCpu<float>::Init(FusionFcParam *param) {
 template <>
 void FusionFcKernelCpu<float>::Compute(const FusionFcParam &param) {
   FusionFcCompute<float, float>(param);
-  param.Out()->InnerLoDTensor()->set_lod(param.InputX()->InnerLoDTensor()->lod());
+  param.Out()->InnerLoDTensor()->set_lod(
+      param.InputX()->InnerLoDTensor()->lod());
 }
 
 template class FusionFcKernelCpu<float>;
@@ -42,7 +43,8 @@ bool FusionFcKernelCpu<int8_t>::Init(FusionFcParam *param) {
 template <>
 void FusionFcKernelCpu<int8_t>::Compute(const FusionFcParam &param) {
   FusionFcCompute<int8_t, int32_t>(param);
-  param.Out()->InnerLoDTensor()->set_lod(param.InputX()->InnerLoDTensor()->lod());
+  param.Out()->InnerLoDTensor()->set_lod(
+      param.InputX()->InnerLoDTensor()->lod());
 }
 
 template class FusionFcKernelCpu<int8_t>;

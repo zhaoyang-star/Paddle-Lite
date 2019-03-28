@@ -119,26 +119,38 @@ template <typename P>
 void ConvAddCompute(const FusionConvAddParam &param) {
   param.Output()->InnerLoDTensor()->mutable_data<float>();
   if (param.Groups() == param.Input()->InnerLoDTensor()->dims()[1] &&
-      param.Input()->InnerLoDTensor()->dims()[1] == param.Output()->InnerLoDTensor()->dims()[1] &&
-     param.Filter()->InnerLoDTensor()->dims()[2] ==param.Filter()->InnerLoDTensor()->dims()[3] &&
-     param.Filter()->InnerLoDTensor()->dims()[2] == 3 && param.Strides()[0] == 1 &&
-      param.paddings_[0] == 1) {
-    math::DepthwiseConv3x3s1p1(param.Input()->InnerLoDTensor(),param.Filter()->InnerLoDTensor(), param.Output()->InnerLoDTensor(),
+      param.Input()->InnerLoDTensor()->dims()[1] ==
+          param.Output()->InnerLoDTensor()->dims()[1] &&
+      param.Filter()->InnerLoDTensor()->dims()[2] ==
+          param.Filter()->InnerLoDTensor()->dims()[3] &&
+      param.Filter()->InnerLoDTensor()->dims()[2] == 3 &&
+      param.Strides()[0] == 1 && param.paddings_[0] == 1) {
+    math::DepthwiseConv3x3s1p1(param.Input()->InnerLoDTensor(),
+                               param.Filter()->InnerLoDTensor(),
+                               param.Output()->InnerLoDTensor(),
                                param.Bias()->InnerLoDTensor(), true, false);
   } else if (param.Groups() == param.Input()->InnerLoDTensor()->dims()[1] &&
-             param.Input()->InnerLoDTensor()->dims()[1] == param.Output()->InnerLoDTensor()->dims()[1] &&
-            param.Filter()->InnerLoDTensor()->dims()[2] ==param.Filter()->InnerLoDTensor()->dims()[3] &&
-            param.Filter()->InnerLoDTensor()->dims()[2] == 3 && param.Strides()[0] == 2) {
-    //        math::DepthwiseConv3x3(param.Input()->InnerLoDTensor(), param.Strides(),
-    //        param.Paddings(),
-    //                              param.Filter()->InnerLoDTensor(), param.Bias()->InnerLoDTensor(),
+             param.Input()->InnerLoDTensor()->dims()[1] ==
+                 param.Output()->InnerLoDTensor()->dims()[1] &&
+             param.Filter()->InnerLoDTensor()->dims()[2] ==
+                 param.Filter()->InnerLoDTensor()->dims()[3] &&
+             param.Filter()->InnerLoDTensor()->dims()[2] == 3 &&
+             param.Strides()[0] == 2) {
+    //        math::DepthwiseConv3x3(param.Input()->InnerLoDTensor(),
+    //        param.Strides(), param.Paddings(),
+    //                              param.Filter()->InnerLoDTensor(),
+    //                              param.Bias()->InnerLoDTensor(),
     //                               param.Output()->InnerLoDTensor(), false);
     if (param.Paddings()[0] == 0) {
-      math::DepthwiseConv3x3s2p0(param.Input()->InnerLoDTensor(),param.Filter()->InnerLoDTensor(), param.Output()->InnerLoDTensor(),
+      math::DepthwiseConv3x3s2p0(param.Input()->InnerLoDTensor(),
+                                 param.Filter()->InnerLoDTensor(),
+                                 param.Output()->InnerLoDTensor(),
                                  param.Bias()->InnerLoDTensor(), true, false);
     } else {
-      math::DepthwiseConv3x3s2p1v2(param.Input()->InnerLoDTensor(),param.Filter()->InnerLoDTensor(),
-                                   param.Output()->InnerLoDTensor(), param.Bias()->InnerLoDTensor(), true, false);
+      math::DepthwiseConv3x3s2p1v2(param.Input()->InnerLoDTensor(),
+                                   param.Filter()->InnerLoDTensor(),
+                                   param.Output()->InnerLoDTensor(),
+                                   param.Bias()->InnerLoDTensor(), true, false);
     }
   } else {
     ConvAddBasic(param);

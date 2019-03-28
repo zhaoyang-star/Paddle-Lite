@@ -19,15 +19,23 @@ namespace paddle_mobile {
 namespace operators {
 
 void InitBaseConvKernel(ConvParam *param) {
-  bool conv3x3 = param->Filter()->InnerLoDTensor()->dims()[2] == param->Filter()->InnerLoDTensor()->dims()[3] &&
+  bool conv3x3 = param->Filter()->InnerLoDTensor()->dims()[2] ==
+                     param->Filter()->InnerLoDTensor()->dims()[3] &&
                  param->Filter()->InnerLoDTensor()->dims()[2] == 3;
-  bool conv5x5 = param->Filter()->InnerLoDTensor()->dims()[2] == param->Filter()->InnerLoDTensor()->dims()[3] &&
+  bool conv5x5 = param->Filter()->InnerLoDTensor()->dims()[2] ==
+                     param->Filter()->InnerLoDTensor()->dims()[3] &&
                  param->Filter()->InnerLoDTensor()->dims()[2] == 5;
-  bool depth3x3 = conv3x3 && param->Groups() == param->Input()->InnerLoDTensor()->dims()[1] &&
-                  param->Input()->InnerLoDTensor()->dims()[1] == param->Output()->InnerLoDTensor()->dims()[1];
+  bool depth3x3 =
+      conv3x3 &&
+      param->Groups() == param->Input()->InnerLoDTensor()->dims()[1] &&
+      param->Input()->InnerLoDTensor()->dims()[1] ==
+          param->Output()->InnerLoDTensor()->dims()[1];
 
-  bool depth5x5 = conv5x5 && param->Groups() == param->Input()->InnerLoDTensor()->dims()[1] &&
-                  param->Input()->InnerLoDTensor()->dims()[1] == param->Output()->InnerLoDTensor()->dims()[1];
+  bool depth5x5 =
+      conv5x5 &&
+      param->Groups() == param->Input()->InnerLoDTensor()->dims()[1] &&
+      param->Input()->InnerLoDTensor()->dims()[1] ==
+          param->Output()->InnerLoDTensor()->dims()[1];
   if (param->Filter()->InnerLoDTensor()->type() == typeid(int8_t)) {
 #ifndef __aarch64__
     if (depth3x3 && param->Strides()[0] < 3 &&
@@ -68,7 +76,8 @@ void InitBaseConvKernel(ConvParam *param) {
 
       //      param->transformed_filter_ = new framework::LoDTensor;
       operators::math::winograd_transform_weight<8, 3>(
-          *(param->Filter()->InnerLoDTensor()), param->TransformedFilter()->InnerLoDTensor());
+          *(param->Filter()->InnerLoDTensor()),
+          param->TransformedFilter()->InnerLoDTensor());
     } else {
       param->ExecMode() = ConvParam::EXEC_GEMM_FLOAT;
     }

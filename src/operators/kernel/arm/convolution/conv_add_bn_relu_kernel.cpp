@@ -51,9 +51,9 @@ bool ConvAddBNReluKernelCpu<float>::Init(FusionConvAddBNReluParam *param) {
   auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
   LoDTensor *new_scale = new_scale_w->MuteLodTensor();
   LoDTensor *new_bias = new_bias_w->MuteLodTensor();
- /* auto *new_scale = param->CreateNewScale<framework::LoDTensor>();
-  auto *new_bias = param->CreateNewBiase<framework::LoDTensor>();
-*/
+  /* auto *new_scale = param->CreateNewScale<framework::LoDTensor>();
+   auto *new_bias = param->CreateNewBiase<framework::LoDTensor>();
+ */
   auto new_scale_ptr = new_scale->mutable_data<float>({C});
   auto new_bias_ptr = new_bias->mutable_data<float>({C});
   for (int i = 0; i < C; i++) {
@@ -88,8 +88,9 @@ void ConvAddBNReluKernelCpu<float>::Compute(
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",
                                     param.ExecMode());
   }
-  math::ScaleAddChannelWise<RELU>(param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
-                                  param.NewBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
+  math::ScaleAddChannelWise<RELU>(
+      param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
+      param.NewBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
 }
 
 template class ConvAddBNReluKernelCpu<float>;

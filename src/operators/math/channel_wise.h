@@ -25,8 +25,8 @@ namespace operators {
 namespace math {
 
 template <ActivationType Act>
-void AddChannelWise(framework::Tensor *input,
-                     framework::Tensor *bias, framework::Tensor *output) {
+void AddChannelWise(framework::Tensor *input, framework::Tensor *bias,
+                    framework::Tensor *output) {
   const float *input_ptr = input->data<float>();
   const float *bias_ptr = bias->data<float>();
   float *output_ptr = output->mutable_data<float>();
@@ -77,10 +77,8 @@ void AddChannelWise(framework::Tensor *input,
 }
 
 template <ActivationType Act>
-void ScaleAddChannelWise(framework::Tensor *input,
-                          framework::Tensor *scale,
-                          framework::Tensor *bias,
-                         framework::Tensor *output) {
+void ScaleAddChannelWise(framework::Tensor *input, framework::Tensor *scale,
+                         framework::Tensor *bias, framework::Tensor *output) {
   const float *input_ptr = input->data<float>();
   const float *scale_ptr = scale->data<float>();
   const float *bias_ptr = bias->data<float>();

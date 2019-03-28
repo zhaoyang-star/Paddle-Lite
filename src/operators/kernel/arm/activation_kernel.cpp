@@ -84,7 +84,6 @@ bool Relu6KernelCpu<float>::Init(ReluParam *param) {
 }
 template <>
 void Relu6KernelCpu<float>::Compute(const ReluParam &param) {
-
   LoDTensor *output = param.Out()->InnerLoDTensor();
   ActivationCompute<float, RELU6>()(param.InputX()->InnerLoDTensor(), output);
   output->set_lod(param.InputX()->InnerLoDTensor()->lod());

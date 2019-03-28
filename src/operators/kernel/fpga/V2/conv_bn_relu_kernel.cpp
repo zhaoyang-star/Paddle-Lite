@@ -32,8 +32,9 @@ bool ConvBNReluKernel<FPGA, float>::Init(FusionConvBNReluParam<FPGA> *param) {
   auto bn_scale_ptr = param->InputScale()->InnerLoDTensor()->data<float>();
   auto bn_bias_ptr = param->InputBias()->InnerLoDTensor()->data<float>();
   const float epsilon = param->Epsilon();
-  PADDLE_MOBILE_ENFORCE(out->dims()[1] == param->InputBias()->InnerLoDTensor()->dims()[0],
-                        "Output channel should be equal to bias number");
+  PADDLE_MOBILE_ENFORCE(
+      out->dims()[1] == param->InputBias()->InnerLoDTensor()->dims()[0],
+      "Output channel should be equal to bias number");
   const int channel = out->dims()[1];
   auto bs_ptr =
       (float *)fpga::fpga_malloc(2 * channel * sizeof(float));  // NOLINT

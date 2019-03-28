@@ -63,7 +63,6 @@ typedef RunTimeType OpType;
 #define MEM_GPU KERNEL_GPU
 #define MEM_UNKNOWN -1
 
-
 //! data type
 enum DataType {
   PM_INVALID = -1,

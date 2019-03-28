@@ -84,8 +84,9 @@ void DWConvBNReluKernelCpu<float>::Compute(
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",
                                     param.ExecMode());
   }
-  math::ScaleAddChannelWise<RELU>(param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
-                                  param.NewBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
+  math::ScaleAddChannelWise<RELU>(
+      param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
+      param.NewBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
 }
 
 template class DWConvBNReluKernelCpu<float>;

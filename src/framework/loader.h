@@ -48,7 +48,6 @@ class Loader {
                                       bool optimize = false,
                                       bool quantification = false);
 
-
  private:
   const Program<T> LoadProgram(const std::string &model_path,
                                bool optimize = false,

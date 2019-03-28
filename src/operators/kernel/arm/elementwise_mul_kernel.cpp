@@ -28,7 +28,8 @@ bool ElementwiseMulKernelCpu<float>::Init(ElementwiseMulParam *param) {
 template <>
 void ElementwiseMulKernelCpu<float>::Compute(const ElementwiseMulParam &param) {
   ElementwiseMulCompute<float>(param);
-  param.Out()->InnerLoDTensor()->set_lod(param.InputX()->InnerLoDTensor()->lod());
+  param.Out()->InnerLoDTensor()->set_lod(
+      param.InputX()->InnerLoDTensor()->lod());
 }
 
 }  // namespace operators

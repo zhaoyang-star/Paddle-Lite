@@ -27,12 +27,12 @@ void winograd_transform_weight(framework::Tensor &weight,
                                framework::Tensor *output);
 
 template <int tile, int kernel>
-void winograd_transform_input( framework::Tensor &input,
+void winograd_transform_input(framework::Tensor &input,
                               framework::Tensor *output);
 
 template <int tile, int kernel>
-void winograd_transform_output( framework::Tensor &input,
-                                framework::Tensor &weight,
+void winograd_transform_output(framework::Tensor &input,
+                               framework::Tensor &weight,
                                framework::Tensor *output);
 
 }  // namespace math

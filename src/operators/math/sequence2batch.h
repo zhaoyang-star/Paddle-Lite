@@ -33,7 +33,7 @@ class CopyMatrixRowsFunctor {
                   framework::Tensor* dst, bool is_src_index);
 };
 
-template <typename DeviceType,typename T>
+template <typename DeviceType, typename T>
 class LoDTensor2BatchFunctor {
   // Calculate the length of each sequence and
   // sort sequence index by the length.

@@ -24,7 +24,8 @@ void ShapeOp<T>::InferShape() const {
                         "Input (Input) of get_shape op should not be null.");
   PADDLE_MOBILE_ENFORCE(this->param_.Out()->InnerLoDTensor() != nullptr,
                         "Output (Out) of get_shape op should not be null.");
-  this->param_.Out()->InnerLoDTensor()->Resize({this->param_.Input()->InnerLoDTensor()->dims().size()});
+  this->param_.Out()->InnerLoDTensor()->Resize(
+      {this->param_.Input()->InnerLoDTensor()->dims().size()});
 }
 
 }  // namespace operators

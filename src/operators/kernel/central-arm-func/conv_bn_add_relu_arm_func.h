@@ -120,23 +120,32 @@ void ConvBNAddReluCompute(const FusionConvBNAddReluParam &param) {
   Tensor Bias;
   Bias.mutable_data<float>({param.Groups()});
   if (param.Groups() == param.Input()->InnerLoDTensor()->dims()[1] &&
-      param.Input()->InnerLoDTensor()->dims()[1] == param.Output()->InnerLoDTensor()->dims()[1] &&
-     param.Filter()->InnerLoDTensor()->dims()[2] ==param.Filter()->InnerLoDTensor()->dims()[3] &&
-     param.Filter()->InnerLoDTensor()->dims()[2] == 3 && param.Strides()[0] == 1 &&
-      param.paddings_[0] == 1) {
-    math::DepthwiseConvAddBNRelu3x3s1p1(param.Input()->InnerLoDTensor(),param.Filter()->InnerLoDTensor(),
-                                        param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
-                                        param.NewBias()->InnerLoDTensor(), true);
+      param.Input()->InnerLoDTensor()->dims()[1] ==
+          param.Output()->InnerLoDTensor()->dims()[1] &&
+      param.Filter()->InnerLoDTensor()->dims()[2] ==
+          param.Filter()->InnerLoDTensor()->dims()[3] &&
+      param.Filter()->InnerLoDTensor()->dims()[2] == 3 &&
+      param.Strides()[0] == 1 && param.paddings_[0] == 1) {
+    math::DepthwiseConvAddBNRelu3x3s1p1(
+        param.Input()->InnerLoDTensor(), param.Filter()->InnerLoDTensor(),
+        param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
+        param.NewBias()->InnerLoDTensor(), true);
   } else if (param.Groups() == param.Input()->InnerLoDTensor()->dims()[1] &&
-             param.Input()->InnerLoDTensor()->dims()[1] == param.Output()->InnerLoDTensor()->dims()[1] &&
-            param.Filter()->InnerLoDTensor()->dims()[2] ==param.Filter()->InnerLoDTensor()->dims()[3] &&
-            param.Filter()->InnerLoDTensor()->dims()[2] == 3 && param.Strides()[0] == 2) {
+             param.Input()->InnerLoDTensor()->dims()[1] ==
+                 param.Output()->InnerLoDTensor()->dims()[1] &&
+             param.Filter()->InnerLoDTensor()->dims()[2] ==
+                 param.Filter()->InnerLoDTensor()->dims()[3] &&
+             param.Filter()->InnerLoDTensor()->dims()[2] == 3 &&
+             param.Strides()[0] == 2) {
     //    math::DepthwiseConvAddBNRelu3x3s2p1(param.Input()->InnerLoDTensor(),param.Filter()->InnerLoDTensor(),
-    //                                        param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
-    //                                        param.NewBias()->InnerLoDTensor(), 1);
-    math::DepthwiseConvAddBNRelu3x3s2p1v2(param.Input()->InnerLoDTensor(),param.Filter()->InnerLoDTensor(),
-                                          param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
-                                          param.NewBias()->InnerLoDTensor(), true);
+    //                                        param.Output()->InnerLoDTensor(),
+    //                                        param.NewScale()->InnerLoDTensor(),
+    //                                        param.NewBias()->InnerLoDTensor(),
+    //                                        1);
+    math::DepthwiseConvAddBNRelu3x3s2p1v2(
+        param.Input()->InnerLoDTensor(), param.Filter()->InnerLoDTensor(),
+        param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
+        param.NewBias()->InnerLoDTensor(), true);
   } else {
     ConvBNAddReluBasic(param);
   }

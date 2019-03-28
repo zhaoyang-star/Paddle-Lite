@@ -28,7 +28,8 @@ bool MulKernelCpu<float>::Init(MulParam *param) {
 template <>
 void MulKernelCpu<float>::Compute(const MulParam &param) {
   MulCompute<float>(param);
-  param.Out()->InnerLoDTensor()->set_lod(param.InputX()->InnerLoDTensor()->lod());
+  param.Out()->InnerLoDTensor()->set_lod(
+      param.InputX()->InnerLoDTensor()->lod());
 }
 
 template class MulKernelCpu<float>;

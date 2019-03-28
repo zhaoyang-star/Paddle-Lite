@@ -20,7 +20,8 @@ namespace paddle_mobile {
 namespace operators {
 template <typename T>
 void SoftmaxOp<T>::InferShape() const {
-  this->param_.Out()->InnerLoDTensor()->Resize(this->param_.InputX()->InnerLoDTensor()->dims());
+  this->param_.Out()->InnerLoDTensor()->Resize(
+      this->param_.InputX()->InnerLoDTensor()->dims());
 }
 
 }  // namespace operators

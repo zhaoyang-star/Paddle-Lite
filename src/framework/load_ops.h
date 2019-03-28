@@ -15,7 +15,7 @@ limitations under the License. */
 #pragma once
 
 #ifdef PADDLE_MOBILE_CPU
-#define LOAD_CPU_OP(op_type)                                           \
+#define LOAD_CPU_OP(op_type)                                      \
   extern int TouchOpRegistrar_##op_type##_();                     \
   static int use_op_itself_##op_type##_ __attribute__((unused)) = \
       TouchOpRegistrar_##op_type##_()

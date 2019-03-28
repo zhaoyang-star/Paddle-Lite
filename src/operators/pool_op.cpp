@@ -53,7 +53,8 @@ void PoolOp<T>::InferShape() const {
     output_shape.push_back(PoolOutputSize(in_x_dims[i + 2], ksize[i],
                                           paddings[i], strides[i], ceil_mode));
   }
-  this->param_.Output()->InnerLoDTensor()->Resize(framework::make_ddim(output_shape));
+  this->param_.Output()->InnerLoDTensor()->Resize(
+      framework::make_ddim(output_shape));
 }
 
 }  // namespace operators

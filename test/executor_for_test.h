@@ -14,9 +14,9 @@ limitations under the License. */
 
 #pragma once
 
+#include <framework/executor_cpu_impl.h>
 #include <string>
 #include <vector>
-#include <framework/executor_cpu_impl.h>
 
 #include "common/log.h"
 #include "framework/executor_common_impl.h"
@@ -43,8 +43,7 @@ using std::vector;
 template <typename OpType>
 class Executor4Test : public ExecutorCpu<float> {
  public:
-  Executor4Test(Program<float> p, string op_type,
-                bool use_optimize = false)
+  Executor4Test(Program<float> p, string op_type, bool use_optimize = false)
       : ExecutorCpu() {
     this->use_optimize_ = use_optimize;
     this->program_ = p;
@@ -67,8 +66,8 @@ class Executor4Test : public ExecutorCpu<float> {
         DLOG << "匹配到: " << op->Type();
 
         /// test first meeting op in program
-        std::shared_ptr<paddle_mobile::framework::OperatorBase>
-            op_ptr = paddle_mobile::framework::OpRegistry::CreateOp(
+        std::shared_ptr<paddle_mobile::framework::OperatorBase> op_ptr =
+            paddle_mobile::framework::OpRegistry::CreateOp(
                 op->Type(), op->GetInputs(), op->GetOutputs(), op->GetAttrMap(),
                 this->program_.scope.get());
         this->ops_of_block0_.push_back(op_ptr);

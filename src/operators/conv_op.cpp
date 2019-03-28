@@ -25,7 +25,6 @@ namespace operators {
 
 template <typename T>
 void ConvOp<T>::InferShape() const {
-
   auto in_dims = this->param_.Input()->InnerLoDTensor()->dims();
   auto filter_dims = this->param_.Filter()->InnerLoDTensor()->dims();
   const std::vector<int> &strides = this->param_.Strides();

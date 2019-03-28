@@ -37,7 +37,8 @@ template <>
 void FeedKernel<FPGA, float>::Compute(const FeedParam<FPGA> &param) {
   auto output = param.Out()->InnerLoDTensor();
   int col = param.Col();
-  auto input = const_cast<LoDTensor *>(&param.InputX()->InnerLoDTensor()->at(col));
+  auto input =
+      const_cast<LoDTensor *>(&param.InputX()->InnerLoDTensor()->at(col));
   std::type_index input_type = input->type();
 
   if (input_type == typeid(float)) {
