@@ -27,7 +27,7 @@ bool PriorBoxKernelGpu<float>::Init(PriorBoxParam *param) {
 
 template <>
 void PriorBoxKernelGpu<float>::Compute(const PriorBoxParam &param) {
-  const auto *input_ = param.Input();
+  const auto *input_ = param.Input()->InnerCLImage();
   const auto &input_dims = input_->dims();
 
   const auto &input_image_dims = param.InputImage()->dims();

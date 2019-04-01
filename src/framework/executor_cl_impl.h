@@ -30,11 +30,12 @@ namespace paddle_mobile {
 namespace framework {
 
 template <typename T = float>
-class Executor {
+class ExecutorClImpl {
  public:
-  Executor(const Program<T> &program,
-           paddle_mobile::PaddleMobileConfigInternal config, int batch_size = 1,
-           const bool use_optimize = true, const bool lod_mode = false);
+  ExecutorClImpl(const Program<T> &program,
+                 paddle_mobile::PaddleMobileConfigInternal config,
+                 int batch_size = 1, const bool use_optimize = true,
+                 const bool lod_mode = false);
 
   void SetThreadNum(int threads);
 
@@ -67,7 +68,7 @@ class Executor {
 #endif
 
  protected:
-  Executor() = default;
+  ExecutorClImpl() = default;
 
   bool varInputMemory(const std::shared_ptr<VarDesc> &var_desc,
                       Variable *var) const;
@@ -75,8 +76,6 @@ class Executor {
   void InitMemory();
   void InitCombineMemory();
   void InitNoPersistableMemory(const Tensor &input_tensor);
-  void LoadMemory(void **data, const std::shared_ptr<VarDesc> var_desc,
-                  LoDTensor *tensor);
 #ifdef PADDLE_MOBILE_CL
   void LoadMemory(const VarDesc var_desc, float *tensorInput, char **data);
 #endif

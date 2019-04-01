@@ -21,9 +21,9 @@ namespace operators {
 
 template <>
 bool ConcatKernelGpu<float>::Init(ConcatParam *param) {
-  if (param->Out()->dims().size() < 4) {
+  if (param->Out()->InnerCLImage()->dims().size() < 4) {
     this->cl_helper_.AddKernel("concatByH", "concat_kernel.cl");
-  } else if (param->Out()->dims().size() == 4) {
+  } else if (param->Out()->InnerCLImage()->dims().size() == 4) {
     this->cl_helper_.AddKernel("concatByC0", "concat_kernel.cl");
     this->cl_helper_.AddKernel("concatByC", "concat_kernel.cl");
   }
@@ -33,21 +33,22 @@ bool ConcatKernelGpu<float>::Init(ConcatParam *param) {
 template <>
 void ConcatKernelGpu<float>::Compute(const ConcatParam &param) {
   DLOG << "yangfei50";
-  DLOG << param.Out()->dims();
-  if (param.Out()->dims().size() < 4) {
+  DLOG << param.Out()->InnerCLImage()->dims();
+  if (param.Out()->InnerCLImage()->dims().size() < 4) {
     auto kernel = this->cl_helper_.KernelAt(0);
     auto inputs = param.Inputs();
-    auto *output_image = param.Out()->GetCLImage();
+    auto *output_image = param.Out()->InnerCLImage()->GetCLImage();
     int out_W = 0;
-    if (param.Out()->dims().size() == 3) {
-      out_W = param.Out()->dims()[2];
-    } else if (param.Out()->dims().size() == 2) {
-      out_W = param.Out()->dims()[1];
+    if (param.Out()->InnerCLImage()->dims().size() == 3) {
+      out_W = param.Out()->InnerCLImage()->dims()[2];
+    } else if (param.Out()->InnerCLImage()->dims().size() == 2) {
+      out_W = param.Out()->InnerCLImage()->dims()[1];
     }
     int out_H_Start = 0;
     for (int i = 0; i < inputs.size(); i++) {
-      auto input_image = inputs[i]->GetCLImage();
-      auto default_work_size = this->cl_helper_.DefaultWorkSize(*inputs[i]);
+      auto input_image = inputs[i]->InnerCLImage()->GetCLImage();
+      auto default_work_size =
+          this->cl_helper_.DefaultWorkSize(*inputs[i]->InnerCLImage());
       cl_int status;
       status = clSetKernelArg(kernel, 0, sizeof(cl_mem), &input_image);
       CL_CHECK_ERRORS(status);
@@ -61,22 +62,23 @@ void ConcatKernelGpu<float>::Compute(const ConcatParam &param) {
           this->cl_helper_.CLCommandQueue(), kernel, default_work_size.size(),
           NULL, default_work_size.data(), NULL, 0, NULL, NULL);
       CL_CHECK_ERRORS(status);
-      if (param.Out()->dims().size() == 3) {
-        out_H_Start += inputs[i]->dims()[1];
-      } else if (param.Out()->dims().size() == 2) {
-        out_H_Start += inputs[i]->dims()[0];
+      if (param.Out()->InnerCLImage()->dims().size() == 3) {
+        out_H_Start += inputs[i]->InnerCLImage()->dims()[1];
+      } else if (param.Out()->InnerCLImage()->dims().size() == 2) {
+        out_H_Start += inputs[i]->InnerCLImage()->dims()[0];
       }
     }
   } else {
     auto kernel0 = this->cl_helper_.KernelAt(0);
     auto kernel1 = this->cl_helper_.KernelAt(1);
     auto inputs = param.Inputs();
-    auto *output_image = param.Out()->GetCLImage();
+    auto *output_image = param.Out()->InnerCLImage()->GetCLImage();
 
     int out_C_Start = 0;
-    auto input_image = inputs[0]->GetCLImage();
-    auto default_work_size = this->cl_helper_.DefaultWorkSize(*inputs[0]);
-    int out_W = param.Out()->dims()[3];
+    auto input_image = inputs[0]->InnerCLImage()->GetCLImage();
+    auto default_work_size =
+        this->cl_helper_.DefaultWorkSize(*inputs[0]->InnerCLImage());
+    int out_W = param.Out()->InnerCLImage()->dims()[3];
     cl_int status;
     status = clSetKernelArg(kernel0, 0, sizeof(cl_mem), &input_image);
     CL_CHECK_ERRORS(status);
@@ -88,17 +90,18 @@ void ConcatKernelGpu<float>::Compute(const ConcatParam &param) {
         this->cl_helper_.CLCommandQueue(), kernel0, default_work_size.size(),
         NULL, default_work_size.data(), NULL, 0, NULL, NULL);
     CL_CHECK_ERRORS(status);
-    out_C_Start += inputs[0]->dims()[1];
+    out_C_Start += inputs[0]->InnerCLImage()->dims()[1];
     for (int i = 1; i < inputs.size(); i++) {
-      auto input_image1 = inputs[i - 1]->GetCLImage();
-      auto input_image2 = inputs[i]->GetCLImage();
-      default_work_size = this->cl_helper_.DefaultWorkSize(*inputs[i]);
-      int out_C = param.Out()->dims()[1];
-      int out_H = param.Out()->dims()[2];
-      int in_W = inputs[i]->dims()[3];
-      int in_H = inputs[i]->dims()[2];
-      int in_C1 = inputs[i - 1]->dims()[1];
-      int in_C2 = inputs[i]->dims()[1];
+      auto input_image1 = inputs[i - 1]->InnerCLImage()->GetCLImage();
+      auto input_image2 = inputs[i]->InnerCLImage()->GetCLImage();
+      default_work_size =
+          this->cl_helper_.DefaultWorkSize(*inputs[i]->InnerCLImage());
+      int out_C = param.Out()->InnerCLImage()->dims()[1];
+      int out_H = param.Out()->InnerCLImage()->dims()[2];
+      int in_W = inputs[i]->InnerCLImage()->dims()[3];
+      int in_H = inputs[i]->InnerCLImage()->dims()[2];
+      int in_C1 = inputs[i - 1]->InnerCLImage()->dims()[1];
+      int in_C2 = inputs[i]->InnerCLImage()->dims()[1];
       DLOG << "第" << i << "个";
       DLOG << "out_C=" << out_C;
       DLOG << "out_H=" << out_H;
@@ -135,7 +138,7 @@ void ConcatKernelGpu<float>::Compute(const ConcatParam &param) {
           NULL, default_work_size.data(), NULL, 0, NULL, NULL);
       CL_CHECK_ERRORS(status);
 
-      out_C_Start += inputs[i]->dims()[1];
+      out_C_Start += inputs[i]->InnerCLImage()->dims()[1];
     }
   }
 }

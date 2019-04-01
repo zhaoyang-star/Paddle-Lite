@@ -14,7 +14,7 @@ limitations under the License. */
 
 #pragma once
 
-#include <framework/executor_cpu_impl.h>
+#include <framework/executor.h>
 #include <string>
 #include <vector>
 
@@ -31,7 +31,7 @@ limitations under the License. */
 
 using paddle_mobile::framework::BlockDesc;
 using paddle_mobile::framework::DDim;
-using paddle_mobile::framework::ExecutorCpu;
+using paddle_mobile::framework::Executor;
 using paddle_mobile::framework::LoDTensor;
 using paddle_mobile::framework::OpDesc;
 using paddle_mobile::framework::Program;
@@ -41,10 +41,10 @@ using std::string;
 using std::vector;
 
 template <typename OpType>
-class Executor4Test : public ExecutorCpu<float> {
+class Executor4Test : public Executor<float> {
  public:
   Executor4Test(Program<float> p, string op_type, bool use_optimize = false)
-      : ExecutorCpu() {
+      : Executor() {
     this->use_optimize_ = use_optimize;
     this->program_ = p;
     if (this->use_optimize_) {

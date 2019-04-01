@@ -28,11 +28,12 @@ bool DropoutKernelGpu<float>::Init(DropoutParam *param) {
 template <>
 void DropoutKernelGpu<float>::Compute(const DropoutParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
-  auto default_work_size = this->cl_helper_.DefaultWorkSize(*(param.Out()));
-  auto *input_image = param.InputX()->GetCLImage();
-  auto *output_image = param.Out()->GetCLImage();
+  auto default_work_size =
+      this->cl_helper_.DefaultWorkSize(*(param.Out()->InnerCLImage()));
+  auto *input_image = param.InputX()->InnerCLImage()->GetCLImage();
+  auto *output_image = param.Out()->InnerCLImage()->GetCLImage();
   const float dropoutProb = param.DropoutProb();
-  const auto &inputDim = param.InputX()->dims();
+  const auto &inputDim = param.InputX()->InnerCLImage()->dims();
   int input_dims[4] = {1, 1, 1, 1};
   // 1 1000 1 1
   for (int i = 0; i < inputDim.size(); i++) {

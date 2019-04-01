@@ -66,9 +66,7 @@ class OpDesc {
 
   void SetAttrMap(AttributeMap attrs) { attrs_ = attrs; }
 
-  void SetComputeType(int compute_type) {
-    compute_type_ = compute_type;
-  }
+  void SetComputeType(int compute_type) { compute_type_ = compute_type; }
 
  private:
   std::string type_;

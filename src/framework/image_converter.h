@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
+/* Copyright (c) 2019 PaddlePaddle Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,25 +14,27 @@ limitations under the License. */
 
 #pragma once
 
-#include <map>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
-#include "common/types.h"
-#include "common/util.h"
-#include "framework/lod_tensor.h"
-#include "framework/operator.h"
-#include "framework/program/program.h"
-#include "framework/tensor.h"
+#include "framework/cl/cl_helper.h"
 
 namespace paddle_mobile {
 namespace framework {
-
-template <typename T = float>
-class ExecutorBase {
+class ImageConverterHelper {
  public:
-};
+  void Init(CLScope * scope) {
+    helper_global = CLHelper(scope);
+    helper_global.AddKernel("feed", "feed_kernel.cl");
+    helper_global.AddKernel("fetch", "fetch_kernel.cl");
+  }
+  static ImageConverterHelper *Instance() {
+    static ImageConverterHelper converter_;
+    return &converter_;
+  }
 
+  CLHelper *GetClHelper(){
+    return &helper_global;
+  }
+private:
+  CLHelper helper_global;
+};
 }  // namespace framework
 }  // namespace paddle_mobile

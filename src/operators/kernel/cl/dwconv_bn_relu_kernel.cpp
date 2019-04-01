@@ -22,14 +22,14 @@ namespace operators {
 
 template <>
 bool DWConvBNReluKernelGpu<float>::Init(FusionDWConvBNReluParam *param) {
-  PADDLE_MOBILE_ENFORCE(
-      param->Filter()->dims()[2] == param->Filter()->dims()[3] &&
-          param->Paddings()[0] == param->Paddings()[1],
-      "need equal");
-  const framework::CLImage *mean = param->InputMean();
-  const framework::CLImage *variance = param->InputVariance();
-  const framework::CLImage *scale = param->InputScale();
-  const framework::CLImage *bias = param->InputBias();
+  PADDLE_MOBILE_ENFORCE(param->Filter()->InnerCLImage()->dims()[2] ==
+                                param->Filter()->InnerCLImage()->dims()[3] &&
+                            param->Paddings()[0] == param->Paddings()[1],
+                        "need equal");
+  const framework::CLImage *mean = param->InputMean()->InnerCLImage();
+  const framework::CLImage *variance = param->InputVariance()->InnerCLImage();
+  const framework::CLImage *scale = param->InputScale()->InnerCLImage();
+  const framework::CLImage *bias = param->InputBias()->InnerCLImage();
   const float epsilon = param->Epsilon();
 
   const int C = mean->numel();
@@ -76,18 +76,19 @@ bool DWConvBNReluKernelGpu<float>::Init(FusionDWConvBNReluParam *param) {
   delete[](new_scale_ptr);
   delete[](new_bias_ptr);
 
-  PADDLE_MOBILE_ENFORCE(
-      param->Filter()->dims()[2] == param->Filter()->dims()[3] &&
-          param->Paddings()[0] == param->Paddings()[1],
-      "need equal");
+  PADDLE_MOBILE_ENFORCE(param->Filter()->InnerCLImage()->dims()[2] ==
+                                param->Filter()->InnerCLImage()->dims()[3] &&
+                            param->Paddings()[0] == param->Paddings()[1],
+                        "need equal");
 
-  int offset = static_cast<int>(param->Filter()->dims()[2]) / 2 -
-               static_cast<int>(param->Paddings()[1]);
+  int offset =
+      static_cast<int>(param->Filter()->InnerCLImage()->dims()[2]) / 2 -
+      static_cast<int>(param->Paddings()[1]);
 
   param->SetOffset(offset);
 
-  param->Filter()->InitDWImage(cl_helper_.CLContext(),
-                               cl_helper_.CLCommandQueue());
+  param->Filter()->InnerCLImage()->InitDWImage(cl_helper_.CLContext(),
+                                               cl_helper_.CLCommandQueue());
   this->cl_helper_.AddKernel("depth_conv_3x3", "conv_bn_relu_kernel.cl");
   DLOG << " conv bn relu depth_conv_3x3";
 
@@ -98,25 +99,26 @@ template <>
 void DWConvBNReluKernelGpu<float>::Compute(
     const FusionDWConvBNReluParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
-  auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.Output());
+  auto default_work_size =
+      this->cl_helper_.DefaultWorkSize(*param.Output()->InnerCLImage());
   int c_block = default_work_size[0];
   int w = default_work_size[1];
   int nh = default_work_size[2];
-  auto input = param.Input()->GetCLImage();
-  auto filter = param.Filter()->GetCLImage();
-  auto new_scale = param.NewScale()->GetCLImage();
-  auto new_bias = param.NewBias()->GetCLImage();
-  auto output = param.Output()->GetCLImage();
+  auto input = param.Input()->InnerCLImage()->GetCLImage();
+  auto filter = param.Filter()->InnerCLImage()->GetCLImage();
+  auto new_scale = param.NewScale()->InnerCLImage()->GetCLImage();
+  auto new_bias = param.NewBias()->InnerCLImage()->GetCLImage();
+  auto output = param.Output()->InnerCLImage()->GetCLImage();
   int stride = param.Strides()[0];
   int offset = param.Offset();
   int input_c = reinterpret_cast<framework::CLImageConverterFolder *>(
-                    param.Input()->Converter())
+                    param.Input()->InnerCLImage()->Converter())
                     ->GetCBlock();
   int dilation = param.Dilations()[0];
-  int input_width = param.Input()->dims()[3];
-  int input_height = param.Input()->dims()[2];
-  int output_width = param.Output()->dims()[3];
-  int output_height = param.Output()->dims()[2];
+  int input_width = param.Input()->InnerCLImage()->dims()[3];
+  int input_height = param.Input()->InnerCLImage()->dims()[2];
+  int output_width = param.Output()->InnerCLImage()->dims()[3];
+  int output_height = param.Output()->InnerCLImage()->dims()[2];
 
   cl_int status;
 

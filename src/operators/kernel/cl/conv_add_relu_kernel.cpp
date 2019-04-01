@@ -21,45 +21,48 @@ namespace operators {
 
 template <>
 bool ConvAddReluKernelGpu<float>::Init(FusionConvAddReluParam *param) {
-  PADDLE_MOBILE_ENFORCE(
-      param->Filter()->dims()[2] == param->Filter()->dims()[3] &&
-          param->Paddings()[0] == param->Paddings()[1],
-      "need equal");
-  param->Bias()->InitCLImage(cl_helper_.CLContext(),
-                             this->cl_helper_.CLCommandQueue());
+  PADDLE_MOBILE_ENFORCE(param->Filter()->InnerCLImage()->dims()[2] ==
+                                param->Filter()->InnerCLImage()->dims()[3] &&
+                            param->Paddings()[0] == param->Paddings()[1],
+                        "need equal");
+  param->Bias()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
+                                             this->cl_helper_.CLCommandQueue());
 
-  int offset = static_cast<int>(param->Filter()->dims()[2]) / 2 -
-               static_cast<int>(param->Paddings()[1]);
+  int offset =
+      static_cast<int>(param->Filter()->InnerCLImage()->dims()[2]) / 2 -
+      static_cast<int>(param->Paddings()[1]);
   param->SetOffset(offset);
 
-  if (param->Filter()->dims()[2] == 1 && param->Filter()->dims()[3] == 1) {
-    param->Filter()->InitNImage(cl_helper_.CLContext(),
-                                cl_helper_.CLCommandQueue());
+  if (param->Filter()->InnerCLImage()->dims()[2] == 1 &&
+      param->Filter()->InnerCLImage()->dims()[3] == 1) {
+    param->Filter()->InnerCLImage()->InitNImage(cl_helper_.CLContext(),
+                                                cl_helper_.CLCommandQueue());
 
     this->cl_helper_.AddKernel("conv_1x1", "conv_add_relu_kernel.cl");
-  } else if (param->Filter()->dims()[1] == 1 &&
-             param->Input()->dims()[1] == param->Output()->dims()[1] &&
-             param->Filter()->dims()[2] == 3) {
-    param->Filter()->InitDWImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+  } else if (param->Filter()->InnerCLImage()->dims()[1] == 1 &&
+             param->Input()->InnerCLImage()->dims()[1] ==
+                 param->Output()->InnerCLImage()->dims()[1] &&
+             param->Filter()->InnerCLImage()->dims()[2] == 3) {
+    param->Filter()->InnerCLImage()->InitDWImage(cl_helper_.CLContext(),
+                                                 cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("depth_conv_3x3", "conv_add_relu_kernel.cl");
 
-  } else if (param->Filter()->dims()[2] == 3 &&
-             param->Filter()->dims()[3] == 3) {
-    param->Filter()->InitCLImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+  } else if (param->Filter()->InnerCLImage()->dims()[2] == 3 &&
+             param->Filter()->InnerCLImage()->dims()[3] == 3) {
+    param->Filter()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
+                                                 cl_helper_.CLCommandQueue());
 
     this->cl_helper_.AddKernel("conv_3x3", "conv_add_relu_kernel.cl");
 
-  } else if (param->Filter()->dims()[2] == 7 &&
-             param->Filter()->dims()[3] == 7) {
-    param->Filter()->InitCLImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+  } else if (param->Filter()->InnerCLImage()->dims()[2] == 7 &&
+             param->Filter()->InnerCLImage()->dims()[3] == 7) {
+    param->Filter()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
+                                                 cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("conv_7x7", "conv_add_relu_kernel.cl");
-  } else if (param->Filter()->dims()[2] == 5 &&
-             param->Filter()->dims()[3] == 5) {
-    param->Filter()->InitCLImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+  } else if (param->Filter()->InnerCLImage()->dims()[2] == 5 &&
+             param->Filter()->InnerCLImage()->dims()[3] == 5) {
+    param->Filter()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
+                                                 cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("conv_5x5", "conv_add_relu_kernel.cl");
   } else {
     PADDLE_MOBILE_THROW_EXCEPTION(" not support ");
@@ -71,28 +74,29 @@ bool ConvAddReluKernelGpu<float>::Init(FusionConvAddReluParam *param) {
 template <>
 void ConvAddReluKernelGpu<float>::Compute(const FusionConvAddReluParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
-  auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.Output());
+  auto default_work_size =
+      this->cl_helper_.DefaultWorkSize(*param.Output()->InnerCLImage());
   int c_block = default_work_size[0];
   int w = default_work_size[1];
   int nh = default_work_size[2];
-  auto input = param.Input()->GetCLImage();
-  auto filter = param.Filter()->GetCLImage();
+  auto input = param.Input()->InnerCLImage()->GetCLImage();
+  auto filter = param.Filter()->InnerCLImage()->GetCLImage();
   DLOG << "---yangfei30---";
-  DLOG << *param.Filter();
+  DLOG << *param.Filter()->InnerCLImage();
   DLOG << param.Paddings();
-  auto biase = param.Bias()->GetCLImage();
-  auto output = param.Output()->GetCLImage();
+  auto biase = param.Bias()->InnerCLImage()->GetCLImage();
+  auto output = param.Output()->InnerCLImage()->GetCLImage();
   int stride = param.Strides()[0];
   int offset = param.Offset();
   int input_c = reinterpret_cast<framework::CLImageConverterFolder *>(
-                    param.Input()->Converter())
+                    param.Input()->InnerCLImage()->Converter())
                     ->GetCBlock();
   int dilation = param.Dilations()[0];
 
-  int input_width = param.Input()->dims()[3];
-  int input_height = param.Input()->dims()[2];
-  int output_width = param.Output()->dims()[3];
-  int output_height = param.Output()->dims()[2];
+  int input_width = param.Input()->InnerCLImage()->dims()[3];
+  int input_height = param.Input()->InnerCLImage()->dims()[2];
+  int output_width = param.Output()->InnerCLImage()->dims()[3];
+  int output_height = param.Output()->InnerCLImage()->dims()[2];
 
   cl_int status;
 
@@ -141,8 +145,8 @@ void ConvAddReluKernelGpu<float>::Compute(const FusionConvAddReluParam &param) {
   status = clSetKernelArg(kernel, 14, sizeof(int), &output_height);
   CL_CHECK_ERRORS(status);
 
-  //  cl_event out_event = param.Output()->GetClEvent();
-  //  cl_event wait_event = param.Input()->GetClEvent();
+  //  cl_event out_event = param.Output()->InnerCLImage()->GetClEvent();
+  //  cl_event wait_event = param.Input()->InnerCLImage()->GetClEvent();
 
   status = clEnqueueNDRangeKernel(
       this->cl_helper_.CLCommandQueue(), kernel, default_work_size.size(), NULL,

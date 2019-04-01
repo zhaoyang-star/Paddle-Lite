@@ -28,76 +28,55 @@ template <typename T>
 void Loader<T>::InitMemoryFromProgram(
     const std::shared_ptr<ProgramDesc> &originProgramDesc,
     const std::shared_ptr<Scope> &scope) {
+  for (const auto &block : originProgramDesc.get()->Blocks()) {
+    for (const auto &var_desc : block->Vars()) {
+      auto var = scope.get()->Var(var_desc->Name());
+      if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
+        if (var_desc->Persistable()) {
+          auto dim = var_desc->Tensor_desc().Dims();
+          auto tensor_w = var->GetMutable<TensorWrapper>();
+          auto tensor = tensor_w->MuteLodTensor();
+          tensor->Resize(make_ddim(dim));
 #ifdef PADDLE_MOBILE_CL
-  if (0) {
-    for (const auto &block : originProgramDesc.get()->Blocks()) {
-      for (const auto &var_desc : block->Vars()) {
-        auto var = scope.get()->Var(var_desc->Name());
-        if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
-          if (var_desc->Persistable()) {
-            auto dim = var_desc->Tensor_desc().Dims();
-            auto cl_image_w = var->GetMutable<TensorWrapper>();
-            CLImage *cl_image = cl_image_w->MuteClImage();
-            cl_image->Resize(make_ddim(dim));
-          } else {
-            auto dim = var_desc->Tensor_desc().Dims();
-            PADDLE_MOBILE_ENFORCE(dim.size() > 0, "dim size is 0");
-            dim[0] = 1;
-            auto cl_image = var->GetMutable<framework::CLImage>();
-            cl_image->Resize(make_ddim(dim));
-          }
-        } else {
-          // TODO(codeWorm)
-        }
-      }
-    }
-  } else {
+          auto image = tensor_w->MuteClImage();
+          image->Resize(make_ddim(dim));
 #endif
-    for (const auto &block : originProgramDesc.get()->Blocks()) {
-      for (const auto &var_desc : block->Vars()) {
-        auto var = scope.get()->Var(var_desc->Name());
-        if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
-          if (var_desc->Persistable()) {
-            auto dim = var_desc->Tensor_desc().Dims();
+        } else {
+          auto dim = var_desc->Tensor_desc().Dims();
+          if (dim.size() == 0) {
+            framework::DDim dDim = {0};
             auto tensor_w = var->GetMutable<TensorWrapper>();
             LoDTensor *const tensor = tensor_w->MuteLodTensor();
-            tensor->Resize(make_ddim(dim));
+            tensor->Resize(dDim);
+#ifdef PADDLE_MOBILE_CL
+            auto image = tensor_w->InnerCLImage();
+            image->Resize(dDim);
+#endif
           } else {
-            auto dim = var_desc->Tensor_desc().Dims();
-            if (dim.size() == 0) {
-              auto tensor_w = var->GetMutable<TensorWrapper>();
-              LoDTensor *const tensor = tensor_w->MuteLodTensor();
-              framework::DDim dDim = {0};
-              tensor->Resize(dDim);
-            } else {
-              for (auto &d : dim) {
-                if (d < 0) {
-                  d *= -1;
-                }
+            for (auto &d : dim) {
+              if (d < 0) {
+                d *= -1;
               }
-              auto tensor_w = var->GetMutable<TensorWrapper>();
-              LoDTensor *tensor = tensor_w->MuteLodTensor();
-              tensor->Resize(make_ddim(dim));
             }
+
+            auto tensor_w = var->GetMutable<TensorWrapper>();
+            LoDTensor *tensor = tensor_w->MuteLodTensor();
+            tensor->Resize(make_ddim(dim));
+#ifdef PADDLE_MOBILE_CL
+            auto image = tensor_w->InnerCLImage();
+            image->Resize(make_ddim(dim));
+#endif
           }
-        } else {
-          // TODO(codeWorm)
         }
+      } else {
+        // only use for presize when not lod mod .
       }
     }
-#ifdef PADDLE_MOBILE_CL
   }
-#endif
 }
 
 /**
  * fusion and print someinfos
- * @tparam Device
- * @tparam P
- * @param optimize
- * @param can_add_split
- * @param program
- * @param originProgramDesc
  */
 template <typename T>
 void FusionAndPrintInfos(
@@ -165,6 +144,7 @@ template <typename T>
 const Program<T> Loader<T>::LoadProgram(const std::string &model_path,
                                         bool optimize, bool quantification,
                                         bool can_add_split) {
+
   std::string model_filename = model_path;
   PaddleMobile__Framework__Proto__ProgramDesc *c_program;
   uint8_t *buf = NULL;
@@ -189,6 +169,8 @@ const Program<T> Loader<T>::LoadProgram(const std::string &model_path,
   auto scope = std::make_shared<Scope>();
   program.scope = scope;
 
+
+
   // use  originProgramDesc and scope to init tensors
   InitMemoryFromProgram(originProgramDesc, scope);
   // perform fusion and print infos
@@ -196,6 +178,10 @@ const Program<T> Loader<T>::LoadProgram(const std::string &model_path,
 
   paddle_mobile__framework__proto__program_desc__free_unpacked(c_program, NULL);
   free(buf);
+
+#ifdef PADDLE_MOBILE_CL
+  ImageConverterHelper::Instance()->Init(program.scope->GetCLScpoe());
+#endif
   return program;
 }
 

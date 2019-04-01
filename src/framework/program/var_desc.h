@@ -68,9 +68,7 @@ class VarDesc {
 
   const TensorDesc &Tensor_desc() const { return tensor_desc_; }
   const int &GetComputeType() const { return compute_type_; }
-  const void SetComputeType(int compute_type) {
-    compute_type_ = compute_type;
-  }
+  const void SetComputeType(int compute_type) { compute_type_ = compute_type; }
 
  private:
   std::string name_;

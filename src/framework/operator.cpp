@@ -69,8 +69,9 @@ void OperatorBase::Run() {
       auto var = this->scope_->FindVar(var_vec_in[i]);
       if (var->IsInitialized() &&
           var->template IsType<framework::TensorWrapper>()) {
-        TensorWrapper* tensor_w = const_cast<TensorWrapper *>(var->template Get<TensorWrapper>());
-        auto * tensor = tensor_w->InnerLoDTensor();
+        TensorWrapper *tensor_w =
+            const_cast<TensorWrapper *>(var->template Get<TensorWrapper>());
+        auto *tensor = tensor_w->InnerLoDTensor();
         if (tensor) DLOG << type_ << " input- " << key << "=" << *tensor;
       }
     }
@@ -81,13 +82,14 @@ void OperatorBase::Run() {
       auto var = scope_->FindVar(var_vec_out[i]);
       if (var->IsInitialized() &&
           var->template IsType<framework::TensorWrapper>()) {
-        TensorWrapper* tensor_w = const_cast<TensorWrapper *>(var->template Get<TensorWrapper>());
+        TensorWrapper *tensor_w =
+            const_cast<TensorWrapper *>(var->template Get<TensorWrapper>());
         auto *tensor = tensor_w->InnerLoDTensor();
         if (tensor) DLOG << type_ << " output- " << key << "=" << *tensor;
       }
     }
   }
-  
+
 #endif
 }
 

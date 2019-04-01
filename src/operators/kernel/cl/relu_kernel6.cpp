@@ -18,8 +18,9 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
+// fixme
 template <>
-bool ReluKernelGpu<float>::Init(ReluParam* param) {
+bool Relu6KernelGpu<float>::Init(ReluParam* param) {
   this->cl_helper_.AddKernel("relu", "relu.cl");
   //  this->cl_helper_.AddKernel("relu_p0", "relu.cl");
   //  this->cl_helper_.AddKernel("relu_p1", "relu.cl");
@@ -32,7 +33,7 @@ bool ReluKernelGpu<float>::Init(ReluParam* param) {
 }
 
 template <>
-void ReluKernelGpu<float>::Compute(const ReluParam& param) {
+void Relu6KernelGpu<float>::Compute(const ReluParam& param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   //  auto kernel_p0 = this->cl_helper_.KernelAt(1);
   //  auto kernel_p1 = this->cl_helper_.KernelAt(2);
@@ -61,7 +62,7 @@ void ReluKernelGpu<float>::Compute(const ReluParam& param) {
   //                         work_size, NULL, 0, NULL, NULL);
 }
 
-template class ReluKernelGpu<float>;
+template class Relu6KernelGpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

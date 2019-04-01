@@ -22,48 +22,51 @@ bool optimise_convadd = true;
 
 template <>
 bool ConvAddKernelGpu<float>::Init(FusionConvAddParam *param) {
-  PADDLE_MOBILE_ENFORCE(
-      param->Filter()->dims()[2] == param->Filter()->dims()[3] &&
-          param->Paddings()[0] == param->Paddings()[1],
-      "need equal");
-  param->Bias()->InitCLImage(cl_helper_.CLContext(),
-                             this->cl_helper_.CLCommandQueue());
+  PADDLE_MOBILE_ENFORCE(param->Filter()->InnerCLImage()->dims()[2] ==
+                                param->Filter()->InnerCLImage()->dims()[3] &&
+                            param->Paddings()[0] == param->Paddings()[1],
+                        "need equal");
+  param->Bias()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
+                                             this->cl_helper_.CLCommandQueue());
 
-  int offset = static_cast<int>(param->Filter()->dims()[2]) / 2 -
-               static_cast<int>(param->Paddings()[1]);
+  int offset =
+      static_cast<int>(param->Filter()->InnerCLImage()->dims()[2]) / 2 -
+      static_cast<int>(param->Paddings()[1]);
   param->SetOffset(offset);
 
-  if (param->Filter()->dims()[2] == 1 && param->Filter()->dims()[3] == 1) {
-    param->Filter()->InitNImage(cl_helper_.CLContext(),
-                                cl_helper_.CLCommandQueue());
+  if (param->Filter()->InnerCLImage()->dims()[2] == 1 &&
+      param->Filter()->InnerCLImage()->dims()[3] == 1) {
+    param->Filter()->InnerCLImage()->InitNImage(cl_helper_.CLContext(),
+                                                cl_helper_.CLCommandQueue());
     if (optimise_convadd) {
       this->cl_helper_.AddKernel("conv_1x1_spl", "conv_add_kernel.cl");
     } else {
       this->cl_helper_.AddKernel("conv_1x1", "conv_add_kernel.cl");
     }
-  } else if (param->Filter()->dims()[1] == 1 &&
-             param->Input()->dims()[1] == param->Output()->dims()[1] &&
-             param->Filter()->dims()[2] == 3) {
-    param->Filter()->InitDWImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+  } else if (param->Filter()->InnerCLImage()->dims()[1] == 1 &&
+             param->Input()->InnerCLImage()->dims()[1] ==
+                 param->Output()->InnerCLImage()->dims()[1] &&
+             param->Filter()->InnerCLImage()->dims()[2] == 3) {
+    param->Filter()->InnerCLImage()->InitDWImage(cl_helper_.CLContext(),
+                                                 cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("depth_conv_3x3", "conv_add_kernel.cl");
 
-  } else if (param->Filter()->dims()[2] == 3 &&
-             param->Filter()->dims()[3] == 3) {
-    param->Filter()->InitCLImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+  } else if (param->Filter()->InnerCLImage()->dims()[2] == 3 &&
+             param->Filter()->InnerCLImage()->dims()[3] == 3) {
+    param->Filter()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
+                                                 cl_helper_.CLCommandQueue());
 
     this->cl_helper_.AddKernel("conv_3x3", "conv_add_kernel.cl");
 
-  } else if (param->Filter()->dims()[2] == 7 &&
-             param->Filter()->dims()[3] == 7) {
-    param->Filter()->InitCLImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+  } else if (param->Filter()->InnerCLImage()->dims()[2] == 7 &&
+             param->Filter()->InnerCLImage()->dims()[3] == 7) {
+    param->Filter()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
+                                                 cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("conv_7x7", "conv_add_kernel.cl");
-  } else if (param->Filter()->dims()[2] == 5 &&
-             param->Filter()->dims()[3] == 5) {
-    param->Filter()->InitCLImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+  } else if (param->Filter()->InnerCLImage()->dims()[2] == 5 &&
+             param->Filter()->InnerCLImage()->dims()[3] == 5) {
+    param->Filter()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
+                                                 cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("conv_5x5", "conv_add_kernel.cl");
   }
 
@@ -73,37 +76,38 @@ bool ConvAddKernelGpu<float>::Init(FusionConvAddParam *param) {
 template <>
 void ConvAddKernelGpu<float>::Compute(const FusionConvAddParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
-  auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.Output());
+  auto default_work_size =
+      this->cl_helper_.DefaultWorkSize(*param.Output()->InnerCLImage());
   int c_block = default_work_size[0];
   int w = default_work_size[1];
   int nh = default_work_size[2];
-  auto input = param.Input()->GetCLImage();
-  auto filter = param.Filter()->GetCLImage();
-  auto biase = param.Bias()->GetCLImage();
-  param.Output()->InitEmptyImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue(),
-                                 param.Output()->dims());
-  auto output = param.Output()->GetCLImage();
+  auto input = param.Input()->InnerCLImage()->GetCLImage();
+  auto filter = param.Filter()->InnerCLImage()->GetCLImage();
+  auto biase = param.Bias()->InnerCLImage()->GetCLImage();
+  param.Output()->InnerCLImage()->InitEmptyImage(
+      cl_helper_.CLContext(), cl_helper_.CLCommandQueue(),
+      param.Output()->InnerCLImage()->dims());
+  auto output = param.Output()->InnerCLImage()->GetCLImage();
   int stride = param.Strides()[0];
   int offset = param.Offset();
   int input_c = reinterpret_cast<framework::CLImageConverterFolder *>(
-                    param.Input()->Converter())
+                    param.Input()->InnerCLImage()->Converter())
                     ->GetCBlock();
   int dilation = param.Dilations()[0];
 
-  int input_width = param.Input()->dims()[3];
-  int input_height = param.Input()->dims()[2];
-  int output_width = param.Output()->dims()[3];
-  int output_height = param.Output()->dims()[2];
+  int input_width = param.Input()->InnerCLImage()->dims()[3];
+  int input_height = param.Input()->InnerCLImage()->dims()[2];
+  int output_width = param.Output()->InnerCLImage()->dims()[3];
+  int output_height = param.Output()->InnerCLImage()->dims()[2];
 
   cl_int status;
 
-  if (optimise_convadd && param.Filter()->dims()[2] == 1 &&
-      param.Filter()->dims()[3] == 1) {
+  if (optimise_convadd && param.Filter()->InnerCLImage()->dims()[2] == 1 &&
+      param.Filter()->InnerCLImage()->dims()[3] == 1) {
     status = clSetKernelArg(kernel, 0, sizeof(int), &c_block);
     CL_CHECK_ERRORS(status);
 
-    int maped_w = maptofactor(w, 4);
+    int maped_w = framework::maptofactor(w, 4);
     status = clSetKernelArg(kernel, 1, sizeof(int), &maped_w);
     CL_CHECK_ERRORS(status);
 

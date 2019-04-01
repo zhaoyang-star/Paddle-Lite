@@ -15,6 +15,7 @@ limitations under the License. */
 #ifdef MULTICLASSNMS_OP
 
 #include "operators/kernel/multiclass_nms_kernel.h"
+#include <algorithm>
 #include "operators/math/poly_util.h"
 namespace paddle_mobile {
 namespace operators {
@@ -236,7 +237,7 @@ template <typename P>
 void MultiClassNMSCompute(const MultiClassNMSParam& param, cl_context context,
                           cl_command_queue commandQueue, cl_kernel kernel0,
                           cl_kernel kernel1) {
-  auto* input_bboxes_image = param.InputBBoxes();
+  auto* input_bboxes_image = param.InputBBoxes()->InnerCLImage();
   auto& input_bboxes_dims = input_bboxes_image->dims();
   Tensor* input_bboxes = new Tensor();
   input_bboxes->Resize(input_bboxes_dims);
@@ -245,7 +246,7 @@ void MultiClassNMSCompute(const MultiClassNMSParam& param, cl_context context,
   framework::CLImageToTensor(input_bboxes_image, input_bboxes, context,
                              commandQueue, kernel0);
   DLOG << "yangfei20";
-  auto* input_scores_image = param.InputScores();
+  auto* input_scores_image = param.InputScores()->InnerCLImage();
   auto& input_scores_dims = input_scores_image->dims();
 
   Tensor* input_scores = new Tensor();
@@ -254,7 +255,7 @@ void MultiClassNMSCompute(const MultiClassNMSParam& param, cl_context context,
   framework::CLImageToTensor(input_scores_image, input_scores, context,
                              commandQueue, kernel0);
   DLOG << "yangfei20";
-  auto outs_image = param.Out();
+  auto outs_image = param.Out()->InnerCLImage();
   Tensor* outs = new Tensor();
   outs->Resize(outs_image->dims());
   outs->mutable_data<float>();

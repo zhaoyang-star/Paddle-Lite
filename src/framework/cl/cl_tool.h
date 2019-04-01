@@ -20,7 +20,7 @@ namespace paddle_mobile {
 namespace framework {
 
 const char* opencl_error_to_str(cl_int error);
-
+inline int maptofactor(int i, int factor) { return (i + factor - 1) / factor; }
 #define CL_CHECK_ERRORS(ERR)                                          \
   if (ERR != CL_SUCCESS) {                                            \
     printf(                                                           \

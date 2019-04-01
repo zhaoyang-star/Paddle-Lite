@@ -22,12 +22,11 @@ namespace operators {
 
 template <>
 bool BatchNormKernelGpu<float>::Init(BatchNormParam *param) {
-  this->InitCLHelper(scope->GetCLScpoe());
   this->cl_helper_.AddKernel("batchnorm", "batchnorm_kernel.cl");
-  framework::CLImage *mean = param->InputMean();
-  const framework::CLImage *variance = param->InputVariance();
-  const framework::CLImage *scale = param->InputScale();
-  const framework::CLImage *bias = param->InputBias();
+  framework::CLImage *mean = param->InputMean()->InnerCLImage();
+  const framework::CLImage *variance = param->InputVariance()->InnerCLImage();
+  const framework::CLImage *scale = param->InputScale()->InnerCLImage();
+  const framework::CLImage *bias = param->InputBias()->InnerCLImage();
   const float epsilon = param->Epsilon();
 
   auto mean_ptr = mean->data<float>();
@@ -75,21 +74,22 @@ bool BatchNormKernelGpu<float>::Init(BatchNormParam *param) {
 template <>
 void BatchNormKernelGpu<float>::Compute(const BatchNormParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
-  auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.OutputY());
+  auto default_work_size =
+      this->cl_helper_.DefaultWorkSize(*param.OutputY()->InnerCLImage());
 
-  auto input = param.InputX();
+  auto input = param.InputX()->InnerCLImage();
   auto out = param.OutputY();
-  auto new_scale = param.NewScale();
-  auto new_bias = param.NewBias();
+  auto new_scale = param.NewScale()->InnerCLImage();
+  auto new_bias = param.NewBias()->InnerCLImage();
   const int out_width = default_work_size[1];
-  DLOG << *param.InputX();
-  DLOG << *param.NewBias();
-  DLOG << *param.NewScale();
+  DLOG << *param.InputX()->InnerCLImage();
+  DLOG << *param.NewBias()->InnerCLImage();
+  DLOG << *param.NewScale()->InnerCLImage();
   DLOG << default_work_size[0];
   DLOG << default_work_size[1];
   DLOG << default_work_size[2];
   DLOG << out_width;
-  DLOG << *param.OutputY();
+  DLOG << *param.OutputY()->InnerCLImage();
   cl_int status;
   clSetKernelArg(kernel, 0, sizeof(cl_int), &out_width);
   CL_CHECK_ERRORS(status);

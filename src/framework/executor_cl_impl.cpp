@@ -11,8 +11,9 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License. */
+#ifdef PADDLE_MOBILE_CL
 
-#include "framework/executor.h"
+#include "framework/executor_cl_impl.h"
 #include <algorithm>
 #include <utility>
 #include <vector>
@@ -30,33 +31,31 @@
 #include "framework/tensor_wrapper.h"
 #include "memory/t_malloc.h"
 
-#ifdef PADDLE_MOBILE_CL
 #include "framework/cl/cl_image.h"
-#endif
 
 namespace paddle_mobile {
 namespace framework {
 
-#pragma mark - executor
+#pragma mark - ExecutorClImpl
 
 template <typename T>
-void Executor<T>::SetThreadNum(int threads) {
+void ExecutorClImpl<T>::SetThreadNum(int threads) {
   set_global_num_threads(threads);
 }
 
 template <typename T>
-Executor<T>::Executor(const Program<T> &program,
-                      paddle_mobile::PaddleMobileConfigInternal config,
-                      int batch_size, const bool use_optimize,
-                      const bool lod_mode)
+ExecutorClImpl<T>::ExecutorClImpl(
+    const Program<T> &program, paddle_mobile::PaddleMobileConfigInternal config,
+    int batch_size, const bool use_optimize, const bool lod_mode)
     : program_(program),
       batch_size_(batch_size),
       use_optimize_(use_optimize),
       lod_mode_(lod_mode),
       config_(config) {
-  DLOG << "executor in lod mode: " << lod_mode_;
+  DLOG << "ExecutorClImpl in lod mode: " << lod_mode_;
 
   Variable *variable_ptr = program_.scope->Var("batch_size");
+
   variable_ptr->SetValue<int>(batch_size);
 
   program_desc_ =
@@ -129,7 +128,7 @@ Executor<T>::Executor(const Program<T> &program,
 }
 
 template <typename T>
-void Executor<T>::InitFeedFetchList() {
+void ExecutorClImpl<T>::InitFeedFetchList() {
   std::unordered_map<std::string, int> feed_indices, fetch_indices;
   for (const auto &block : program_desc_->Blocks()) {
     for (const auto &op_desc : block->Ops()) {
@@ -180,11 +179,12 @@ static void LoadMemInternal(void **data, LoDTensor *tensor,
     *data_buf += size * sizeof(T);
   }
 }
+/*
 
 template <typename T>
-void Executor<T>::LoadMemory(void **data,
-                             const std::shared_ptr<VarDesc> var_desc,
-                             LoDTensor *tensor) {
+void ExecutorClImpl<T>::LoadMemory(void **data,
+                                   const std::shared_ptr<VarDesc> var_desc,
+                                   LoDTensor *tensor) {
   char **data_buf = reinterpret_cast<char **>(data);
   // version
   uint32_t version = *(reinterpret_cast<uint32_t *>(*data_buf));
@@ -232,106 +232,163 @@ void Executor<T>::LoadMemory(void **data,
       LOG(kLOG_ERROR) << "data type is not supported";
   }
 }
+*/
 
 template <typename T>
-void Executor<T>::InitMemory() {
+void ExecutorClImpl<T>::InitMemory() {
   for (const auto &block : program_desc_->Blocks()) {
     for (const auto &var_desc : block->Vars()) {
       auto var = program_.scope->Var(var_desc->Name());
       if (var_desc->Persistable()) {
+        CLImage *cl_image = nullptr;
         if (var_desc->Name() == "feed" || var_desc->Name() == "fetch") {
-          var->template GetMutable<framework::TensorWrapperArray>();
+          var->template GetMutable<framework::LoDTensorArray>();
           continue;
+        } else {
+          cl_image = var->template GetMutable<CLImage>();
         }
+
         char *origin_data =
             ReadFileToBuff(program_.model_path + "/" + var_desc->Name());
         char *data = origin_data;
-        auto tensor_w = var->template GetMutable<TensorWrapper>();
-        LoadMemory(reinterpret_cast<void **>(&data), var_desc,
-                   tensor_w->MuteLodTensor());
-        delete[] origin_data;
+        cl_context context = program_.scope->GetCLScpoe()->Context();
+        const TensorDesc &desc = var_desc->Tensor_desc();
+        int numel = 1;
+        for (auto l : desc.Dims()) {
+          numel *= l;
+        }
+        DLOG << var_desc->Name();
+        float *tensorInput = static_cast<float *>(
+            paddle_mobile::memory::Alloc(sizeof(float) * numel));
+        LoadMemory(*var_desc, tensorInput, &data);
+
+        DDim ddim = make_ddim(desc.Dims());
+
+        // has not init
+        // 内存直接放到clImage
+        cl_image->SetTensorData(tensorInput, ddim);
+
+        delete origin_data;
+        paddle_mobile::memory::Free(tensorInput);
       } else {
-        DLOG << "init no persistable var: " << var_desc->Name();
-        varInputMemory(var_desc, var);
+        if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
+          auto cl_image = var->template GetMutable<CLImage>();
+          cl_context context = program_.scope->GetCLScpoe()->Context();
+          cl_command_queue command_queue =
+              program_.scope->GetCLScpoe()->CommandQueue();
+
+          const TensorDesc &desc = var_desc->Tensor_desc();
+          //          DDim ddim = make_ddim(desc.Dims());
+          DDim ddim = cl_image->dims();
+          DLOG << var_desc->Name();
+          cl_image->InitEmptyImage(context, command_queue, ddim);
+        }
       }
     }
   }
 }
 
-template <typename T>
-void Executor<T>::InitCombineMemory() {
+/*template <typename T>
+void ExecutorClImpl<T>::InitCombineMemory() {
+  DLOG << "CL InitCombineMemory---- "
+       << "config_.load_when_predict: " << config_.load_when_predict;
   char *origin_data = nullptr;
   bool self_alloc = false;
   if (program_.combined_params_buf && program_.combined_params_len) {
+    LOG(kLOG_INFO) << "use outter memory";
     origin_data = reinterpret_cast<char *>(program_.combined_params_buf);
   } else {
+    LOG(kLOG_INFO) << " begin init combine memory";
     self_alloc = true;
     origin_data = ReadFileToBuff(program_.para_path);
   }
-  PADDLE_MOBILE_ENFORCE(origin_data != nullptr, "data == nullptr");
-  char *data = origin_data;
+  PADDLE_MOBILE_ENFORCE(origin_data != nullptr, "origin_data==nullptr!!!");
+  float *data = reinterpret_cast<float *>(origin_data);
+
   for (const auto &block : program_desc_->Blocks()) {
     for (const auto &var_desc : block->Vars()) {
       auto var = program_.scope->Var(var_desc->Name());
       if (var_desc->Persistable()) {
+        CLImage *cl_image = nullptr;
         if (var_desc->Name() == "feed" || var_desc->Name() == "fetch") {
-          var->template GetMutable<framework::TensorWrapperArray>();
+          var->template GetMutable<framework::LoDTensorArray>();
           continue;
+        } else {
+          cl_image = var->template GetMutable<CLImage>();
         }
 
-        DLOG << " init combine memory persistable: " << var_desc->Name();
-        auto tensor_wrapper = var->template GetMutable<TensorWrapper>();
-        //        LoDTensor *tensor = tensor_wrapper->MuteLodTensor();
-        LoadMemory(reinterpret_cast<void **>(&data), var_desc,
-                   tensor_wrapper->MuteLodTensor());
+        cl_context context = program_.scope->GetCLScpoe()->Context();
+
+        const TensorDesc &desc = var_desc->Tensor_desc();
+        DDim ddim = make_ddim(desc.Dims());
+
+        int numel = 1;
+        for (int i = 0; i < ddim.size(); i++) {
+          numel = numel * ddim[i];
+        }
+        float *tensorInput = static_cast<float *>(
+            paddle_mobile::memory::Alloc(sizeof(float) * numel));
+        LoadMemory(*var_desc, tensorInput, &origin_data);
+
+        // has not init
+        cl_image->SetTensorData(tensorInput, ddim);
+
+        paddle_mobile::memory::Free(tensorInput);
       } else {
-        DLOG << " init combine memory no persistable: " << var_desc->Name();
-        varInputMemory(var_desc, var);
+        auto cl_image = var->template GetMutable<CLImage>();
+        cl_context context = program_.scope->GetCLScpoe()->Context();
+        cl_command_queue command_queue =
+            program_.scope->GetCLScpoe()->CommandQueue();
+        const TensorDesc &desc = var_desc->Tensor_desc();
+        DDim ddim = cl_image->dims();
+        //  DDim ddim = make_ddim(desc.Dims());
+        cl_image->InitEmptyImage(context, command_queue, ddim);
       }
     }
   }
   if (self_alloc) {
-    delete[] origin_data;
+    delete data;
   }
-  LOG(kLOG_INFO) << "init combine memory finish";
-}
+  LOG(kLOG_INFO) << " end init combine memory ";
+}*/
 
 template <typename T>
-void Executor<T>::InitNoPersistableMemory(const Tensor &input_tensor) {
+void ExecutorClImpl<T>::InitNoPersistableMemory(const Tensor &input_tensor) {
+  DLOG << "CL InitNoPersistableMemory ";
   for (const auto &block : program_desc_->Blocks()) {
     for (const auto &var_desc : block->Vars()) {
       auto var = program_.scope->Var(var_desc->Name());
-      auto tensor_w = var->template GetMutable<TensorWrapper>();
-      LoDTensor *const tensor = tensor_w->MuteLodTensor();
+
+      auto cl_image = var->template GetMutable<CLImage>();
+
       if (var_desc->Persistable()) {
         if (var_desc->Name() == "feed" || var_desc->Name() == "fetch") {
-          var->template GetMutable<framework::TensorWrapperArray>();
           continue;
         }
       } else {
         if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
-          DDim tensor_dim = tensor->dims();
+          cl_context context = program_.scope->GetCLScpoe()->Context();
+          cl_command_queue command_queue =
+              program_.scope->GetCLScpoe()->CommandQueue();
+
+          DDim tensor_dim = cl_image->dims();
           DDim new_dim =
               make_ddim({tensor_dim[0], tensor_dim[1], input_tensor.dims()[2],
                          input_tensor.dims()[3]});
-          tensor->Resize(new_dim);
-          tensor->template mutable_data<T>();
-        } else {
-          PADDLE_MOBILE_THROW_EXCEPTION("Unsupported var type `%d`",
-                                        var_desc->Type());
+          cl_image->Resize(new_dim);
+          cl_image->InitEmptyImage(context, command_queue, new_dim);
         }
       }
     }
   }
-
   std::shared_ptr<LoDTensor> output = GetOutput("fetch");
   output->Resize(input_tensor.dims());
-  output->mutable_data<T>();
+  output->mutable_data<float>();
 }
 
 template <typename T>
-bool Executor<T>::varInputMemory(const std::shared_ptr<VarDesc> &var_desc,
-                                 Variable *var) const {
+bool ExecutorClImpl<T>::varInputMemory(const std::shared_ptr<VarDesc> &var_desc,
+                                       Variable *var) const {
 #ifdef PADDLE_MOBILE_FPGA
   framework::LoDTensor *tensor = var->template GetMutable<LoDTensor>();
   tensor->init(typeid(float));
@@ -375,7 +432,7 @@ bool Executor<T>::varInputMemory(const std::shared_ptr<VarDesc> &var_desc,
 }
 
 template <typename T>
-PMStatus Executor<T>::Predict(
+PMStatus ExecutorClImpl<T>::Predict(
     const std::vector<std::pair<std::string, Tensor>> &inputs) {
   for (const auto &input : inputs) {
     SetInput(input.second, input.first);
@@ -384,7 +441,7 @@ PMStatus Executor<T>::Predict(
 }
 
 template <typename T>
-PMStatus Executor<T>::Predict(
+PMStatus ExecutorClImpl<T>::Predict(
     const std::vector<std::pair<std::string, LoDTensor>> &inputs) {
   for (const auto &input : inputs) {
     SetInput(input.second, input.first);
@@ -393,8 +450,8 @@ PMStatus Executor<T>::Predict(
 }
 
 template <typename T>
-std::vector<T> Executor<T>::Predict(const std::vector<T> &input,
-                                    const std::vector<int64_t> &dims) {
+std::vector<T> ExecutorClImpl<T>::Predict(const std::vector<T> &input,
+                                          const std::vector<int64_t> &dims) {
   PADDLE_MOBILE_ENFORCE(feed_indices_.size() != 0,
                         "We don't know which tensor should be assign, since no"
                         "feed op found in this model");
@@ -416,31 +473,41 @@ std::vector<T> Executor<T>::Predict(const std::vector<T> &input,
 }
 
 template <typename T>
-void Executor<T>::SetInput(const Tensor &input, const std::string &var_name) {
+void ExecutorClImpl<T>::SetInput(const Tensor &input,
+                                 const std::string &var_name) {
   int index = 0;
   if (feed_indices_.find(var_name) != feed_indices_.end()) {
     index = feed_indices_.find(var_name)->second;
   }
   auto *feed_var = program_.scope->Var("feed");
-  framework::LoDTensor &target =
-      *feed_var->template GetMutable<framework::TensorWrapperArray>()
-           ->at(index)
-           .MuteLodTensor();
+  framework::LoDTensor *target_tensor =
+      &(feed_var->template GetMutable<framework::LoDTensorArray>()->at(index));
 
+  DLOG << "config_.load_when_predict   " << config_.load_when_predict;
+  DLOG << "target_tensor->IsInitialized() " << target_tensor->IsInitialized();
+  DLOG << "target_tensor->dims()   " << target_tensor->dims();
+  DLOG << "input.dims()   " << input.dims();
+  DLOG << "input_dim_last_   " << input_dim_last_;
   if (config_.load_when_predict) {
     if (input_dim_last_ != input.dims()) {
-      InitNoPersistableMemory(input);
-      input_dim_last_ = input.dims();
+      DLOG << "SetInput ---- > resize1";
+      target_tensor->Resize(input.dims());
+      target_tensor->mutable_data<float>();
+      InitNoPersistableMemory(*target_tensor);
     }
+  } else {
+    DLOG << "SetInput ---- > resize2";
+    target_tensor->Resize(input.dims());
+    DLOG << "SetInput ---- > ShareDataWith";
   }
-
-  target.Resize(input.dims());
-  target.ShareDataWith(input);
+  target_tensor->ShareDataWith(input);
+  auto &dim = input.dims();
+  input_dim_last_ = static_cast<DDim>(dim);
 }
 
 template <typename T>
-void Executor<T>::SetInput(const LoDTensor &input,
-                           const std::string &var_name) {
+void ExecutorClImpl<T>::SetInput(const LoDTensor &input,
+                                 const std::string &var_name) {
   int index = 0;
   if (feed_indices_.find(var_name) != feed_indices_.end()) {
     index = feed_indices_.find(var_name)->second;
@@ -464,7 +531,8 @@ void Executor<T>::SetInput(const LoDTensor &input,
 }
 
 template <typename T>
-std::shared_ptr<LoDTensor> Executor<T>::GetOutput(const std::string &var_name) {
+std::shared_ptr<LoDTensor> ExecutorClImpl<T>::GetOutput(
+    const std::string &var_name) {
   const auto &iter = fetch_indices_.find(var_name);
   if (var_name == "fetch" || iter != fetch_indices_.end()) {
     int index = 0;
@@ -487,7 +555,7 @@ std::shared_ptr<LoDTensor> Executor<T>::GetOutput(const std::string &var_name) {
 }
 
 template <typename T>
-PMStatus Executor<T>::Predict() {
+PMStatus ExecutorClImpl<T>::Predict() {
 #if _OPENMP
   omp_set_num_threads(get_global_num_threads());
 #endif
@@ -552,7 +620,7 @@ PMStatus Executor<T>::Predict() {
 
 #ifdef PADDLE_MOBILE_FPGA
 template <typename T>
-void Executor<T>::InjectVariable(const Tensor &t, std::string var_name) {
+void ExecutorClImpl<T>::InjectVariable(const Tensor &t, std::string var_name) {
   Variable *g_feed_value = program_.scope->Var(var_name);
   Tensor *feed_tensor = g_feed_value->template GetMutable<LoDTensor>();
   feed_tensor->Resize(t.dims());
@@ -560,12 +628,12 @@ void Executor<T>::InjectVariable(const Tensor &t, std::string var_name) {
 }
 
 template <typename T>
-void Executor<T>::FeedData(const Tensor &t) {
+void ExecutorClImpl<T>::FeedData(const Tensor &t) {
   InjectVariable(t, "feed0");
 }
 
 template <typename T>
-void Executor<T>::FeedData(const std::vector<void *> &v) {
+void ExecutorClImpl<T>::FeedData(const std::vector<void *> &v) {
   auto input_size = v.size();
   int index = 0;
   auto vars = program_.scope->VarContain("feed", &index);
@@ -579,7 +647,7 @@ void Executor<T>::FeedData(const std::vector<void *> &v) {
 }
 
 template <typename T>
-void Executor<T>::GetResults(std::vector<void *> *v) {
+void ExecutorClImpl<T>::GetResults(std::vector<void *> *v) {
   auto output_size = v->size();
   PADDLE_MOBILE_ENFORCE(output_size > 0, "Empty output");
   int index = 0;
@@ -595,7 +663,7 @@ void Executor<T>::GetResults(std::vector<void *> *v) {
 }
 
 template <typename T>
-void Executor<T>::GetTensorResults(std::vector<framework::Tensor *> *v) {
+void ExecutorClImpl<T>::GetTensorResults(std::vector<framework::Tensor *> *v) {
   int index = 0;
   auto vars = program_.scope->VarContain("fetch", &index);
   auto output_size = vars.size();
@@ -607,13 +675,13 @@ void Executor<T>::GetTensorResults(std::vector<framework::Tensor *> *v) {
 }
 
 template <typename T>
-framework::Tensor *Executor<T>::GetTensorByName(const std::string &name) {
+framework::Tensor *ExecutorClImpl<T>::GetTensorByName(const std::string &name) {
   auto var = program_.scope->Var(name);
   return var->template GetMutable<LoDTensor>();
 }
 
 template <typename T>
-std::shared_ptr<Tensor> Executor<T>::FetchResult(int id) {
+std::shared_ptr<Tensor> ExecutorClImpl<T>::FetchResult(int id) {
   auto &ops = ops_of_block0_;
 
   PADDLE_MOBILE_ENFORCE(id < (int)ops.size(), "Index out of range");
@@ -627,7 +695,7 @@ std::shared_ptr<Tensor> Executor<T>::FetchResult(int id) {
 }
 
 template <typename T>
-void Executor<T>::Predict_From_To(int start, int end) {
+void ExecutorClImpl<T>::Predict_From_To(int start, int end) {
   auto &ops = ops_of_block0_;
   end = end < 0 ? static_cast<int>(ops.size()) : end;
   PADDLE_MOBILE_ENFORCE(start >= 0 && start < end && end <= ops.size(),
@@ -653,93 +721,21 @@ void Executor<T>::Predict_From_To(int start, int end) {
 }
 
 template <typename T>
-void Executor<T>::Predict_From(int start) {
+void ExecutorClImpl<T>::Predict_From(int start) {
   Predict_From_To(start);
 }
 
 template <typename T>
-void Executor<T>::Predict_To(int end) {
+void ExecutorClImpl<T>::Predict_To(int end) {
   Predict_From_To(0, end);
 }
 #endif
 
-/*
 #ifdef PADDLE_MOBILE_CL
-template <>
-void Executor<GPU_CL, float>::InitNoPersistableMemory(
-    const Tensor &input_tensor) {
-  DLOG << "CL InitNoPersistableMemory ";
-  for (const auto &block : program_desc_->Blocks()) {
-    for (const auto &var_desc : block->Vars()) {
-      auto var = program_.scope->Var(var_desc->Name());
-
-      auto cl_image = var->template GetMutable<CLImage>();
-
-      if (var_desc->Persistable()) {
-        if (var_desc->Name() == "feed" || var_desc->Name() == "fetch") {
-          continue;
-        }
-      } else {
-        if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
-          cl_context context = program_.scope->GetCLScpoe()->Context();
-          cl_command_queue command_queue =
-              program_.scope->GetCLScpoe()->CommandQueue();
-
-          DDim tensor_dim = cl_image->dims();
-          DDim new_dim =
-              make_ddim({tensor_dim[0], tensor_dim[1], input_tensor.dims()[2],
-                         input_tensor.dims()[3]});
-          cl_image->Resize(new_dim);
-          cl_image->InitEmptyImage(context, command_queue, new_dim);
-        }
-      }
-    }
-  }
-  std::shared_ptr<LoDTensor> output = GetOutput("fetch");
-  output->Resize(input_tensor.dims());
-  output->mutable_data<float>();
-}
 
 template <>
-void Executor<GPU_CL, float>::SetInput(const Tensor &input,
-                                       const std::string &var_name) {
-  int index = 0;
-  if (feed_indices_.find(var_name) != feed_indices_.end()) {
-    index = feed_indices_.find(var_name)->second;
-  }
-  auto *feed_var = program_.scope->Var("feed");
-  framework::LoDTensor *target_tensor =
-      &(feed_var->template GetMutable<framework::LoDTensorArray>()->at(index));
-
-  DLOG << "config_.load_when_predict   " << config_.load_when_predict;
-  DLOG << "target_tensor->IsInitialized() " << target_tensor->IsInitialized();
-  DLOG << "target_tensor->dims()   " << target_tensor->dims();
-  DLOG << "input.dims()   " << input.dims();
-  DLOG << "input_dim_last_   " << input_dim_last_;
-  if (config_.load_when_predict) {
-    if (input_dim_last_ != input.dims()) {
-      DLOG << "SetInput ---- > resize1";
-      target_tensor->Resize(input.dims());
-      target_tensor->mutable_data<float>();
-      InitNoPersistableMemory(*target_tensor);
-    }
-  } else {
-    DLOG << "SetInput ---- > resize2";
-    target_tensor->Resize(input.dims());
-    DLOG << "SetInput ---- > ShareDataWith";
-  }
-  target_tensor->ShareDataWith(input);
-  auto &dim = input.dims();
-  input_dim_last_ = static_cast<DDim>(dim);
-}
-
-template <typename T>
-void Executor<T>::LoadMemory(const VarDesc var_desc, float *tensorInput,
-                             char **data) {}
-
-template <>
-void Executor<GPU_CL, float>::LoadMemory(const VarDesc var_desc,
-                                         float *tensorInput, char **data) {
+void ExecutorClImpl<float>::LoadMemory(const VarDesc var_desc,
+                                       float *tensorInput, char **data) {
   // 1. version
   uint32_t version = *reinterpret_cast<uint32_t *>(*data);
 
@@ -814,61 +810,7 @@ void Executor<GPU_CL, float>::LoadMemory(const VarDesc var_desc,
 }
 
 template <>
-void Executor<GPU_CL, float>::InitMemory() {
-  for (const auto &block : program_desc_->Blocks()) {
-    for (const auto &var_desc : block->Vars()) {
-      auto var = program_.scope->Var(var_desc->Name());
-      if (var_desc->Persistable()) {
-        CLImage *cl_image = nullptr;
-        if (var_desc->Name() == "feed" || var_desc->Name() == "fetch") {
-          var->template GetMutable<framework::LoDTensorArray>();
-          continue;
-        } else {
-          cl_image = var->template GetMutable<CLImage>();
-        }
-
-        char *origin_data =
-            ReadFileToBuff(program_.model_path + "/" + var_desc->Name());
-        char *data = origin_data;
-        cl_context context = program_.scope->GetCLScpoe()->Context();
-        const TensorDesc &desc = var_desc->Tensor_desc();
-        int numel = 1;
-        for (auto l : desc.Dims()) {
-          numel *= l;
-        }
-        DLOG << var_desc->Name();
-        float *tensorInput = static_cast<float *>(
-            paddle_mobile::memory::Alloc(sizeof(float) * numel));
-        LoadMemory(*var_desc, tensorInput, &data);
-
-        DDim ddim = make_ddim(desc.Dims());
-
-        // has not init
-        // 内存直接放到clImage
-        cl_image->SetTensorData(tensorInput, ddim);
-
-        delete origin_data;
-        paddle_mobile::memory::Free(tensorInput);
-      } else {
-        if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
-          auto cl_image = var->template GetMutable<CLImage>();
-          cl_context context = program_.scope->GetCLScpoe()->Context();
-          cl_command_queue command_queue =
-              program_.scope->GetCLScpoe()->CommandQueue();
-
-          const TensorDesc &desc = var_desc->Tensor_desc();
-          //          DDim ddim = make_ddim(desc.Dims());
-          DDim ddim = cl_image->dims();
-          DLOG << var_desc->Name();
-          cl_image->InitEmptyImage(context, command_queue, ddim);
-        }
-      }
-    }
-  }
-}
-
-template <>
-void Executor<GPU_CL, float>::InitCombineMemory() {
+void ExecutorClImpl<float>::InitCombineMemory() {
   DLOG << "CL InitCombineMemory---- "
        << "config_.load_when_predict: " << config_.load_when_predict;
   char *origin_data = nullptr;
@@ -932,13 +874,13 @@ void Executor<GPU_CL, float>::InitCombineMemory() {
 }
 
 #endif
-*/
 
-template class Executor<float>;
+template class ExecutorClImpl<float>;
 /*
-template class Executor<FPGA, float>;
+template class ExecutorClImpl<FPGA, float>;
 
-template class Executor<GPU_CL, float>;*/
+template class ExecutorClImpl<GPU_CL, float>;*/
 
 }  // namespace framework
 }  // namespace paddle_mobile
+#endif

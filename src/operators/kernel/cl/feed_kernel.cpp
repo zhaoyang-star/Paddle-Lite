@@ -29,12 +29,14 @@ template <>
 void FeedKernelGpu<float>::Compute(const FeedParam &param) {
   const int col = param.Col();
   auto kernel = this->cl_helper_.KernelAt(0);
-  auto default_work_size = this->cl_helper_.DefaultWorkSize(*(param.Out()));
+  auto default_work_size =
+      this->cl_helper_.DefaultWorkSize(*(param.Out()->InnerCLImage()));
   cl_int status;
-  param.Out()->InitEmptyImage(cl_helper_.CLContext(),
-                              cl_helper_.CLCommandQueue(), param.Out()->dims());
-  auto output = param.Out();
-  const Tensor *input = &param.InputX()->at(col);
+  param.Out()->InnerCLImage()->InitEmptyImage(
+      cl_helper_.CLContext(), cl_helper_.CLCommandQueue(),
+      param.Out()->InnerCLImage()->dims());
+  auto output = param.Out()->InnerCLImage();
+  const Tensor *input = param.InputX()->at(col).InnerLoDTensor();
   //  DLOG << *input;
   const float *input_data = input->data<float>();
   int numel = input->numel();

@@ -29,17 +29,18 @@ bool PoolKernelGpu<float>::Init(PoolParam *param) {
 template <>
 void PoolKernelGpu<float>::Compute(const PoolParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
-  auto default_work_size = this->cl_helper_.DefaultWorkSize(*param.Output());
+  auto default_work_size =
+      this->cl_helper_.DefaultWorkSize(*param.Output()->InnerCLImage());
 
-  auto input = param.Input()->GetCLImage();
-  auto out = param.Output()->GetCLImage();
+  auto input = param.Input()->InnerCLImage()->GetCLImage();
+  auto out = param.Output()->InnerCLImage()->GetCLImage();
 
   framework::CLImageConverterFolder *input_folder_converter =
       reinterpret_cast<framework::CLImageConverterFolder *>(
-          param.Input()->Converter());
+          param.Input()->InnerCLImage()->Converter());
   framework::CLImageConverterFolder *output_folder_converter =
       reinterpret_cast<framework::CLImageConverterFolder *>(
-          param.Output()->Converter());
+          param.Output()->InnerCLImage()->Converter());
 
   const int in_height = input_folder_converter->HeightOfOneBlock();
   const int in_width = input_folder_converter->WidthOfOneBlock();
@@ -70,8 +71,8 @@ void PoolKernelGpu<float>::Compute(const PoolParam &param) {
   clSetKernelArg(kernel, 10, sizeof(cl_mem), &input);
   clSetKernelArg(kernel, 11, sizeof(cl_mem), &out);
 
-  //  cl_event out_event = param.Output()->GetClEvent();
-  //  cl_event wait_event = param.Input()->GetClEvent();
+  //  cl_event out_event = param.Output()->InnerCLImage()->GetClEvent();
+  //  cl_event wait_event = param.Input()->InnerCLImage()->GetClEvent();
   clEnqueueNDRangeKernel(this->cl_helper_.CLCommandQueue(), kernel, 3, NULL,
                          default_work_size.data(), NULL, 0, NULL, NULL);
 }

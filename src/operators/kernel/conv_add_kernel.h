@@ -21,6 +21,7 @@ limitations under the License. */
 #include <arm_neon.h>
 #endif
 #include "common/common.h"
+#include "framework/cl/cl_tool.h"
 #include "framework/ddim.h"
 #include "framework/operator.h"
 #include "operators/math/depthwise_conv3x3.h"
