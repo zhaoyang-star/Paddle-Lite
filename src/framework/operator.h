@@ -100,6 +100,7 @@ class OpKernelBase {
 #ifdef PADDLE_MOBILE_CL
   virtual void InitCLHelper(CLScope *clScope) {
     cl_helper_ = CLHelper(clScope);
+    // DLOG << "InitCLHelper end";
   }
 #endif
 
@@ -266,17 +267,18 @@ class FusionOpMatcher {
                const framework::AttributeMap &attrs, framework::Scope *scope) \
         : framework::OperatorWithKernels<T, OpParam>(type, inputs, outputs,   \
                                                      attrs, scope) {          \
-      INIT_KERNEKS_CPU(OpName, OpParam);                                      \
       INIT_KERNEKS_GPU(OpName, OpParam);                                      \
+      INIT_KERNEKS_CPU(OpName, OpParam);                                      \
       INIT_KERNEKS_FPGA(OpName, OpParam);                                     \
     }                                                                         \
     void Init() {                                                             \
-      REGIST_INIT_CPU(OpParam);                                               \
       REGIST_INIT_GPU(OpParam);                                               \
+      /*REGIST_INIT_CPU(OpParam);   */                                        \
       REGIST_INIT_FPGA(OpParam);                                              \
     }                                                                         \
     void RunImpl() {                                                          \
-      kernelCpu_.Compute(framework::OperatorWithKernels<T, OpParam>::param_); \
+      /* use pre defined kernel to run */                                     \
+      kernelGpu_.Compute(framework::OperatorWithKernels<T, OpParam>::param_); \
     }                                                                         \
                                                                               \
     void InferShape() const override;                                         \

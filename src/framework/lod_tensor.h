@@ -120,6 +120,15 @@ class LoDTensor : public Tensor {
     //    PADDLE_ENFORCE_LT(elem, NumElements(level));
     return std::make_pair((lod_)[level][elem], (lod_)[level][elem + 1]);
   }
+  /*! Resize the dimensions of the memory block. */
+  inline Tensor &Resize(const DDim &dims) {
+    dims_ = dims;
+    return *this;
+  }
+  /*!resize in constructor*/
+  void ResizeSafe(const DDim &dims) {
+    dims_ = dims;
+  }
 
   /*
    * Number of LoDTensor's levels, each level has units of data, for

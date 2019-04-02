@@ -33,11 +33,14 @@ void Loader<T>::InitMemoryFromProgram(
       auto var = scope.get()->Var(var_desc->Name());
       if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
         if (var_desc->Persistable()) {
+          DLOG << "InitMemoryFromProgram vardesc: "<<var_desc->Name();
           auto dim = var_desc->Tensor_desc().Dims();
           auto tensor_w = var->GetMutable<TensorWrapper>();
+          DLOG << "mutelodtensor  ===>";
           auto tensor = tensor_w->MuteLodTensor();
           tensor->Resize(make_ddim(dim));
 #ifdef PADDLE_MOBILE_CL
+          DLOG << "MuteClImage  ===>";
           auto image = tensor_w->MuteClImage();
           image->Resize(make_ddim(dim));
 #endif

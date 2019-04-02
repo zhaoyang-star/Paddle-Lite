@@ -394,7 +394,7 @@ __kernel void depth_conv_3x3(__private const int global_size_dim0,
 
     half4 inputs[9];
 
-        inputs[0]->InnerCLImage() = select(read_imageh(input, sampler, (int2)(pos_in_input_block.x + in_pos_in_one_block.x - 1, pos_in_input_block.y + in_pos_in_one_block.y - 1)),
+        inputs[0] = select(read_imageh(input, sampler, (int2)(pos_in_input_block.x + in_pos_in_one_block.x - 1, pos_in_input_block.y + in_pos_in_one_block.y - 1)),
                            (half4)(0.0f),
                            (ushort4)((in_pos_in_one_block.x - 1 < 0 || in_pos_in_one_block.y - 1 < 0 || in_pos_in_one_block.x - 1 >= input_width || in_pos_in_one_block.y - 1 >= input_height) << 15));
 
@@ -451,7 +451,7 @@ __kernel void depth_conv_3x3(__private const int global_size_dim0,
     filters[8] =  read_imageh(filter, sampler,(int2)(filter_x + 2,filter_y + 2));
 
     for(int i = 0 ;i < 9 ; i++){
-     output += inputs[i]->InnerCLImage() * filters[i];
+     output += inputs[i] * filters[i];
     }
 #ifdef BATCH_NORM
     output = output * read_imageh(new_scale, sampler, (int2)(out_c, 0)) + read_imageh(new_biase, sampler, (int2)(out_c, 0));
@@ -467,7 +467,7 @@ __kernel void depth_conv_3x3(__private const int global_size_dim0,
     if (output_pos.x == 112 && output_pos.y == 0) {
 
         for (int i = 0; i < 9; ++i) {
-            half4 input1 = inputs[i]->InnerCLImage();
+            half4 input1 = inputs[i];
             float4 in = (float4)(input1.x, input1.y, input1.z, input1.w);
             printf(" input4 %d - %v4hlf \n", i, in);
         }

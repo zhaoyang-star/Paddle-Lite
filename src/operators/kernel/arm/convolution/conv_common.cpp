@@ -19,6 +19,7 @@ namespace paddle_mobile {
 namespace operators {
 
 void InitBaseConvKernel(ConvParam *param) {
+  DLOG << "InitBaseConvKernel  ";
   bool conv3x3 = param->Filter()->InnerLoDTensor()->dims()[2] ==
                      param->Filter()->InnerLoDTensor()->dims()[3] &&
                  param->Filter()->InnerLoDTensor()->dims()[2] == 3;

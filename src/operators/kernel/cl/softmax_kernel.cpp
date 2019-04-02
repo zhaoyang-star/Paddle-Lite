@@ -27,13 +27,25 @@ bool SoftmaxKernelGpu<float>::Init(SoftmaxParam *param) {
 
 template <>
 void SoftmaxKernelGpu<float>::Compute(const SoftmaxParam &param) {
+  DLOG << "SoftmaxKernelGpu Compute";
+
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size =
       this->cl_helper_.DefaultWorkSize(*(param.Out()->InnerCLImage()));
-  const auto *input = param.InputX()->InnerCLImage();
+  DLOG << "SoftmaxKernelGpu Compute1";
+
+  auto *input = param.InputX()->InnerCLImage();
+  DLOG << "SoftmaxKernelGpu Compute2";
+
   auto *output = param.Out()->InnerCLImage();
+  DLOG << "SoftmaxKernelGpu Compute3";
+
   auto inputImage = input->GetCLImage();
+  DLOG << "SoftmaxKernelGpu Compute4";
+
   auto outputImage = output->GetCLImage();
+  DLOG << "SoftmaxKernelGpu Compute5";
+
   const auto &outputDim = output->dims();
 
   int dims[4] = {1, 1, 1, 1};

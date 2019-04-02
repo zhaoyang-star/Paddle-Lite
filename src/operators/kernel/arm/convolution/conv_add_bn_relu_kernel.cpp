@@ -25,13 +25,17 @@ namespace operators {
 
 template <>
 bool ConvAddBNReluKernelCpu<float>::Init(FusionConvAddBNReluParam *param) {
+  DLOG << "ConvAddBNReluKernelCpu init ";
+
   const Tensor *mean = param->InputMean()->InnerLoDTensor();
   const Tensor *variance = param->InputVariance()->InnerLoDTensor();
   const Tensor *scale = param->InputScale()->InnerLoDTensor();
   const Tensor *bias = param->InputBias()->InnerLoDTensor();
   const float epsilon = param->Epsilon();
-
+  DLOG << "mean_ptr  tag1";
   auto mean_ptr = mean->data<float>();
+  DLOG << "mean_ptr  tag2";
+
   auto variance_ptr = variance->data<float>();
   auto scale_ptr = scale->data<float>();
   auto bias_ptr = bias->data<float>();

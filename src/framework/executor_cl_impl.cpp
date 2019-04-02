@@ -76,10 +76,15 @@ ExecutorClImpl<T>::ExecutorClImpl(
     auto op_handler = OpRegistry::CreateOp(
         op_desc->Type(), op_desc->GetInputs(), op_desc->GetOutputs(),
         op_desc->GetAttrMap(), program_.scope.get());
+
+    DLOG << "create op end of : " << op_desc->Type();
+
     // infer shape to reshape inputs and outputs before predict,
     // but for lod mode, it still need to infer shape in runtime
     if (!lod_mode) {
+      DLOG << "begin infer shape of " << op_desc->Type();
       op_handler->InferShape();
+      DLOG << "end infer shape of " << op_desc->Type();
     }
 
     /*
@@ -104,7 +109,6 @@ ExecutorClImpl<T>::ExecutorClImpl(
           DLOG << "outputs:  " <<output_iter->first << "\t" <<
        output_iter->second;
         }
-
     */
 
     ops_of_block0_.push_back(op_handler);
@@ -122,8 +126,9 @@ ExecutorClImpl<T>::ExecutorClImpl(
 
   int count = 0;
   for (auto &op_handler : ops_of_block0_) {
-    DLOG << "Initialize op[" << count++ << "]: ";
+    DLOG << "Initialize op[" << count++ << "]: begin";
     op_handler->Init();
+    DLOG << "Initialize op[" << count++ << "]: end ";
   }
 }
 
@@ -236,56 +241,59 @@ void ExecutorClImpl<T>::LoadMemory(void **data,
 
 template <typename T>
 void ExecutorClImpl<T>::InitMemory() {
+  DLOG << "begin init memory";
   for (const auto &block : program_desc_->Blocks()) {
     for (const auto &var_desc : block->Vars()) {
       auto var = program_.scope->Var(var_desc->Name());
+      DLOG << "init memory of ----" << var_desc->Name()
+           << "is Persistable? === " << var_desc->Persistable();
+
       if (var_desc->Persistable()) {
+        TensorWrapper *tensor_wrapper = nullptr;
         CLImage *cl_image = nullptr;
         if (var_desc->Name() == "feed" || var_desc->Name() == "fetch") {
-          var->template GetMutable<framework::LoDTensorArray>();
+          var->template GetMutable<framework::TensorWrapperArray>();
           continue;
         } else {
-          cl_image = var->template GetMutable<CLImage>();
+          tensor_wrapper = var->template GetMutable<TensorWrapper>();
+          cl_image = tensor_wrapper->MuteClImage();
         }
 
         char *origin_data =
             ReadFileToBuff(program_.model_path + "/" + var_desc->Name());
         char *data = origin_data;
-        cl_context context = program_.scope->GetCLScpoe()->Context();
         const TensorDesc &desc = var_desc->Tensor_desc();
         int numel = 1;
         for (auto l : desc.Dims()) {
           numel *= l;
         }
-        DLOG << var_desc->Name();
         float *tensorInput = static_cast<float *>(
             paddle_mobile::memory::Alloc(sizeof(float) * numel));
         LoadMemory(*var_desc, tensorInput, &data);
 
         DDim ddim = make_ddim(desc.Dims());
+        // 内存直接放到clImage
 
         // has not init
-        // 内存直接放到clImage
         cl_image->SetTensorData(tensorInput, ddim);
-
         delete origin_data;
         paddle_mobile::memory::Free(tensorInput);
       } else {
         if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
-          auto cl_image = var->template GetMutable<CLImage>();
+          auto cl_image_wrapper = var->template GetMutable<TensorWrapper>();
+          CLImage *const cl_image = cl_image_wrapper->InnerCLImage();
           cl_context context = program_.scope->GetCLScpoe()->Context();
           cl_command_queue command_queue =
               program_.scope->GetCLScpoe()->CommandQueue();
 
           const TensorDesc &desc = var_desc->Tensor_desc();
-          //          DDim ddim = make_ddim(desc.Dims());
           DDim ddim = cl_image->dims();
-          DLOG << var_desc->Name();
           cl_image->InitEmptyImage(context, command_queue, ddim);
         }
       }
     }
   }
+  DLOG << "end of init memory";
 }
 
 /*template <typename T>
@@ -480,8 +488,10 @@ void ExecutorClImpl<T>::SetInput(const Tensor &input,
     index = feed_indices_.find(var_name)->second;
   }
   auto *feed_var = program_.scope->Var("feed");
-  framework::LoDTensor *target_tensor =
-      &(feed_var->template GetMutable<framework::LoDTensorArray>()->at(index));
+
+  auto target_tensor_w =
+      feed_var->template GetMutable<framework::TensorWrapperArray>()->at(index);
+  framework::LoDTensor *target_tensor = target_tensor_w.InnerLoDTensor();
 
   DLOG << "config_.load_when_predict   " << config_.load_when_predict;
   DLOG << "target_tensor->IsInitialized() " << target_tensor->IsInitialized();

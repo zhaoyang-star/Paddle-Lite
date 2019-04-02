@@ -1276,6 +1276,7 @@ class FeedParam : public OpParam {
     auto var = scope->FindVar("batch_size");
     batch_size = var->GetValue<int>();
   }
+
   framework::TensorWrapperArray *InputX() const { return input_x_; }
   RType *Out() const { return out_; }
   const int Col() const { return col_; }

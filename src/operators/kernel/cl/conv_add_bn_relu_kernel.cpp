@@ -24,6 +24,7 @@ namespace operators {
 bool optimise = true;
 template <>
 bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
+  DLOG << "ConvAddBNReluKernelGpu<float>::Init:::  ";
   PADDLE_MOBILE_ENFORCE(param->Filter()->InnerCLImage()->dims()[2] ==
                                 param->Filter()->InnerCLImage()->dims()[3] &&
                             param->Paddings()[0] == param->Paddings()[1],

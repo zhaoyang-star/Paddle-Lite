@@ -33,10 +33,9 @@ class CLHelper {
   explicit CLHelper(CLScope *scope) : scope_(scope) {}
 
   void AddKernel(const std::string &kernel_name, const std::string &file_name) {
-    DLOG << " begin add kernel ";
     auto kernel = scope_->GetKernel(kernel_name, file_name);
-    DLOG << " add kernel ing ";
     kernels.emplace_back(std::move(kernel));
+    DLOG << " add kernel " << kernel_name << "  ----end";
   }
 
   cl_kernel KernelAt(const int index) const {
