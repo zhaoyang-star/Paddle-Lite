@@ -30,9 +30,10 @@ bool DequantizeKernelCpu<float>::Init(DequantizeParam *param) {
 
 template <>
 void DequantizeKernelCpu<float>::Compute(const DequantizeParam &param) {
-  const LoDTensor *input = param.input_;
-  LoDTensor *output = param.output_;
-  float activation_scale = param.activation_scale_->data<float>()[0];
+  const LoDTensor *input = param.input_->InnerLoDTensor();
+  LoDTensor *output = param.output_->InnerLoDTensor();
+  float activation_scale =
+      param.activation_scale_->InnerLoDTensor()->data<float>()[0];
   float weight_scale = param.weight_scale_;
   const int32_t *x = input->data<const int32_t>();
   float *y = output->mutable_data<float>();

@@ -85,7 +85,7 @@ class TensorWrapper {
       // cast gpu to cpu
       const LoDTensor *input = this->GetCpu();
       CLImage *output = this->GetGpu();
-      CLHelper *helper = ImageConverterHelper::Instance()->GetClHelper();
+      CLHelper *helper = GpuRumtimeHelper::Instance()->GetClHelper();
 
       DLOG << "input->IsInitialized(): " << input->IsInitialized();
       if (input->IsInitialized()) {
@@ -96,10 +96,9 @@ class TensorWrapper {
 
         const DDim &dims = output->dims();
         DLOG << "output->dims():  " << dims;
-        if (!output->isInit()){
+        if (!output->isInit()) {
           output->InitEmptyImage(context, command_queue, dims);
         }
-
 
         //      this->GetClHelper().AddKernel("feed", "feed_kernel.cl");
         cl_mem output_image = output->GetCLImage();
@@ -114,16 +113,14 @@ class TensorWrapper {
         C = new_dims[1];
         H = new_dims[2];
         W = new_dims[3];
-        
+
         const int out_C = C;
         const int out_H = H;
         const int out_W = W;
         const int Stride2 = out_C * out_H * out_W;
         const int Stride1 = out_H * out_W;
         const int Stride0 = out_W;
-        
-        
-        
+
         framework::CLTensor input_cl_tensor(helper->CLContext(),
                                             helper->CLCommandQueue());
         input_cl_tensor.Resize(input->dims());
@@ -179,13 +176,14 @@ class TensorWrapper {
       CLImage *input_climage = this->GetGpu();
 
       LoDTensor *output_lodtensor = this->GetCpu();
-      DLOG << " begin convert gpu image to cpu   ----   input_climage->isInit(): " << input_climage->isInit();
+      DLOG << " begin convert gpu image to cpu   ----   "
+              "input_climage->isInit(): "
+           << input_climage->isInit();
 
       if (input_climage->isInit()) {
-
         DLOG << "inner conver";
         // cast gpu to cpu
-//        CLImage *image_p = input_climage;
+        //        CLImage *image_p = input_climage;
         int width = input_climage->ImageDims()[0];
         int height = input_climage->ImageDims()[1];
         DLOG << "inner conver 1";
@@ -199,26 +197,26 @@ class TensorWrapper {
         DLOG << "inner conver2";
 
         err =
-            clEnqueueReadImage(input_climage->CommandQueue(), image, CL_TRUE, origin,
-                               region, 0, 0, image_data, 0, NULL, NULL);
+            clEnqueueReadImage(input_climage->CommandQueue(), image, CL_TRUE,
+                               origin, region, 0, 0, image_data, 0, NULL, NULL);
         CL_CHECK_ERRORS(err);
         DLOG << "inner conver3";
 
         output_lodtensor->Resize(input_climage->dims());
         auto converter = input_climage->Converter();
         DLOG << "inner conver4";
-        if (!output_lodtensor->IsInitialized()){
+        if (!output_lodtensor->IsInitialized()) {
           output_lodtensor->mutable_data<float>();
         }
         converter->ImageToNCHW(image_data, output_lodtensor->data<float>(),
-                               input_climage->ImageDims(), input_climage->dims());
+                               input_climage->ImageDims(),
+                               input_climage->dims());
         DLOG << "inner conver5";
 
         delete[](image_data);
       } else {
-
         const DDim &dims = input_climage->dims();
-        DLOG << "input_climage->dims(): "<<dims;
+        DLOG << "input_climage->dims(): " << dims;
         output_lodtensor->ResizeSafe(dims);
       }
 

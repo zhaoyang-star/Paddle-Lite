@@ -31,10 +31,10 @@ class AnchorGeneratorParam : public OpParam {
                        const AttributeMap &attrs, Scope *scope)
       : OpParam(inputs, outputs, attrs, scope) {
     input_ =
-        OpParam::GetVarValue<framework::LoDTensor>("Input", inputs, *scope);
-    output_anchors_ =
-        OpParam::GetVarValue<framework::LoDTensor>("Anchors", outputs, *scope);
-    output_variances_ = OpParam::GetVarValue<framework::LoDTensor>(
+        OpParam::GetVarValue<framework::TensorWrapper>("Input", inputs, *scope);
+    output_anchors_ = OpParam::GetVarValue<framework::TensorWrapper>(
+        "Anchors", outputs, *scope);
+    output_variances_ = OpParam::GetVarValue<framework::TensorWrapper>(
         "Variances", outputs, *scope);
 
     anchor_sizes_ = OpParam::GetAttr<std::vector<float>>("anchor_sizes", attrs);
@@ -47,10 +47,10 @@ class AnchorGeneratorParam : public OpParam {
 
  public:
   // input
-  framework::Tensor *input_;
+  framework::TensorWrapper *input_;
   // outputs
-  framework::Tensor *output_anchors_;
-  framework::Tensor *output_variances_;
+  framework::TensorWrapper *output_anchors_;
+  framework::TensorWrapper *output_variances_;
 
   std::vector<float> anchor_sizes_;
   std::vector<float> aspect_ratios_;
@@ -125,11 +125,12 @@ class PSRoiPoolParam : public OpParam {
   PSRoiPoolParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
                  const AttributeMap &attrs, Scope *scope)
       : OpParam(inputs, outputs, attrs, scope) {
-    input_x_ = OpParam::GetVarValue<framework::LoDTensor>("X", inputs, *scope);
+    input_x_ =
+        OpParam::GetVarValue<framework::TensorWrapper>("X", inputs, *scope);
     input_rois_ =
-        OpParam::GetVarValue<framework::LoDTensor>("ROIs", inputs, *scope);
+        OpParam::GetVarValue<framework::TensorWrapper>("ROIs", inputs, *scope);
     output_ =
-        OpParam::GetVarValue<framework::LoDTensor>("Out", outputs, *scope);
+        OpParam::GetVarValue<framework::TensorWrapper>("Out", outputs, *scope);
 
     output_channels_ = OpParam::GetAttr<int>("output_channels", attrs);
     pooled_height_ = OpParam::GetAttr<int>("pooled_height", attrs);
@@ -138,9 +139,9 @@ class PSRoiPoolParam : public OpParam {
   }
 
  public:
-  framework::Tensor *input_x_;
-  framework::LoDTensor *input_rois_;
-  framework::Tensor *output_;
+  framework::TensorWrapper *input_x_;
+  framework::TensorWrapper *input_rois_;
+  framework::TensorWrapper *output_;
   int output_channels_;
   int pooled_height_;
   int pooled_width_;
@@ -200,11 +201,12 @@ class RoiPerspectiveParam : public OpParam {
                       const VariableNameMap &outputs, const AttributeMap &attrs,
                       Scope *scope)
       : OpParam(inputs, outputs, attrs, scope) {
-    input_x_ = OpParam::GetVarValue<framework::LoDTensor>("X", inputs, *scope);
+    input_x_ =
+        OpParam::GetVarValue<framework::TensorWrapper>("X", inputs, *scope);
     input_rois_ =
-        OpParam::GetVarValue<framework::LoDTensor>("ROIs", inputs, *scope);
+        OpParam::GetVarValue<framework::TensorWrapper>("ROIs", inputs, *scope);
     output_ =
-        OpParam::GetVarValue<framework::LoDTensor>("Out", outputs, *scope);
+        OpParam::GetVarValue<framework::TensorWrapper>("Out", outputs, *scope);
 
     spatial_scale_ = OpParam::GetAttr<float>("spatial_scale", attrs);
     transformed_height_ = OpParam::GetAttr<int>("transformed_height", attrs);
@@ -212,9 +214,9 @@ class RoiPerspectiveParam : public OpParam {
   }
 
  public:
-  framework::Tensor *input_x_;
-  framework::LoDTensor *input_rois_;
-  framework::Tensor *output_;
+  framework::TensorWrapper *input_x_;
+  framework::TensorWrapper *input_rois_;
+  framework::TensorWrapper *output_;
 
   float spatial_scale_;
   int transformed_height_;

@@ -84,28 +84,29 @@ void CrfCompute(const CrfParam& param) {
   //  DLOG<<*transition;
   //  DLOG<<*label;
 
-  PADDLE_MOBILE_ENFORCE(emission->NumLevels() == 1U,
+  PADDLE_MOBILE_ENFORCE(emission->InnerLoDTensor()->NumLevels() == 1U,
                         "The Input(Emission) should be a sequence.");
-  auto lod = emission->lod();
+  auto lod = emission->InnerLoDTensor()->lod();
   PADDLE_MOBILE_ENFORCE(lod.size(),
                         "The Input(Emission) should be a sequence.");
   const size_t level = 0;
   const size_t seq_num = lod[level].size() - 1;
-  int64_t* path = decoded_path->mutable_data<int64_t>();
-  int numel = decoded_path->numel();
+  int64_t* path = decoded_path->InnerLoDTensor()->mutable_data<int64_t>();
+  int numel = decoded_path->InnerLoDTensor()->numel();
   memset(static_cast<void*>(path), 0, sizeof(int64_t) * numel);
   for (size_t i = 0; i < seq_num; ++i) {
     int start_pos = static_cast<int>(lod[level][i]);
     int end_pos = static_cast<int>(lod[level][i + 1]);
-    Tensor decoded_path_one_seq = decoded_path->Slice(start_pos, end_pos);
-    Decode<P>(emission->Slice(start_pos, end_pos), *transition,
-              &decoded_path_one_seq);
+    Tensor decoded_path_one_seq =
+        decoded_path->InnerLoDTensor()->Slice(start_pos, end_pos);
+    Decode<P>(emission->InnerLoDTensor()->Slice(start_pos, end_pos),
+              *transition->InnerLoDTensor(), &decoded_path_one_seq);
   }
   if (label) {
-    PADDLE_MOBILE_ENFORCE(label->NumLevels() == 1U,
+    PADDLE_MOBILE_ENFORCE(label->InnerLoDTensor()->NumLevels() == 1U,
                           "The Input(Label) should be a sequence.");
-    const int64_t* label_value = label->data<int64_t>();
-    size_t batch_size = emission->dims()[0];
+    const int64_t* label_value = label->InnerLoDTensor()->data<int64_t>();
+    size_t batch_size = emission->InnerLoDTensor()->dims()[0];
     for (size_t i = 0; i < batch_size; ++i) {
       path[i] = label_value[i] == path[i] ? 1 : 0;
     }

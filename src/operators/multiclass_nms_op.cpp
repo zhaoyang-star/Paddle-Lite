@@ -20,8 +20,8 @@ namespace operators {
 
 template <typename T>
 void MultiClassNMSOp<T>::InferShape() const {
-  auto input_bboxes_dims = this->param_.InputBBoxes()->dims();
-  auto input_scores_dims = this->param_.InputScores()->dims();
+  auto input_bboxes_dims = this->param_.InputBBoxes()->InnerLoDTensor()->dims();
+  auto input_scores_dims = this->param_.InputScores()->InnerLoDTensor()->dims();
   if (input_scores_dims.size() != 3) {
     LOG(kLOG_ERROR) << "Input Scores size must be 3";
   }

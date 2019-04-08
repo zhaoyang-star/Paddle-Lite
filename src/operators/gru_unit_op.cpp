@@ -21,9 +21,10 @@ namespace operators {
 
 template <typename T>
 void GruUnitOp<T>::InferShape() const {
-  auto input_dims = this->param_.InputInput()->dims();
-  auto hidden_prev_dims = this->param_.InputHiddenPrev()->dims();
-  auto weight_dims = this->param_.InputWeight()->dims();
+  auto input_dims = this->param_.InputInput()->InnerLoDTensor()->dims();
+  auto hidden_prev_dims =
+      this->param_.InputHiddenPrev()->InnerLoDTensor()->dims();
+  auto weight_dims = this->param_.InputWeight()->InnerLoDTensor()->dims();
   int batch_size = input_dims[0];
   int input_size = input_dims[1];
   int frame_size = hidden_prev_dims[1];
@@ -39,7 +40,7 @@ void GruUnitOp<T>::InferShape() const {
       (weight_width == frame_size * 3),
       "The shape of Weight matrix must be [frame_size, frame_size * 3].");
   if (this->param_.InputBias()) {
-    auto bias_dims = this->param_.InputBias()->dims();
+    auto bias_dims = this->param_.InputBias()->InnerLoDTensor()->dims();
     int bias_height = bias_dims[0];
     int bias_width = bias_dims[1];
     PADDLE_MOBILE_ENFORCE((bias_height == 1),
@@ -47,9 +48,11 @@ void GruUnitOp<T>::InferShape() const {
     PADDLE_MOBILE_ENFORCE((bias_width == frame_size * 3),
                           "The shape of Bias must be [1, frame_size * 3].");
   }
-  this->param_.OutGate()->Resize({batch_size, frame_size * 3});
-  this->param_.OutResetHiddenPrev()->Resize({batch_size, frame_size});
-  this->param_.OutHidden()->Resize({batch_size, frame_size});
+  this->param_.OutGate()->InnerLoDTensor()->Resize(
+      {batch_size, frame_size * 3});
+  this->param_.OutResetHiddenPrev()->InnerLoDTensor()->Resize(
+      {batch_size, frame_size});
+  this->param_.OutHidden()->InnerLoDTensor()->Resize({batch_size, frame_size});
 }
 
 }  // namespace operators

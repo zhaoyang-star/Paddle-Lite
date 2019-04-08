@@ -30,7 +30,7 @@ void BilinearInterpCompute(const BilinearInterpParam& param) {
   int out_h = param.OutH();
   int out_w = param.OutW();
   if (out_size_t != nullptr) {
-    auto out_size_data = out_size_t->data<int>();
+    auto out_size_data = out_size_t->InnerLoDTensor()->data<int>();
     out_h = out_size_data[0];
     out_w = out_size_data[1];
   }

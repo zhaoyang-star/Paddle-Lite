@@ -18,13 +18,32 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 namespace math {
-
-template <typename DeviceType, typename T>
+template <typename T>
 class PadFunctor {
- public:
+public:
   void operator()(const framework::Tensor &input, const int pad_top,
                   const int pad_bottom, const int pad_left, const int pad_right,
-                  framework::Tensor *output);
+                  framework::Tensor *output) {
+    const T *in_data = input.data<T>();
+    T *out_data = output->mutable_data<T>();
+    // should check output shape is valid for such pad parameters
+    const framework::DDim &input_shape = input.dims();
+    const framework::DDim &output_shape = output->dims();
+    // fill output with 0
+    memset(out_data, 0, sizeof(T) * output->numel());
+    // should make sure the shape of output is match with input
+    for (int i = 0; i < input_shape[0]; ++i) {
+      for (int c = 0; c < input_shape[1]; ++c) {
+        out_data += pad_top * output_shape[3];
+        for (int h = 0; h < input_shape[2]; ++h) {
+          memcpy(out_data + pad_left, in_data, sizeof(T) * input_shape[3]);
+          out_data += output_shape[3];
+          in_data += input_shape[3];
+        }
+        out_data += pad_bottom * output_shape[3];
+      }
+    }
+  }
 };
 
 }  // namespace math

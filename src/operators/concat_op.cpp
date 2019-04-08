@@ -29,7 +29,7 @@ void ConcatOp<T>::InferShape() const {
   std::vector<DDim> inputs_dims;
   inputs_dims.reserve(n);
   for (int i = 0; i < n; i++) {
-    inputs_dims.push_back(inputs[i]->dims());
+    inputs_dims.push_back(inputs[i]->InnerLoDTensor()->dims());
   }
 
   auto axis = static_cast<size_t>(this->param_.Axis());

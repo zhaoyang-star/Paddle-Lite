@@ -66,9 +66,9 @@ inline void SequenceExpandImpl(const framework::LoDTensor &x,
 }
 template <>
 void SequenceExpandKernelCpu<float>::Compute(const SequenceExpandParam &param) {
-  const framework::LoDTensor *input_x = param.input_x_;
-  const framework::LoDTensor *input_y = param.input_y_;
-  framework::LoDTensor *output = param.output_;
+  const framework::LoDTensor *input_x = param.input_x_->InnerLoDTensor();
+  const framework::LoDTensor *input_y = param.input_y_->InnerLoDTensor();
+  framework::LoDTensor *output = param.output_->InnerLoDTensor();
   output->mutable_data<float>();
 
   const auto &x_lod = input_x->lod();

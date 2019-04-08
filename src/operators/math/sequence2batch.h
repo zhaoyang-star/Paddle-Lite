@@ -21,19 +21,38 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 namespace math {
-template <typename DeviceType, typename T>
+template <typename T>
 class CopyMatrixRowsFunctor {
- public:
-  // If is_src_index is true,
-  // copy the indexed rows of input src to the output dst.
-  // If is_src_index is false,
-  // copy the input src to the indexed rows of output dst.
-  // The indexed rows are based on the input index.
+public:
   void operator()(const framework::Tensor& src, std::vector<size_t> index_lod,
-                  framework::Tensor* dst, bool is_src_index);
+                  framework::Tensor* dst, bool is_src_index) {
+    size_t* index = index_lod.data();
+    auto src_dims = src.dims();
+    auto dst_dims = dst->dims();
+    PADDLE_MOBILE_ENFORCE((src_dims.size() == 2UL),
+                          "The src must be matrix with rank 2.");
+    PADDLE_MOBILE_ENFORCE((dst_dims.size() == 2UL),
+                          "The dst must be matrix with rank 2.");
+    PADDLE_MOBILE_ENFORCE((src_dims[1] == dst_dims[1]),
+                          "The width of src and dst must be same.");
+    auto height = dst_dims[0];
+    auto width = dst_dims[1];
+    auto* src_data = src.data<T>();
+    auto* dst_data = dst->data<T>();
+    for (int i = 0; i < height; ++i) {
+      if (is_src_index) {
+        memcpy(dst_data + i * width, src_data + index[i] * width,
+               width * sizeof(T));
+      } else {
+        memcpy(dst_data + index[i] * width, src_data + i * width,
+               width * sizeof(T));
+      }
+    }
+  }
 };
 
-template <typename DeviceType, typename T>
+
+template <typename T>
 class LoDTensor2BatchFunctor {
   // Calculate the length of each sequence and
   // sort sequence index by the length.
@@ -62,7 +81,7 @@ class LoDTensor2BatchFunctor {
       PADDLE_MOBILE_ENFORCE(
           (lods[1].size() == static_cast<size_t>(lod_tensor.dims()[0])),
           "The LoD information should be consistent with the dims.");
-      CopyMatrixRowsFunctor<CPU, T> to_batch;
+      CopyMatrixRowsFunctor<T> to_batch;
       to_batch(lod_tensor, lods[1], batch, true);
       return;
     }
@@ -142,12 +161,12 @@ class LoDTensor2BatchFunctor {
     }
     batch->set_lod(batch_lods);
 
-    CopyMatrixRowsFunctor<CPU, T> to_batch;
+    CopyMatrixRowsFunctor<T> to_batch;
     to_batch(lod_tensor, batch_lods[1], batch, true);
   }
 };
 
-template <typename DeviceType, typename T>
+template <typename T>
 class Batch2LoDTensorFunctor {
  public:
   void operator()(const framework::LoDTensor& batch,
@@ -160,7 +179,7 @@ class Batch2LoDTensorFunctor {
     PADDLE_MOBILE_ENFORCE(
         (in_lod[1].size() == static_cast<size_t>(lod_tensor->dims()[0])),
         "The LoD information should be consistent with the dims.");
-    CopyMatrixRowsFunctor<CPU, T> to_seq;
+    CopyMatrixRowsFunctor<T> to_seq;
     to_seq(batch, in_lod[1], lod_tensor, false);
   }
 };

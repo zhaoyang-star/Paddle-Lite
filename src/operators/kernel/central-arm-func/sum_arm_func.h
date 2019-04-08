@@ -114,28 +114,33 @@ void SumCompute(const SumParam &param) {
       functor(sel_row, offset, out);
       offset += sel_row.value().numel();
     }
-  } else if (outvar->IsType<LoDTensorArray>()) {
-    auto &out_array = *outvar->GetMutable<LoDTensorArray>();
+  } else if (outvar->IsType<TensorWrapperArray>()) {
+    auto &out_array = *outvar->GetMutable<TensorWrapperArray>();
     for (size_t i = in_place ? 1 : 0; i < inputsvars.size(); ++i) {
-      PADDLE_MOBILE_ENFORCE(inputsvars[i]->IsType<LoDTensorArray>(),
+      PADDLE_MOBILE_ENFORCE(inputsvars[i]->IsType<TensorWrapperArray>(),
                             "Only support all inputs are TensorArray");
-      auto *in_array = inputsvars[i]->Get<LoDTensorArray>();
+      auto *in_array = inputsvars[i]->Get<TensorWrapperArray>();
 
       for (size_t i = 0; i < in_array->size(); ++i) {
-        if ((*in_array)[i].numel() != 0) {
+        const framework::TensorWrapper &tensor_wrapper = (*in_array)[i];
+        auto tensor = *static_cast<framework::TensorWrapper> (tensor_wrapper).InnerLoDTensor();
+        if (tensor.numel() != 0) {
           if (i >= out_array.size()) {
             out_array.resize(i + 1);
           }
-          if (out_array[i].numel() == 0) {
-            framework::TensorCopy((*in_array)[i], &out_array[i]);
-            out_array[i].set_lod((*in_array)[i].lod());
-          } else {
-            PADDLE_MOBILE_ENFORCE(out_array[i].lod() == (*in_array)[i].lod(),
-                                  "outLod != inLod");
-            auto *inptr = (*in_array)[i].data<float>();
-            auto *outptr = out_array[i].data<float>();
+          const framework::TensorWrapper &tensor_out_wrapper = out_array[i];
+          auto tensor_out = *static_cast<framework::TensorWrapper> (tensor_out_wrapper).InnerLoDTensor();
 
-            for (int j = 0; j < (*in_array)[i].numel(); ++j) {
+          if (tensor_out.numel() == 0) {
+            framework::TensorCopy(tensor, &tensor_out);
+            tensor_out.set_lod(tensor.lod());
+          } else {
+            PADDLE_MOBILE_ENFORCE(tensor_out.lod() == tensor.lod(),
+                                  "outLod != inLod");
+            auto *inptr = tensor.data<float>();
+            auto *outptr = tensor_out.data<float>();
+
+            for (int j = 0; j < tensor.numel(); ++j) {
               outptr[j] = inptr[j] + outptr[j];
             }
           }

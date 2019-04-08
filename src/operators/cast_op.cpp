@@ -21,8 +21,8 @@ namespace operators {
 
 template <typename T>
 void CastOp<T>::InferShape() const {
-  const auto &dims = this->param_.input_->dims();
-  this->param_.output_->Resize(dims);
+  const auto &dims = this->param_.input_->InnerLoDTensor()->dims();
+  this->param_.output_->InnerLoDTensor()->Resize(dims);
 }
 
 }  // namespace operators

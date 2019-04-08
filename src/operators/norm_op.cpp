@@ -31,7 +31,7 @@ void NormOp<T>::InferShape() const {
     axis += x_dims.size();
   }
   x_dims[axis] = 1;
-  this->param_.OutputNorm()->Resize(x_dims);
+  this->param_.OutputNorm()->InnerLoDTensor()->Resize(x_dims);
 }
 
 }  // namespace operators

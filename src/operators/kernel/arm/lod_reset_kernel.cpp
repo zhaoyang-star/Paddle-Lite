@@ -26,9 +26,9 @@ bool LodResetKernelCpu<float>::Init(LodResetParam *param) {
 
 template <>
 void LodResetKernelCpu<float>::Compute(const LodResetParam &param) {
-  const auto *input = param.input_x_;
-  const auto *lod_t = param.input_y_;
-  auto *output = param.output_;
+  const auto *input = param.input_x_->InnerLoDTensor();
+  const auto *lod_t = param.input_y_->InnerLoDTensor();
+  auto *output = param.output_->InnerLoDTensor();
 
   output->ShareDataWith(*input);
 

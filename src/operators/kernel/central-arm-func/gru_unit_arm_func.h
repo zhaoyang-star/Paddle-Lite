@@ -28,16 +28,16 @@ namespace operators {
 template <typename P>
 void GruUnitCompute(const GruUnitParam& param) {
   // inputs
-  auto* input = param.InputInput();
-  auto* hidden_prev = param.InputHiddenPrev();
-  auto* weight = param.InputWeight();
+  auto* input = param.InputInput()->InnerLoDTensor();
+  auto* hidden_prev = param.InputHiddenPrev()->InnerLoDTensor();
+  auto* weight = param.InputWeight()->InnerLoDTensor();
   auto* bias = param.InputBias()->InnerLoDTensor();
   // outputs
-  auto* gate = param.OutGate();
+  auto* gate = param.OutGate()->InnerLoDTensor();
   gate->mutable_data<P>();
-  auto* reset_hidden_prev = param.OutResetHiddenPrev();
+  auto* reset_hidden_prev = param.OutResetHiddenPrev()->InnerLoDTensor();
   reset_hidden_prev->mutable_data<P>();
-  auto* hidden = param.OutHidden();
+  auto* hidden = param.OutHidden()->InnerLoDTensor();
   hidden->mutable_data<P>();
 
   // add bias

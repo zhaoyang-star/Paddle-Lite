@@ -20,16 +20,16 @@ namespace operators {
 #ifdef FUSION_DEQUANT_BN_OP
 template <typename T>
 void FusionDequantBNOp<T>::InferShape() const {
-  const auto& input_dims = this->param_.input_->dims();
-  this->param_.output_->Resize(input_dims);
+  const auto& input_dims = this->param_.input_->InnerLoDTensor()->dims();
+  this->param_.output_->InnerLoDTensor()->Resize(input_dims);
 }
 #endif  // FUSION_DEQUANT_BN_OP
 
 #ifdef FUSION_DEQUANT_BN_RELU_OP
 template <typename T>
 void FusionDequantBNReluOp<T>::InferShape() const {
-  const auto& input_dims = this->param_.input_->dims();
-  this->param_.output_->Resize(input_dims);
+  const auto& input_dims = this->param_.input_->InnerLoDTensor()->dims();
+  this->param_.output_->InnerLoDTensor()->Resize(input_dims);
 }
 #endif  // FUSION_DEQUANT_BN_RELU_OP
 

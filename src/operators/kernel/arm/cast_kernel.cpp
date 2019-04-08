@@ -62,8 +62,8 @@ bool CastKernelCpu<float>::Init(CastParam* param) {
 
 template <>
 void CastKernelCpu<float>::Compute(const CastParam& param) {
-  const Tensor* input = param.input_;
-  Tensor* output = param.output_;
+  const Tensor* input = param.input_->InnerLoDTensor();
+  Tensor* output = param.output_->InnerLoDTensor();
   framework::VisitDataType(framework::ToDataType(param.input_type_),
                            CastOpFunctor(input, output, param.output_type_));
 }

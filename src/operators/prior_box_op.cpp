@@ -22,7 +22,7 @@ namespace operators {
 template <typename T>
 void PriorBoxOp<T>::InferShape() const {
   auto input_dims = this->param_.Input()->InnerLoDTensor()->dims();
-  auto input_image_dims = this->param_.InputImage()->dims();
+  auto input_image_dims = this->param_.InputImage()->InnerLoDTensor()->dims();
   auto min_sizes = this->param_.MinSizes();
   auto max_sizes = this->param_.MaxSizes();
   auto variances = this->param_.Variances();
@@ -41,8 +41,8 @@ void PriorBoxOp<T>::InferShape() const {
   dim_vec[1] = input_dims[3];
   dim_vec[2] = num_priors;
   dim_vec[3] = 4;
-  this->param_.OutputBoxes()->Resize(framework::make_ddim(dim_vec));
-  this->param_.OutputVariances()->Resize(framework::make_ddim(dim_vec));
+  this->param_.OutputBoxes()->InnerLoDTensor()->Resize(framework::make_ddim(dim_vec));
+  this->param_.OutputVariances()->InnerLoDTensor()->Resize(framework::make_ddim(dim_vec));
 }
 #endif  // PRIORBOX_OP
 

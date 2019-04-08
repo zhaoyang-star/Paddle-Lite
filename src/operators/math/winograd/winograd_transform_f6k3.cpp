@@ -344,7 +344,7 @@ void winograd_transform_input<8, 3>(framework::Tensor &input,
   if (height > input.dims()[2] || width > input.dims()[3]) {
     framework::DDim input_shape =
         framework::make_ddim(std::vector<int>{1, channel, height, width});
-    PadFunctor<CPU, float> pad;
+    PadFunctor<float> pad;
     inptr = input_pad.mutable_data<float>(input_shape);
     pad(input, 0, height - input.dims()[2], 0, width - input.dims()[3],
         &input_pad);

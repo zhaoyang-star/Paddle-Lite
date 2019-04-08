@@ -23,7 +23,7 @@ namespace paddle_mobile {
 namespace operators {
 
 #define GET_VAR_AS_LOD_TENSOR(name, name_dict, scope) \
-  OpParam::GetVarValue<framework::LoDTensor>(name, name_dict, scope)
+  OpParam::GetVarValue<framework::TensorWrapper>(name, name_dict, scope)
 
 class BeamSearchParam : public OpParam {
  public:
@@ -41,7 +41,7 @@ class BeamSearchParam : public OpParam {
     if (outputs.count("parent_idx")) {
       parent_idx_ = GET_VAR_AS_LOD_TENSOR("parent_idx", outputs, *scope);
     } else {
-      parent_idx_ = new framework::Tensor();
+      parent_idx_ = new framework::TensorWrapper();
     }
 
     level_ = OpParam::GetAttr<int>("level", attrs);
@@ -53,14 +53,14 @@ class BeamSearchParam : public OpParam {
   }
 
  public:
-  framework::LoDTensor *pre_ids_;
-  framework::LoDTensor *pre_scores_;
-  framework::LoDTensor *ids_;
-  framework::LoDTensor *scores_;
+  framework::TensorWrapper *pre_ids_;
+  framework::TensorWrapper *pre_scores_;
+  framework::TensorWrapper *ids_;
+  framework::TensorWrapper *scores_;
 
-  framework::LoDTensor *selected_ids_;
-  framework::LoDTensor *selected_scores_;
-  framework::Tensor *parent_idx_;
+  framework::TensorWrapper *selected_ids_;
+  framework::TensorWrapper *selected_scores_;
+  framework::TensorWrapper *parent_idx_;
 
   int level_;
   int beam_size_;

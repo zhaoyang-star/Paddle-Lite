@@ -20,7 +20,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Device, typename T>
+template <typename T>
 class BeamSearchFunctor {
  public:
   void operator()(const framework::LoDTensor *pre_ids,
@@ -250,8 +250,8 @@ bool BeamSearchKernelCpu<float>::Init(BeamSearchParam *param) {
 template <>
 void BeamSearchKernelCpu<float>::Compute(const BeamSearchParam &param) {
   BeamSearchFunctor<float> alg;
-  alg(param.pre_ids_, param.pre_scores_, param.ids_, param.scores_,
-      param.selected_ids_, param.selected_scores_, param.parent_idx_,
+  alg(param.pre_ids_->InnerLoDTensor(), param.pre_scores_->InnerLoDTensor(), param.ids_->InnerLoDTensor(), param.scores_->InnerLoDTensor(),
+      param.selected_ids_->InnerLoDTensor(), param.selected_scores_->InnerLoDTensor(), param.parent_idx_->InnerLoDTensor(),
       param.level_, param.beam_size_, param.end_id_, param.is_accumulated_);
 }
 

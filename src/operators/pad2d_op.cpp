@@ -20,14 +20,14 @@ namespace operators {
 
 template <typename T>
 void Pad2DOp<T>::InferShape() const {
-  auto input_dims = this->param_.input_->dims();
+  auto input_dims = this->param_.input_->InnerLoDTensor()->dims();
   const auto &paddings = this->param_.paddings_;
   PADDLE_MOBILE_ENFORCE(paddings.size() == 4,
                         "Size of paddings should be equal to 4.");
 
   input_dims[2] += paddings[0] + paddings[1];
   input_dims[3] += paddings[2] + paddings[3];
-  this->param_.output_->Resize(input_dims);
+  this->param_.output_->InnerLoDTensor()->Resize(input_dims);
 }
 
 }  // namespace operators

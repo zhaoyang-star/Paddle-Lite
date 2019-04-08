@@ -31,10 +31,10 @@ namespace operators {
 void PublicFusionDequantBNInitParam(FusionDequantBNParam *param,
                                     const framework::Tensor *bias) {
   // batch norm params
-  const Tensor *bn_mean = param->bn_mean_;
-  const Tensor *bn_variance = param->bn_variance_;
-  Tensor *bn_scale = param->bn_scale_;
-  Tensor *bn_bias = param->bn_bias_;
+  const Tensor *bn_mean = param->bn_mean_->InnerLoDTensor();
+  const Tensor *bn_variance = param->bn_variance_->InnerLoDTensor();
+  Tensor *bn_scale = param->bn_scale_->InnerLoDTensor();
+  Tensor *bn_bias = param->bn_bias_->InnerLoDTensor();
   const float epsilon = param->epsilon_;
 
   const float *mean_ptr = bn_mean->data<float>();
@@ -56,18 +56,20 @@ void PublicFusionDequantBNInitParam(FusionDequantBNParam *param,
     defined(FUSION_DEQUANT_ADD_BN_RELU_OP)
 template <ActivationType Act>
 void DequantBNCompute(const FusionDequantBNParam *param) {
-  const int32_t *input = param->input_->data<int32_t>();
-  const float *bn_scale = param->bn_scale_->data<float>();
-  const float *bn_bias = param->bn_bias_->data<float>();
+  const int32_t *input = param->input_->InnerLoDTensor()->data<int32_t>();
+  const float *bn_scale = param->bn_scale_->InnerLoDTensor()->data<float>();
+  const float *bn_bias = param->bn_bias_->InnerLoDTensor()->data<float>();
   // dequantize params
-  const float activation_scale = param->activation_scale_->data<float>()[0];
+  const float activation_scale =
+      param->activation_scale_->InnerLoDTensor()->data<float>()[0];
   const float weight_scale = param->weight_scale_;
   const float dequant_scale = activation_scale / weight_scale;
 
-  float *output = param->output_->mutable_data<float>();
-  int batch_size = param->input_->dims()[0];
-  int channels = param->input_->dims()[1];
-  size_t spatial_size = param->input_->dims()[2] * param->input_->dims()[3];
+  float *output = param->output_->InnerLoDTensor()->mutable_data<float>();
+  int batch_size = param->input_->InnerLoDTensor()->dims()[0];
+  int channels = param->input_->InnerLoDTensor()->dims()[1];
+  size_t spatial_size = param->input_->InnerLoDTensor()->dims()[2] *
+                        param->input_->InnerLoDTensor()->dims()[3];
 
   #pragma omp parallel for collapse(2)
   for (int batch = 0; batch < batch_size; ++batch) {
@@ -152,7 +154,7 @@ void FusionDequantBNReluKernelCpu<float>::Compute(
 #ifdef FUSION_DEQUANT_ADD_BN_OP
 template <>
 bool FusionDequantAddBNKernelCpu<float>::Init(FusionDequantAddBNParam *param) {
-  const framework::Tensor *bias = param->bias_;
+  const framework::Tensor *bias = param->bias_->InnerLoDTensor();
   PublicFusionDequantBNInitParam(param, bias);
   return true;
 }
@@ -168,7 +170,7 @@ void FusionDequantAddBNKernelCpu<float>::Compute(
 template <>
 bool FusionDequantAddBNReluKernelCpu<float>::Init(
     FusionDequantAddBNParam *param) {
-  const framework::Tensor *bias = param->bias_;
+  const framework::Tensor *bias = param->bias_->InnerLoDTensor();
   PublicFusionDequantBNInitParam(param, bias);
   return true;
 }

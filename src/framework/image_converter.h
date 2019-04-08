@@ -18,22 +18,21 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace framework {
-class ImageConverterHelper {
+class GpuRumtimeHelper {
  public:
-  void Init(CLScope * scope) {
+  void Init(CLScope *scope) {
     helper_global = CLHelper(scope);
     helper_global.AddKernel("feed", "feed_kernel.cl");
     helper_global.AddKernel("fetch", "fetch_kernel.cl");
   }
-  static ImageConverterHelper *Instance() {
-    static ImageConverterHelper converter_;
+  static GpuRumtimeHelper *Instance() {
+    static GpuRumtimeHelper converter_;
     return &converter_;
   }
 
-  CLHelper *GetClHelper(){
-    return &helper_global;
-  }
-private:
+  CLHelper *GetClHelper() { return &helper_global; }
+
+ private:
   CLHelper helper_global;
 };
 }  // namespace framework

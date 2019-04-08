@@ -126,9 +126,7 @@ class LoDTensor : public Tensor {
     return *this;
   }
   /*!resize in constructor*/
-  void ResizeSafe(const DDim &dims) {
-    dims_ = dims;
-  }
+  void ResizeSafe(const DDim &dims) { dims_ = dims; }
 
   /*
    * Number of LoDTensor's levels, each level has units of data, for

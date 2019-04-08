@@ -34,8 +34,8 @@ void LookupOp<T>::InferShape() const {
                         "Output(Out) of LookupTableOp should not be null.");
   //    this->param__.InputW()->
 
-  auto table_dims = this->param_.InputW()->dims();
-  auto ids_dims = ids_t->dims();
+  auto table_dims = this->param_.InputW()->InnerCLImage()->dims();
+  auto ids_dims = ids_t->InnerCLImage()->dims();
 
   int ids_rank = ids_dims.size();
 

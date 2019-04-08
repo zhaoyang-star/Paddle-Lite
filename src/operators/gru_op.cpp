@@ -23,8 +23,8 @@ namespace operators {
 
 template <typename T>
 void GruOp<T>::InferShape() const {
-  auto input_dims = this->param_.InputInput()->dims();
-  auto weight_dims = this->param_.InputWeight()->dims();
+  auto input_dims = this->param_.InputInput()->InnerLoDTensor()->dims();
+  auto weight_dims = this->param_.InputWeight()->InnerLoDTensor()->dims();
   int input_size = input_dims[1];
   int frame_size = weight_dims[0];
   PADDLE_MOBILE_ENFORCE(
@@ -33,13 +33,13 @@ void GruOp<T>::InferShape() const {
   PADDLE_MOBILE_ENFORCE(
       (weight_dims[1] == frame_size * 3),
       "The shape of Weight matrix must be [frame_size, frame_size * 3].");
-  if (this->param_.InputH0()) {
-    auto h0_dims = this->param_.InputH0()->dims();
+  if (this->param_.InputH0()->InnerLoDTensor()) {
+    auto h0_dims = this->param_.InputH0()->InnerLoDTensor()->dims();
     PADDLE_MOBILE_ENFORCE((h0_dims[1] == frame_size),
                           "The width of H0 must be equal to frame_size.");
   }
   if (this->param_.InputBias()) {
-    auto bias_dims = this->param_.InputBias()->dims();
+    auto bias_dims = this->param_.InputBias()->InnerLoDTensor()->dims();
     int bias_height = bias_dims[0];
     int bias_width = bias_dims[1];
     PADDLE_MOBILE_ENFORCE((bias_height == 1),
@@ -47,10 +47,13 @@ void GruOp<T>::InferShape() const {
     PADDLE_MOBILE_ENFORCE((bias_width == frame_size * 3),
                           "The shape of Bias must be [1, frame_size * 3].");
   }
-  this->param_.OutBatchGate()->Resize(input_dims);
-  this->param_.OutBatchResetHiddenPrev()->Resize({input_dims[0], frame_size});
-  this->param_.OutBatchHidden()->Resize({input_dims[0], frame_size});
-  this->param_.OutHidden()->Resize({input_dims[0], frame_size});
+  this->param_.OutBatchGate()->InnerLoDTensor()->Resize(input_dims);
+  this->param_.OutBatchResetHiddenPrev()->InnerLoDTensor()->Resize(
+      {input_dims[0], frame_size});
+  this->param_.OutBatchHidden()->InnerLoDTensor()->Resize(
+      {input_dims[0], frame_size});
+  this->param_.OutHidden()->InnerLoDTensor()->Resize(
+      {input_dims[0], frame_size});
 }
 
 }  // namespace operators

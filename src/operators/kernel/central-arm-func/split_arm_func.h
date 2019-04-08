@@ -70,10 +70,11 @@ void SplitCompute(const SplitParam& param) {
 
   size_t input_offset = 0;
   for (auto& out : outs) {
-    out->mutable_data<float>();
-    auto out_stride = framework::stride_numel(out->dims());
+    LoDTensor *outtensor = out->InnerLoDTensor();
+    outtensor->mutable_data<float>();
+    auto out_stride = framework::stride_numel(outtensor->dims());
 
-    StridedNumelCopyWithAxis<float>(axis, out->data<float>(), out_stride,
+    StridedNumelCopyWithAxis<float>(axis, outtensor->data<float>(), out_stride,
                                     in->data<float>() + input_offset, in_stride,
                                     out_stride[axis]);
     input_offset += out_stride[axis];

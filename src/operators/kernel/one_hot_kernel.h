@@ -23,7 +23,7 @@ namespace paddle_mobile {
 namespace operators {
 
 #define GET_VAR_AS_LOD_TENSOR(name, name_dict, scope) \
-  OpParam::GetVarValue<framework::LoDTensor>(name, name_dict, scope)
+  OpParam::GetVarValue<framework::TensorWrapper>(name, name_dict, scope)
 
 class OnehotParam : public OpParam {
  public:
@@ -38,8 +38,8 @@ class OnehotParam : public OpParam {
   }
 
  public:
-  framework::LoDTensor *input_;
-  framework::LoDTensor *output_;
+  framework::TensorWrapper *input_;
+  framework::TensorWrapper *output_;
 
   int depth_;
   int dtype_;

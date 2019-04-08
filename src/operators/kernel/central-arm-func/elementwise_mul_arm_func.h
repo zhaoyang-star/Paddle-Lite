@@ -37,7 +37,7 @@ void ElementwiseMulCompute(const ElementwiseMulParam &param) {
                                                  MulFunctor<float>(), Out);
 }
 
-template class ElementwiseMulKernel<float>;
+template class ElementwiseMulKernelCpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

@@ -25,15 +25,15 @@ bool WriteToArrayKernelCpu<float>::Init(WriteToArrayParam *param) {
 
 template <>
 void WriteToArrayKernelCpu<float>::Compute(const WriteToArrayParam &param) {
-  int64_t offset = param.index_->data<int64_t>()[0];
+  int64_t offset = param.index_->InnerLoDTensor()->data<int64_t>()[0];
   if (offset >= param.output_->size()) {
     param.output_->resize(offset + 1);
   }
 
-  framework::LoDTensor *out_tensor = &(param.output_->at(offset));
-  out_tensor->set_lod(param.input_->lod());
-  if (param.input_->memory_size() > 0) {
-    TensorCopy(*(param.input_), out_tensor);
+  framework::LoDTensor *out_tensor = param.output_->at(offset).InnerLoDTensor();
+  out_tensor->set_lod(param.input_->InnerLoDTensor()->lod());
+  if (param.input_->InnerLoDTensor()->memory_size() > 0) {
+    TensorCopy(*(param.input_->InnerLoDTensor()), out_tensor);
   }
 }
 #endif  // WRITE_TO_ARRAY_OP
@@ -46,10 +46,10 @@ bool ReadFromArrayKernelCpu<float>::Init(ReadFromArrayParam *param) {
 
 template <>
 void ReadFromArrayKernelCpu<float>::Compute(const ReadFromArrayParam &param) {
-  int64_t offset = param.index_->data<int64_t>()[0];
+  int64_t offset = param.index_->InnerLoDTensor()->data<int64_t>()[0];
   if (offset < param.input_->size()) {
-    TensorCopy(param.input_->at(offset), param.output_);
-    param.output_->set_lod(param.input_->at(offset).lod());
+    TensorCopy(*param.input_->at(offset).InnerLoDTensor(), param.output_->InnerLoDTensor());
+    param.output_->InnerLoDTensor()->set_lod(param.input_->at(offset).InnerLoDTensor()->lod());
   } else {
     PADDLE_MOBILE_THROW_EXCEPTION(
         "Can not read tensor which index is `%d` since it only has `%d` inputs",

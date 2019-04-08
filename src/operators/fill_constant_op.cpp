@@ -13,11 +13,6 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 #ifdef FILL_CONSTANT_OP
-
 #include "operators/fill_constant_op.h"
-
-namespace ops = paddle_mobile::operators;
-
-REGISTER_OPERATOR(fill_constant, ops::FillConstantOp);
-
+REGISTER_OPERATOR(fill_constant, paddle_mobile::operators::FillConstantOp);
 #endif

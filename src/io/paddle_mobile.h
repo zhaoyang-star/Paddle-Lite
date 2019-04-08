@@ -15,12 +15,12 @@ limitations under the License. */
 #pragma once
 
 #include <framework/executor.h>
+#include <framework/executor_cl_impl.h>
 #include <framework/executor_cpu_impl.h>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-#include <framework/executor_cl_impl.h>
 #include "common/types.h"
 #include "framework/executor_common_impl.h"
 #include "framework/load_ops.h"

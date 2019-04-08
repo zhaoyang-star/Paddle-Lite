@@ -41,7 +41,7 @@ void NormCompute(const NormParam &param) {
   int axis = param.Axis();
 
   const framework::Tensor *input = param.InputX()->InnerLoDTensor();
-  framework::Tensor *norm = param.OutputNorm();
+  framework::Tensor *norm = param.OutputNorm()->InnerLoDTensor();
   framework::Tensor *out = param.Out()->InnerLoDTensor();
 
   auto x_dims = input->dims();

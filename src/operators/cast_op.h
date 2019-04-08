@@ -46,13 +46,13 @@ class CastOp : public framework::OperatorWithKernels<T, CastParam> {
          framework::Scope *scope)
       : framework::OperatorWithKernels<T, CastParam>(type, inputs, outputs,
                                                      attrs, scope) {
-    framework::OperatorWithKernels<T, CastParam>::kernels.insert(TYPE_GPU,
-                                                                 kernelGpu_);
-    framework::OperatorWithKernels<T, CastParam>::kernels.insert(TYPE_
-                                                                 kernelCpu_);
+//    framework::OperatorWithKernels<T, CastParam>::kernels.insert(TYPE_GPU,
+//                                                                 kernelGpu_);
+//    framework::OperatorWithKernels<T, CastParam>::kernels.insert(TYPE_
+//                                                                 kernelCpu_);
   }
   void Init(){
-      kernelCpu_.Init(framework::OperatorWithKernels<T, CastParam>::param_);
+//      kernelCpu_.Init(framework::OperatorWithKernels<T, CastParam>::param_);
 
   }
   void InferShape() const override;

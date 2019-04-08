@@ -40,15 +40,22 @@ class FillConstantOp : public framework::OperatorBase<DeviceType> {
  protected:
 };
 */
-
+/*
 template <typename T>
 class FillConstantOp : public framework::OperatorBase {
  public:
   FillConstantOp(const std::string &type, const VariableNameMap &inputs,
                  const VariableNameMap &outputs,
                  const framework::AttributeMap &attrs, framework::Scope *scope)
-      : framework::OperatorWithKernels<T, FillConstantParam>(
-            type, inputs, outputs, attrs, scope) {}
+      : framework::OperatorBase(type, inputs, outputs, attrs, scope) {}
+  void Init() {}
+  void InferShape() const {
+    PADDLE_MOBILE_ENFORCE(
+        param_.Out()->InnerLoDTensor() != nullptr,
+        "Output (Out) of fill_constant op should not be null.");
+    framework::DDim ddim = framework::make_ddim(param_.Shape());
+    param_.Out()->InnerLoDTensor()->Resize(ddim);
+  }
 
   void RunImpl() {
     auto data_type =
@@ -63,6 +70,49 @@ class FillConstantOp : public framework::OperatorBase {
     } else if (outvar->template IsType<framework::SelectedRows>()) {
       tensor = outvar->template GetMutable<framework::SelectedRows>()
                    ->mutable_value();
+    } else if (outvar->template IsType<framework::TensorWrapper>()) {
+      tensor = outvar->template GetMutable<framework::TensorWrapper>()
+                   ->InnerLoDTensor();
+    } else {
+      PADDLE_MOBILE_THROW_EXCEPTION(
+          "fill constant op's output only"
+          "supports SelectedRows and LoDTensor");
+    }
+    tensor->Resize(framework::make_ddim(param_.Shape()));
+    tensor->mutable_data(framework::ToTypeIndex(data_type));
+
+    math::SetConstant(tensor, value);
+  }
+
+  FillConstantParam param_;
+};
+*/
+
+template <typename T>
+class FillConstantOp : public framework::OperatorBase {
+ public:
+  FillConstantOp(const std::string &type, const VariableNameMap &inputs,
+                 const VariableNameMap &outputs,
+                 const framework::AttributeMap &attrs, framework::Scope *scope)
+      : framework::OperatorBase(type, inputs, outputs, attrs, scope),
+        param_(inputs, outputs, attrs, scope) {}
+
+  void RunImpl() {
+    auto data_type =
+        static_cast<_PaddleMobile__Framework__Proto__VarType__Type>(
+            param_.DataDtype());
+    framework::Tensor *tensor = nullptr;
+    auto value = param_.Value();
+    auto *outvar = param_.OutVar();
+
+    if (outvar->template IsType<framework::LoDTensor>()) {
+      tensor = outvar->template GetMutable<framework::LoDTensor>();
+    } else if (outvar->template IsType<framework::SelectedRows>()) {
+      tensor = outvar->template GetMutable<framework::SelectedRows>()
+                   ->mutable_value();
+    } else if (outvar->template IsType<framework::TensorWrapper>()) {
+      tensor = outvar->template GetMutable<framework::TensorWrapper>()
+                   ->InnerLoDTensor();
     } else {
       PADDLE_MOBILE_THROW_EXCEPTION(
           "fill constant op's output only"
@@ -85,6 +135,8 @@ class FillConstantOp : public framework::OperatorBase {
   }
   FillConstantParam param_;
 };
+
+// DECLARE_OPERATOR(FillConstant);
 
 }  // namespace operators
 }  // namespace paddle_mobile

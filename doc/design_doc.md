@@ -133,7 +133,7 @@ __一个关于包大小的优化__:
 namespace paddle_mobile {
 namespace operators {
 using std::string;
-template <typename DeviceType, typename T>
+template <typename T>
 class ConvOp
 	//impl  
 };

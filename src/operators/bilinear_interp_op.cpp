@@ -30,8 +30,10 @@ void BilinearInterpOp<T>::InferShape() const {
   int out_w = this->param_.OutW();
   PADDLE_MOBILE_ENFORCE(dim_x.size() == 4, "X's dimension must be 4");
 
-  if (this->param_.InputOutPutSize() != nullptr) {
-    auto out_size_dim = this->param_.InputOutPutSize()->dims();
+  if (this->param_.InputOutPutSize() != nullptr &&
+      this->param_.InputOutPutSize()->InnerLoDTensor() != nullptr) {
+    auto out_size_dim =
+        this->param_.InputOutPutSize()->InnerLoDTensor()->dims();
 
     PADDLE_MOBILE_ENFORCE(out_size_dim.size() == 1,
                           "OutSize's dimension size must be 1");

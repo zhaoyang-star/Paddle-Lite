@@ -33,7 +33,7 @@ void Loader<T>::InitMemoryFromProgram(
       auto var = scope.get()->Var(var_desc->Name());
       if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
         if (var_desc->Persistable()) {
-          DLOG << "InitMemoryFromProgram vardesc: "<<var_desc->Name();
+          DLOG << "InitMemoryFromProgram vardesc: " << var_desc->Name();
           auto dim = var_desc->Tensor_desc().Dims();
           auto tensor_w = var->GetMutable<TensorWrapper>();
           DLOG << "mutelodtensor  ===>";
@@ -147,7 +147,6 @@ template <typename T>
 const Program<T> Loader<T>::LoadProgram(const std::string &model_path,
                                         bool optimize, bool quantification,
                                         bool can_add_split) {
-
   std::string model_filename = model_path;
   PaddleMobile__Framework__Proto__ProgramDesc *c_program;
   uint8_t *buf = NULL;
@@ -172,8 +171,6 @@ const Program<T> Loader<T>::LoadProgram(const std::string &model_path,
   auto scope = std::make_shared<Scope>();
   program.scope = scope;
 
-
-
   // use  originProgramDesc and scope to init tensors
   InitMemoryFromProgram(originProgramDesc, scope);
   // perform fusion and print infos
@@ -183,7 +180,15 @@ const Program<T> Loader<T>::LoadProgram(const std::string &model_path,
   free(buf);
 
 #ifdef PADDLE_MOBILE_CL
-  ImageConverterHelper::Instance()->Init(program.scope->GetCLScpoe());
+  GpuRumtimeHelper::Instance()->Init(program.scope->GetCLScpoe());
+
+  const std::unordered_map<string, OpInfo> &op_info_map =
+      OpInfoMap::Instance()->map();
+
+  for (auto iter = op_info_map.begin(); iter != op_info_map.end(); iter++) {
+    DLOG << " op info map:   " << iter->first << "   ----    ";
+  }
+
 #endif
   return program;
 }

@@ -64,10 +64,10 @@ void ConcatCompute(const ConcatParam &param) {
   if (axis == 0 && inputs.size() < 10) {
     size_t output_offset = 0;
     for (auto *in : inputs) {
-      auto in_stride = framework::stride_numel(in->dims());
+      auto in_stride = framework::stride_numel(in->InnerLoDTensor()->dims());
       auto out_stride = framework::stride_numel(out->dims());
       auto dst = out->data<P>() + output_offset;
-      auto src = in->data<P>();
+      auto src = in->InnerLoDTensor()->data<P>();
       PADDLE_MOBILE_ENFORCE(
           in_stride.size() == out_stride.size(),
           "src and dst tensor should have the same dims size.");
@@ -77,7 +77,7 @@ void ConcatCompute(const ConcatParam &param) {
   } else {
     std::vector<framework::Tensor> inputs_concat(inputs.size());
     for (int j = 0; j < inputs.size(); ++j) {
-      inputs_concat[j] = *inputs[j];
+      inputs_concat[j] = *inputs[j]->InnerLoDTensor();
     }
     ConcatFunctor<P> concat_functor;
     concat_functor(inputs_concat, axis, out);

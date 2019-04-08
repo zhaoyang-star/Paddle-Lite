@@ -24,8 +24,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename DeviceType>
-inline framework::DDim CalOutputShape(const ResizeParam<DeviceType> &param) {
+inline framework::DDim CalOutputShape(const ResizeParam &param) {
   const auto *input_x = param.InputX()->InnerLoDTensor();
   const auto &input_x_dims = input_x->dims();
   auto *out = param.Out()->InnerLoDTensor();

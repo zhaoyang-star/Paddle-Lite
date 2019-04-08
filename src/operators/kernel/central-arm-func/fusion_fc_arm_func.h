@@ -27,7 +27,7 @@ template <typename Itype, typename Otype>
 void FusionFcCompute(const FusionFcParam &param) {
   const Tensor *input_x = param.InputX()->InnerLoDTensor();
   const Tensor *input_y = param.InputY()->InnerLoDTensor();
-  Tensor *input_z = param.InputZ();
+  Tensor *input_z = param.InputZ()->InnerLoDTensor();
   Otype *input_z_data = input_z->data<Otype>();
   int axis = param.Axis();
   Tensor *out = param.Out()->InnerLoDTensor();

@@ -96,7 +96,7 @@ void GemmConv(const ConvParam &param) {
   int in_step = static_cast<int>(input->dims()[1]) / groups;
   int out_step = static_cast<int>(output->dims()[1]) / groups;
 
-  math::Vol2ColFunctor<CPU, Itype> vol2col;
+  math::Vol2ColFunctor<Itype> vol2col;
   math::Im2ColFunctor<math::ColFormat::kCFO, Itype> im2col;
 
   const int batch_size = static_cast<int>(input->dims()[0]);
@@ -152,7 +152,7 @@ void WinogradConv3x3(const ConvParam &param) {
     return pad_width + tile - width;
   };
 
-  math::PadFunctor<CPU, float> pad;
+  math::PadFunctor<float> pad;
   Tensor input_pad;
   framework::Tensor transformed_input;
   for (int i = 0; i < batch_size; ++i) {

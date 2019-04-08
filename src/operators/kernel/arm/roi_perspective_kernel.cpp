@@ -204,9 +204,9 @@ bool RoiPerspectiveKernelCpu<float>::Init(RoiPerspectiveParam *param) {
 
 template <>
 void RoiPerspectiveKernelCpu<float>::Compute(const RoiPerspectiveParam &param) {
-  const auto *input_x = param.input_x_;
-  const auto *input_rois = param.input_rois_;
-  auto *output = param.output_;
+  const auto *input_x = param.input_x_->InnerLoDTensor();
+  const auto *input_rois = param.input_rois_->InnerLoDTensor();
+  auto *output = param.output_->InnerLoDTensor();
 
   const auto &in_dims = input_x->dims();
   const int channels = in_dims[1];

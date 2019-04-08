@@ -64,16 +64,9 @@ void SplitOp<T>::InferShape() const {
   PADDLE_MOBILE_ENFORCE(outs_dims.size() == outs.size(),
                         "length==dims.size()  must be true!");
   for (int j = 0; j < outs_dims.size(); ++j) {
-    outs[j]->Resize(outs_dims[j]);
+    auto &out_wrapper = outs[j];
+    out_wrapper->InnerLoDTensor()->Resize(outs_dims[j]);
   }
-
-  //  todo lod impl
-  //  if (axis != 0) {
-  //    // Only pass LoD when not spliting along the first dim.
-  //    for (size_t i = 0; i < outs_number; ++i) {
-  //      ctx->ShareLoD("X", "Out", 0, i);
-  //    }
-  //  }
 }
 
 }  // namespace operators

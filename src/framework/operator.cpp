@@ -47,7 +47,7 @@ OperatorBase::OperatorBase(const std::string &type,
       scope_(scope)
 
 {
- // DLOG << "construtor of OperatorBase !";
+  // DLOG << "construtor of OperatorBase !";
   CheckAllInputOutputSet();
 #ifdef PADDLE_MOBILE_FPGA
   InsertTensors();

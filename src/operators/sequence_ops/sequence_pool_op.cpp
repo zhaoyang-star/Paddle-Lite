@@ -21,10 +21,10 @@ namespace operators {
 
 template <typename T>
 void SequencePoolOp<T>::InferShape() const {
-  const auto *input = this->param_.input_;
+  const auto *input = this->param_.input_->InnerLoDTensor();
   auto out_dims = input->dims();
   out_dims[0] = input->lod()[0].size() - 1;
-  this->param_.output_->Resize(out_dims);
+  this->param_.output_->InnerLoDTensor()->Resize(out_dims);
 }
 
 }  // namespace operators

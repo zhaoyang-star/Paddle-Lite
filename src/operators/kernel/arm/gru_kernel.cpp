@@ -28,7 +28,7 @@ bool GruKernelCpu<float>::Init(GruParam *param) {
 template <>
 void GruKernelCpu<float>::Compute(const GruParam &param) {
   GruCompute<float>(param);
-  param.OutHidden()->set_lod(param.InputInput()->lod());
+  param.OutHidden()->InnerLoDTensor()->set_lod(param.InputInput()->InnerLoDTensor()->lod());
 }
 
 template class GruKernelCpu<float>;

@@ -25,29 +25,29 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Device, typename T>
+template <typename T>
 inline void ReorderInitState(const framework::Tensor& src,
                              std::vector<size_t> index_lod,
                              framework::Tensor* dst, bool indexed_src) {
-  math::CopyMatrixRowsFunctor<Device, T> row_shuffle;
+  math::CopyMatrixRowsFunctor<T> row_shuffle;
   dst->mutable_data<T>(src.dims());
   row_shuffle(src, index_lod, dst, indexed_src);
 }
 
 template <typename T>
 void GruCompute(const GruParam& param) {
-  auto* input = param.InputInput();
-  auto* h0 = param.InputH0();
-  auto* weight = param.InputWeight();
+  auto* input = param.InputInput()->InnerLoDTensor();
+  auto* h0 = param.InputH0()->InnerLoDTensor();
+  auto* weight = param.InputWeight()->InnerLoDTensor();
   const auto* weight_data = weight->data<float>();
   auto* bias = param.InputBias()->InnerLoDTensor();
-  auto* batch_gate = param.OutBatchGate();
+  auto* batch_gate = param.OutBatchGate()->InnerLoDTensor();
   batch_gate->mutable_data<float>();
   auto* batch_reset_hidden_prev = param.OutBatchResetHiddenPrev();
-  batch_reset_hidden_prev->mutable_data<float>();
-  auto* batch_hidden = param.OutBatchHidden();
+  batch_reset_hidden_prev->InnerLoDTensor()->mutable_data<float>();
+  auto* batch_hidden = param.OutBatchHidden()->InnerLoDTensor();
   batch_hidden->mutable_data<float>();
-  auto* hidden = param.OutHidden();
+  auto* hidden = param.OutHidden()->InnerLoDTensor();
   hidden->mutable_data<float>();
 
   auto hidden_dims = hidden->dims();
@@ -85,7 +85,7 @@ void GruCompute(const GruParam& param) {
     int cur_batch_size = bend - bstart;
     framework::Tensor gate_t = batch_gate->Slice(bstart, bend);
     framework::Tensor reset_hidden_prev_t =
-        batch_reset_hidden_prev->Slice(bstart, bend);
+        batch_reset_hidden_prev->InnerLoDTensor()->Slice(bstart, bend);
     framework::Tensor hidden_t = batch_hidden->Slice(bstart, bend);
     gru_value.output_value = hidden_t.data<float>();
     gru_value.gate_value = gate_t.data<float>();

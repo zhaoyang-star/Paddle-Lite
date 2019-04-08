@@ -24,9 +24,9 @@ namespace paddle_mobile {
 namespace operators {
 namespace math {
 
-template <typename T>
-struct GRUUnitFunctor<T> {
-  static void compute(GRUMetaValue<T> value, int frame_size, int batch_size,
+template <>
+struct GRUUnitFunctor<float>{
+  static void compute(GRUMetaValue<float> value, int frame_size, int batch_size,
                       const ActivationType active_node,
                       const ActivationType active_gate) {
     if (value.prev_out_value) {
