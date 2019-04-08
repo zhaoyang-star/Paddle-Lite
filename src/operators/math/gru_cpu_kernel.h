@@ -142,59 +142,34 @@ void hl_naive_gru_forward_final_output(T *gate_value, T *prev_output_value,
       value.gate_value, value.reset_output_value, value.prev_out_value, \
       frame_size);
 
-template <typename T>
-inline void forward_reset_output(GRUMetaValue<T> value, int frame_size,
-                                 int batch_size, ActivationType active_node) {
-  for (int b = 0; b < batch_size; ++b) {
-    switch (active_node) {
-      case RELU:
-        FORWARD_RESET_OUTPUT(RELU, value, frame_size);
-        break;
-      case SIGMOID:
-        FORWARD_RESET_OUTPUT(SIGMOID, value, frame_size);
-        break;
-      case TANH:
-        FORWARD_RESET_OUTPUT(TANH, value, frame_size);
-        break;
-      default:
-        FORWARD_RESET_OUTPUT(IDENTITY, value, frame_size);
+  /*template <typename T>
+  inline void forward_reset_output(GRUMetaValue<T> value, int frame_size,
+                                   int batch_size, ActivationType active_node) {
+    for (int b = 0; b < batch_size; ++b) {
+      switch (active_node) {
+        case RELU:
+          FORWARD_RESET_OUTPUT(RELU, value, frame_size);
+          break;
+        case SIGMOID:
+          FORWARD_RESET_OUTPUT(SIGMOID, value, frame_size);
+          break;
+        case TANH:
+          FORWARD_RESET_OUTPUT(TANH, value, frame_size);
+          break;
+        default:
+          FORWARD_RESET_OUTPUT(IDENTITY, value, frame_size);
+      }
+      value.gate_value += frame_size * 3;
+      value.reset_output_value += frame_size;
+      if (value.prev_out_value) {
+        value.prev_out_value += frame_size;
+      }
     }
-    value.gate_value += frame_size * 3;
-    value.reset_output_value += frame_size;
-    if (value.prev_out_value) {
-      value.prev_out_value += frame_size;
-    }
-  }
-}
+  }*/
 
 #define FORWARD_FINAL_OUTPUT(active_type, value, frame_size) \
   hl_naive_gru_forward_final_output<float, active_type>(     \
       value.gate_value, value.prev_out_value, value.output_value, frame_size)
-
-template <typename T>
-inline void forward_final_output(GRUMetaValue<T> value, int frame_size,
-                                 int batch_size, ActivationType active_node) {
-  for (int b = 0; b < batch_size; ++b) {
-    switch (active_node) {
-      case RELU:
-        FORWARD_FINAL_OUTPUT(RELU, value, frame_size);
-        break;
-      case SIGMOID:
-        FORWARD_FINAL_OUTPUT(SIGMOID, value, frame_size);
-        break;
-      case TANH:
-        FORWARD_FINAL_OUTPUT(TANH, value, frame_size);
-        break;
-      default:
-        FORWARD_FINAL_OUTPUT(IDENTITY, value, frame_size);
-    }
-    value.gate_value += frame_size * 3;
-    value.output_value += frame_size;
-    if (value.prev_out_value) {
-      value.prev_out_value += frame_size;
-    }
-  }
-}
 
 }  // namespace math
 }  // namespace operators

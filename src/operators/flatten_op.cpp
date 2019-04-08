@@ -50,5 +50,6 @@ void FlattenOp<T>::InferShape() const {
 }  // namespace paddle_mobile
 
 namespace ops = paddle_mobile::operators;
+REGISTER_OPERATOR(flatten, ops::FlattenOp);
 
 #endif

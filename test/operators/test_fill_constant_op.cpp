@@ -18,10 +18,9 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename Dtype>
 class TestFillConstantOp {
  public:
-  explicit TestFillConstantOp(const Program<Dtype> p) : program_(p) {
+  explicit TestFillConstantOp(const Program<float> p) : program_(p) {
     if (use_optimize_) {
       to_predict_program_ = program_.optimizeProgram;
     } else {
@@ -44,8 +43,8 @@ class TestFillConstantOp {
           DLOG << " outputs size: " << op->GetOutputs().size();
           DLOG << " output is : " << op->Output("Out")[0];
           output_var_name = op->Output("Out")[0];
-          std::shared_ptr<operators::FillConstantOp<Dtype, float>> op_ptr =
-              std::make_shared<operators::FillConstantOp<Dtype, float>>(
+          std::shared_ptr<operators::FillConstantOp<float>> op_ptr =
+              std::make_shared<operators::FillConstantOp<float>>(
                   op->Type(), op->GetInputs(), op->GetOutputs(),
                   op->GetAttrMap(), program_.scope.get());
           ops_of_block_[*block_desc.get()].push_back(op_ptr);
@@ -69,10 +68,9 @@ class TestFillConstantOp {
   }
 
  private:
-  const framework::Program<Dtype> program_;
+  const framework::Program<float> program_;
   std::shared_ptr<ProgramDesc> to_predict_program_;
-  std::map<framework::BlockDesc,
-           std::vector<std::shared_ptr<OperatorBase<Dtype>>>>
+  std::map<framework::BlockDesc, std::vector<std::shared_ptr<OperatorBase>>>
       ops_of_block_;
   bool use_optimize_ = false;
   string output_var_name;
@@ -86,20 +84,17 @@ class TestFillConstantOp {
     }
   }
 };
-
-template class TestFillConstantOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 
 int main() {
   DLOG << "----------**********----------";
   DLOG << "begin to run FillConstant Test";
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(std::string(g_ocr) + "/model",
                              std::string(g_ocr) + "/params");
 
-  paddle_mobile::framework::TestFillConstantOp<paddle_mobile::CPU>
-      testFillConstantOp(program);
+  paddle_mobile::framework::TestFillConstantOp testFillConstantOp(program);
 
   auto output = testFillConstantOp.predict();
   auto *output_ptr = output->data<float>();

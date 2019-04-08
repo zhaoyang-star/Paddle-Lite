@@ -267,18 +267,40 @@ class FusionOpMatcher {
                const framework::AttributeMap &attrs, framework::Scope *scope) \
         : framework::OperatorWithKernels<T, OpParam>(type, inputs, outputs,   \
                                                      attrs, scope) {          \
+      INIT_KERNEKS_CPU(OpName, OpParam);                                      \
+    }                                                                         \
+    void Init() { REGIST_INIT_CPU(OpParam); }                                 \
+    void RunImpl() {                                                          \
+      /* use pre defined kernel to run */                                     \
+      kernelCpu_.Compute(framework::OperatorWithKernels<T, OpParam>::param_); \
+    }                                                                         \
+                                                                              \
+    void InferShape() const override;                                         \
+    REGIST_KERNEL_CPU_WITH_KERNEL_PREFIX(OpName, KernelNamePrifix);           \
+  };
+
+#define DECLARE_OPERATOR_WITH_PARAMS_WITH_GPU(OpName, OpParam,                \
+                                              KernelNamePrifix)               \
+  template <typename T>                                                       \
+  class OpName##Op : public framework::OperatorWithKernels<T, OpParam> {      \
+   public:                                                                    \
+    OpName##Op(const std::string &type, const VariableNameMap &inputs,        \
+               const VariableNameMap &outputs,                                \
+               const framework::AttributeMap &attrs, framework::Scope *scope) \
+        : framework::OperatorWithKernels<T, OpParam>(type, inputs, outputs,   \
+                                                     attrs, scope) {          \
       INIT_KERNEKS_GPU(OpName, OpParam);                                      \
       INIT_KERNEKS_CPU(OpName, OpParam);                                      \
       INIT_KERNEKS_FPGA(OpName, OpParam);                                     \
     }                                                                         \
     void Init() {                                                             \
       REGIST_INIT_GPU(OpParam);                                               \
-      /*REGIST_INIT_CPU(OpParam);   */                                        \
+      REGIST_INIT_CPU(OpParam);                                               \
       REGIST_INIT_FPGA(OpParam);                                              \
     }                                                                         \
     void RunImpl() {                                                          \
       /* use pre defined kernel to run */                                     \
-      kernelGpu_.Compute(framework::OperatorWithKernels<T, OpParam>::param_); \
+      kernelCpu_.Compute(framework::OperatorWithKernels<T, OpParam>::param_); \
     }                                                                         \
                                                                               \
     void InferShape() const override;                                         \
@@ -289,6 +311,9 @@ class FusionOpMatcher {
 
 #define DECLARE_OPERATOR(OpName) \
   DECLARE_OPERATOR_WITH_PARAMS(OpName, OpName##Param, OpName##Kernel)
+
+#define DECLARE_OPERATOR_WITH_GPU(OpName) \
+  DECLARE_OPERATOR_WITH_PARAMS_WITH_GPU(OpName, OpName##Param, OpName##Kernel)
 
 #define DECLARE_KERNEL_WITHPARAMS(OpName, DeviceName, DeviceType, OpParam)     \
   template <typename T>                                                        \

@@ -19,10 +19,9 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename Dtype>
 class TestIm2SequenceOp {
  public:
-  explicit TestIm2SequenceOp(const Program<Dtype> p) : program_(p) {
+  explicit TestIm2SequenceOp(const Program<float> p) : program_(p) {
     if (use_optimize_) {
       to_predict_program_ = program_.optimizeProgram;
     } else {
@@ -44,8 +43,8 @@ class TestIm2SequenceOp {
           DLOG << " inputs size: " << op->GetInputs().size();
           DLOG << " outputs size: " << op->GetOutputs().size();
 
-          std::shared_ptr<operators::Im2SequenceOp<Dtype, float>> lrn =
-              std::make_shared<operators::Im2SequenceOp<Dtype, float>>(
+          std::shared_ptr<operators::Im2SequenceOp<float>> lrn =
+              std::make_shared<operators::Im2SequenceOp<float>>(
                   op->Type(), op->GetInputs(), op->GetOutputs(),
                   op->GetAttrMap(), program_.scope.get());
           ops_of_block_[*block_desc.get()].push_back(lrn);
@@ -74,10 +73,9 @@ class TestIm2SequenceOp {
   }
 
  private:
-  const framework::Program<Dtype> program_;
+  const framework::Program<float> program_;
   std::shared_ptr<ProgramDesc> to_predict_program_;
-  std::map<framework::BlockDesc,
-           std::vector<std::shared_ptr<OperatorBase<Dtype>>>>
+  std::map<framework::BlockDesc, std::vector<std::shared_ptr<OperatorBase>>>
       ops_of_block_;
   bool use_optimize_ = false;
 
@@ -91,15 +89,13 @@ class TestIm2SequenceOp {
     }
   }
 };
-
-template class TestIm2SequenceOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 
 int main() {
   DLOG << "----------**********----------";
   DLOG << "begin to run Im2Sequence Test";
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(std::string(g_eng) + "/model",
                              std::string(g_eng) + "/params");
 
@@ -109,8 +105,7 @@ int main() {
                      static_cast<float>(1));
   auto *inputx_ptr = inputx.data<float>();
 
-  paddle_mobile::framework::TestIm2SequenceOp<paddle_mobile::CPU>
-      testIm2SequenceOp(program);
+  paddle_mobile::framework::TestIm2SequenceOp testIm2SequenceOp(program);
 
   auto output_op = testIm2SequenceOp.predict_bn(inputx);
   auto *output_op_ptr = output_op->data<float>();

@@ -16,16 +16,15 @@ limitations under the License. */
 #include "operators/depthwise_conv_op.h"
 
 int main() {
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   //  ../models/image_classification_resnet.inference.model
   auto program = loader.Load(g_mobilenet_ssd);
 
   PADDLE_MOBILE_ENFORCE(program.originProgram != nullptr,
                         "program file read fail");
 
-  Executor4Test<paddle_mobile::paddle_mobile::operators::DepthwiseConvOp<
-      paddle_mobile::float>>
-      executor(program, "depthwise_conv2d");
+  Executor4Test<paddle_mobile::operators::DepthwiseConvOp<float>> executor(
+      program, "depthwise_conv2d");
 
   paddle_mobile::framework::LoDTensor input;
   // GetInput<float>(g_test_image_1x3x224x224, &input, {1, 3, 224, 224});

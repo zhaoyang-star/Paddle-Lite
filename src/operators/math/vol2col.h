@@ -81,7 +81,7 @@ using Tensor = paddle_mobile::framework::Tensor;
  */
 template <typename T>
 class Vol2ColFunctor {
-public:
+ public:
   void operator()(const Tensor &vol, const std::vector<int> &dilations,
                   const std::vector<int> &strides,
                   const std::vector<int> &paddings, Tensor *col) const {
@@ -118,19 +118,18 @@ public:
             int vol_idx =
                 ((c_in * input_depth + d_pad) * input_height + h_pad) *
                     input_width +
-                    w_pad;
+                w_pad;
             col_data[col_idx] =
                 (h_pad < 0 || h_pad >= input_height || w_pad < 0 ||
-                    w_pad >= input_width || d_pad < 0 || d_pad >= input_depth)
-                ? static_cast<T>(0)
-                : vol_data[vol_idx];
+                 w_pad >= input_width || d_pad < 0 || d_pad >= input_depth)
+                    ? static_cast<T>(0)
+                    : vol_data[vol_idx];
           }
         }
       }
     }
   }
 };
-
 
 /*
  * vol = [input_channels,input_depth, input_height, input_width]
@@ -140,7 +139,7 @@ public:
  */
 template <typename T>
 class Col2VolFunctor {
-public:
+ public:
   void operator()(const Tensor &col, const std::vector<int> &dilations,
                   const std::vector<int> &strides,
                   const std::vector<int> &paddings, Tensor *vol) const {
@@ -177,11 +176,11 @@ public:
               int vol_idx =
                   ((cIm * input_depth + d_pad) * input_height + h_pad) *
                       input_width +
-                      w_pad;
+                  w_pad;
 
               int col_idx =
                   ((c * output_depth + d) * output_height + h) * output_width +
-                      w;
+                  w;
               vol_data[vol_idx] += col_data[col_idx];
             }
           }
@@ -190,7 +189,6 @@ public:
     }
   }
 };
-
 
 }  // namespace math
 }  // namespace operators

@@ -17,7 +17,6 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
-namespace math {
-}  // namespace math
+namespace math {}  // namespace math
 }  // namespace operators
 }  // namespace paddle_mobile

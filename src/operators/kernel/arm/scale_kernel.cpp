@@ -63,7 +63,10 @@ void ScaleKernelCpu<float>::Compute(const ScaleParam &param) {
     *output_data = scale * (*input_data) + bias;
   }
 }
-
+template <>
+bool ScaleKernelCpu<float>::Init(ScaleParam *param) {
+  return true;
+}
 }  // namespace operators
 }  // namespace paddle_mobile
 

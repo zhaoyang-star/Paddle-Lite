@@ -41,8 +41,10 @@ void PriorBoxOp<T>::InferShape() const {
   dim_vec[1] = input_dims[3];
   dim_vec[2] = num_priors;
   dim_vec[3] = 4;
-  this->param_.OutputBoxes()->InnerLoDTensor()->Resize(framework::make_ddim(dim_vec));
-  this->param_.OutputVariances()->InnerLoDTensor()->Resize(framework::make_ddim(dim_vec));
+  this->param_.OutputBoxes()->InnerLoDTensor()->Resize(
+      framework::make_ddim(dim_vec));
+  this->param_.OutputVariances()->InnerLoDTensor()->Resize(
+      framework::make_ddim(dim_vec));
 }
 #endif  // PRIORBOX_OP
 

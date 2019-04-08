@@ -16,14 +16,13 @@ limitations under the License. */
 #include "operators/lrn_op.h"
 
 int main() {
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(g_googlenet);
   PADDLE_MOBILE_ENFORCE(program.originProgram != nullptr,
                         "program file read fail");
 
-  Executor4Test<
-      paddle_mobile::paddle_mobile::operators::LrnOp<paddle_mobile::float>>
-      executor(program, "lrn");
+  Executor4Test<paddle_mobile::operators::LrnOp<float>> executor(program,
+                                                                 "lrn");
 
   // 1. input_tensors;
   vector<Tensor> input_tensors;

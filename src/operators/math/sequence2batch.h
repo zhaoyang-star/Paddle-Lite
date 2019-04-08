@@ -23,7 +23,7 @@ namespace operators {
 namespace math {
 template <typename T>
 class CopyMatrixRowsFunctor {
-public:
+ public:
   void operator()(const framework::Tensor& src, std::vector<size_t> index_lod,
                   framework::Tensor* dst, bool is_src_index) {
     size_t* index = index_lod.data();
@@ -50,7 +50,6 @@ public:
     }
   }
 };
-
 
 template <typename T>
 class LoDTensor2BatchFunctor {

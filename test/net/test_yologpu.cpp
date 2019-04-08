@@ -19,14 +19,21 @@ limitations under the License. */
 #include "../test_helper.h"
 #include "../test_include.h"
 void t1() {
-  paddle_mobile::PaddleMobile<paddle_mobile::GPU_CL> paddle_mobile_gpu;
-  paddle_mobile::PaddleMobile<float> paddle_mobile_cpu;
-  paddle_mobile::PaddleTester<paddle_mobile::CPU> paddle_test_cpu;
-  paddle_mobile::PaddleTester<paddle_mobile::GPU_CL> paddle_test_gpu;
-  printf("cpu time:%f\n", paddle_test_cpu.CaculatePredictTime());
+  PaddleMobileConfigInternal configInternalCpu;
+  PaddleMobileConfigInternal configInternalGpu;
+  configInternalCpu.running_mode = TYPE_CPU;
+  configInternalGpu.running_mode = TYPE_GPU;
+
+  paddle_mobile::PaddleMobile<float> paddle_mobile_gpu(configInternalGpu);
+  paddle_mobile::PaddleMobile<float> paddle_mobile_cpu(configInternalCpu);
+  paddle_mobile::PaddleTester<float> paddle_test_cpu;
+  paddle_mobile::PaddleTester<float> paddle_test_gpu;
+
+  printf("cpu time:%f\n", paddle_test_cpu.CaculateCpuPredictTime());
   std::string path = "/data/local/tmp/bin";
-  printf("gpu time:%f\n", paddle_test_gpu.CaculatePredictTime(&path));
-  //    paddle_mobile.SetThreadNum(4);
+  printf("gpu time:%f\n", paddle_test_gpu.CaculateGpuPredictTime(&path));
+
+  paddle_mobile_cpu.SetThreadNum(4);
 #ifdef PADDLE_MOBILE_CL
   paddle_mobile_gpu.SetCLPath("/data/local/tmp/bin");
 #endif
@@ -77,7 +84,9 @@ void t1() {
 }
 
 void t2() {
-  paddle_mobile::PaddleMobile<paddle_mobile::GPU_CL> paddle_mobile;
+  PaddleMobileConfigInternal configInternal;
+  configInternal.running_mode = TYPE_GPU;
+  paddle_mobile::PaddleMobile<float> paddle_mobile(configInternal);
   //    paddle_mobile.SetThreadNum(4);
 #ifdef PADDLE_MOBILE_CL
   paddle_mobile.SetCLPath("/data/local/tmp/bin");

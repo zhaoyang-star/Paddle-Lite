@@ -20,9 +20,6 @@ namespace paddle_mobile {
 namespace operators {
 namespace math {
 
-
-
-
 template class LoDTensor2BatchFunctor<float>;
 template class Batch2LoDTensorFunctor<float>;
 

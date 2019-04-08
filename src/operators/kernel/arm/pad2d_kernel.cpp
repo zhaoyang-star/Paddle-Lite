@@ -31,7 +31,7 @@ void Pad2DKernelCpu<float>::Compute(const Pad2DParam &param) {
   auto *output = param.output_->InnerLoDTensor();
   const auto &paddings = param.paddings_;
   //  if (param.mode_ == "constant" && param.pad_value_ == 0) {
-  math::PadFunctor< float> pad;
+  math::PadFunctor<float> pad;
   pad(*input, paddings[0], paddings[1], paddings[2], paddings[3], output);
   //  } else {
   //    PADDLE_MOBILE_THROW_EXCEPTION("Pad2D has not been implemented.");

@@ -70,7 +70,7 @@ void SplitCompute(const SplitParam& param) {
 
   size_t input_offset = 0;
   for (auto& out : outs) {
-    LoDTensor *outtensor = out->InnerLoDTensor();
+    LoDTensor* outtensor = out->InnerLoDTensor();
     outtensor->mutable_data<float>();
     auto out_stride = framework::stride_numel(outtensor->dims());
 

@@ -20,7 +20,7 @@ namespace framework {
 
 class TestReshape2Op {
  public:
-  explicit TestReshape2Op(const Program<Dtype> p) : program_(p) {
+  explicit TestReshape2Op(const Program<float> p) : program_(p) {
     if (use_optimize_) {
       to_predict_program_ = program_.optimizeProgram;
     } else {
@@ -56,8 +56,8 @@ class TestReshape2Op {
 
           input_var_name = op->Input("X")[0];
           output_var_name = op->Output("Out")[0];
-          std::shared_ptr<operators::Reshape2Op<Dtype, float>> op_ptr =
-              std::make_shared<operators::Reshape2Op<Dtype, float>>(
+          std::shared_ptr<operators::Reshape2Op<float>> op_ptr =
+              std::make_shared<operators::Reshape2Op<float>>(
                   op->Type(), op->GetInputs(), op->GetOutputs(),
                   op->GetAttrMap(), program_.scope.get());
           ops_of_block_[*block_desc.get()].push_back(op_ptr);
@@ -85,10 +85,9 @@ class TestReshape2Op {
   }
 
  private:
-  const framework::Program<Dtype> program_;
+  const framework::Program<float> program_;
   std::shared_ptr<ProgramDesc> to_predict_program_;
-  std::map<framework::BlockDesc,
-           std::vector<std::shared_ptr<OperatorBase<Dtype>>>>
+  std::map<framework::BlockDesc, std::vector<std::shared_ptr<OperatorBase>>>
       ops_of_block_;
   bool use_optimize_ = false;
   string input_var_name;
@@ -104,14 +103,13 @@ class TestReshape2Op {
   }
 };
 
-template class TestReshape2Op;
 }  // namespace framework
 }  // namespace paddle_mobile
 
 int main() {
   DLOG << "----------**********----------";
   DLOG << "begin to run Reshape2 Test";
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(std::string(g_ocr) + "/model",
                              std::string(g_ocr) + "/params");
 
@@ -127,8 +125,7 @@ int main() {
     DLOG << " index " << i << " : " << input_ptr[i];
   }
 
-  paddle_mobile::framework::TestReshape2Op<paddle_mobile::CPU> testReshape2Op(
-      program);
+  paddle_mobile::framework::TestReshape2Op testReshape2Op(program);
 
   auto output = testReshape2Op.predict(input);
   auto *output_ptr = output->data<float>();

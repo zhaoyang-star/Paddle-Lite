@@ -48,8 +48,10 @@ template <>
 void ReadFromArrayKernelCpu<float>::Compute(const ReadFromArrayParam &param) {
   int64_t offset = param.index_->InnerLoDTensor()->data<int64_t>()[0];
   if (offset < param.input_->size()) {
-    TensorCopy(*param.input_->at(offset).InnerLoDTensor(), param.output_->InnerLoDTensor());
-    param.output_->InnerLoDTensor()->set_lod(param.input_->at(offset).InnerLoDTensor()->lod());
+    TensorCopy(*param.input_->at(offset).InnerLoDTensor(),
+               param.output_->InnerLoDTensor());
+    param.output_->InnerLoDTensor()->set_lod(
+        param.input_->at(offset).InnerLoDTensor()->lod());
   } else {
     PADDLE_MOBILE_THROW_EXCEPTION(
         "Can not read tensor which index is `%d` since it only has `%d` inputs",

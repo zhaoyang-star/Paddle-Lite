@@ -18,10 +18,9 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename Dtype>
 class TestTranspose2Op {
  public:
-  explicit TestTranspose2Op(const Program<Dtype> p) : program_(p) {
+  explicit TestTranspose2Op(const Program<float> p) : program_(p) {
     if (use_optimize_) {
       to_predict_program_ = program_.optimizeProgram;
     } else {
@@ -57,8 +56,8 @@ class TestTranspose2Op {
 
           input_var_name = op->Input("X")[0];
           output_var_name = op->Output("Out")[0];
-          std::shared_ptr<operators::Transpose2Op<Dtype, float>> op_ptr =
-              std::make_shared<operators::Transpose2Op<Dtype, float>>(
+          std::shared_ptr<operators::Transpose2Op<float>> op_ptr =
+              std::make_shared<operators::Transpose2Op<float>>(
                   op->Type(), op->GetInputs(), op->GetOutputs(),
                   op->GetAttrMap(), program_.scope.get());
           ops_of_block_[*block_desc.get()].push_back(op_ptr);
@@ -87,10 +86,9 @@ class TestTranspose2Op {
   }
 
  private:
-  const framework::Program<Dtype> program_;
+  const framework::Program<float> program_;
   std::shared_ptr<ProgramDesc> to_predict_program_;
-  std::map<framework::BlockDesc,
-           std::vector<std::shared_ptr<OperatorBase<Dtype>>>>
+  std::map<framework::BlockDesc, std::vector<std::shared_ptr<OperatorBase>>>
       ops_of_block_;
   bool use_optimize_ = false;
   string input_var_name;
@@ -106,14 +104,13 @@ class TestTranspose2Op {
   }
 };
 
-template class TestTranspose2Op;
 }  // namespace framework
 }  // namespace paddle_mobile
 
 int main() {
   DLOG << "----------**********----------";
   DLOG << "begin to run Transpose2 Test";
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(std::string(g_ocr) + "/model",
                              std::string(g_ocr) + "/params");
 
@@ -129,8 +126,7 @@ int main() {
     DLOG << " index " << i << " : " << input_ptr[i];
   }
 
-  paddle_mobile::framework::TestTranspose2Op<paddle_mobile::CPU>
-      testTranspose2Op(program);
+  paddle_mobile::framework::TestTranspose2Op testTranspose2Op(program);
 
   auto output = testTranspose2Op.predict(input);
   auto *output_ptr = output->data<float>();

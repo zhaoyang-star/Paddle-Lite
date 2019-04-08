@@ -18,7 +18,6 @@ namespace paddle_mobile {
 namespace operators {
 namespace math {
 
-
 template class PadFunctor<float>;
 template class PadFunctor<int8_t>;
 

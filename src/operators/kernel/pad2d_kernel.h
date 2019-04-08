@@ -29,7 +29,8 @@ class Pad2DParam : public OpParam {
   Pad2DParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
              const AttributeMap &attrs, Scope *scope)
       : OpParam(inputs, outputs, attrs, scope) {
-    input_ = OpParam::GetVarValue<framework::TensorWrapper>("X", inputs, *scope);
+    input_ =
+        OpParam::GetVarValue<framework::TensorWrapper>("X", inputs, *scope);
     output_ =
         OpParam::GetVarValue<framework::TensorWrapper>("Out", outputs, *scope);
     paddings_ = OpParam::GetAttr<std::vector<int>>("paddings", attrs);

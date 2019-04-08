@@ -19,10 +19,9 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename Dtype>
 class TestSumOp {
  public:
-  explicit TestSumOp(const Program<Dtype> p) : program_(p) {
+  explicit TestSumOp(const Program<float> p) : program_(p) {
     if (use_optimize_) {
       to_predict_program_ = program_.optimizeProgram;
     } else {
@@ -43,8 +42,8 @@ class TestSumOp {
           DLOG << " inputs size: " << op->GetInputs().size();
           DLOG << " outputs size: " << op->GetOutputs().size();
 
-          std::shared_ptr<operators::SumOp<Dtype, float>> lrn =
-              std::make_shared<operators::SumOp<Dtype, float>>(
+          std::shared_ptr<operators::SumOp<float>> lrn =
+              std::make_shared<operators::SumOp<float>>(
                   op->Type(), op->GetInputs(), op->GetOutputs(),
                   op->GetAttrMap(), program_.scope.get());
           ops_of_block_[*block_desc.get()].push_back(lrn);
@@ -78,10 +77,9 @@ class TestSumOp {
   }
 
  private:
-  const framework::Program<Dtype> program_;
+  const framework::Program<float> program_;
   std::shared_ptr<ProgramDesc> to_predict_program_;
-  std::map<framework::BlockDesc,
-           std::vector<std::shared_ptr<OperatorBase<Dtype>>>>
+  std::map<framework::BlockDesc, std::vector<std::shared_ptr<OperatorBase>>>
       ops_of_block_;
   bool use_optimize_ = false;
 
@@ -95,15 +93,13 @@ class TestSumOp {
     }
   }
 };
-
-template class TestSumOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 
 int main() {
   DLOG << "----------**********----------";
   DLOG << "begin to run Sum Test";
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(std::string(g_eng) + "/model",
                              std::string(g_eng) + "/params");
 
@@ -118,7 +114,7 @@ int main() {
                      static_cast<float>(1));
   auto *inputx2_ptr = inputx2.data<float>();
 
-  paddle_mobile::framework::TestSumOp<paddle_mobile::CPU> testSumOp(program);
+  paddle_mobile::framework::TestSumOp testSumOp(program);
 
   auto output_sum = testSumOp.predict_bn(inputx1, inputx2);
   auto *output_sum_ptr = output_sum->data<float>();

@@ -135,7 +135,6 @@ void MatMulWithPRelu(const framework::Tensor &matrix_a, bool trans_a,
 #endif
 }
 
-
 }  // namespace math
 }  // namespace operators
 }  // namespace paddle_mobile

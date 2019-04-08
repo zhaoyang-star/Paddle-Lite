@@ -16,14 +16,13 @@ limitations under the License. */
 #include "../test_include.h"
 #include "operators/transpose_op.h"
 int main() {
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(std::string(g_mobilenet_ssd));
   if (program.originProgram == nullptr) {
     DLOG << "program read file";
   }
-  Executor4Test<paddle_mobile::paddle_mobile::operators::TransposeOp<
-      paddle_mobile::float>>
-      executor(program, "transpose");
+  Executor4Test<paddle_mobile::operators::TransposeOp<float>> executor(
+      program, "transpose");
   paddle_mobile::framework::Tensor input;
   SetupTensor<float>(&input, {1, 2, 3, 4}, static_cast<float>(0),
                      static_cast<float>(1));

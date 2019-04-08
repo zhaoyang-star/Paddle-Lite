@@ -19,7 +19,7 @@ limitations under the License. */
 #include "framework/loader.h"
 
 int main() {
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   //  ../../../test/models/googlenet
   //  ../../../test/models/mobilenet
 

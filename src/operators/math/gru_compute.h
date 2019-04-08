@@ -11,8 +11,11 @@ limitations under the License. */
 #ifdef GRU_OP
 #pragma once
 
+#include "common/types.h"
 #include "operators/math/activation.h"
-
+#include "operators/math/gemm/cblas.h"
+#include "operators/math/gru_compute.h"
+#include "operators/math/gru_cpu_kernel.h"
 namespace paddle_mobile {
 namespace operators {
 namespace math {
@@ -28,10 +31,77 @@ struct GRUMetaValue {
 };
 
 template <typename T>
+inline void forward_reset_output(GRUMetaValue<T> value, int frame_size,
+                                 int batch_size, ActivationType active_node) {
+  for (int b = 0; b < batch_size; ++b) {
+    switch (active_node) {
+      case RELU:
+        FORWARD_RESET_OUTPUT(RELU, value, frame_size);
+        break;
+      case SIGMOID:
+        FORWARD_RESET_OUTPUT(SIGMOID, value, frame_size);
+        break;
+      case TANH:
+        FORWARD_RESET_OUTPUT(TANH, value, frame_size);
+        break;
+      default:
+        FORWARD_RESET_OUTPUT(IDENTITY, value, frame_size);
+    }
+    value.gate_value += frame_size * 3;
+    value.reset_output_value += frame_size;
+    if (value.prev_out_value) {
+      value.prev_out_value += frame_size;
+    }
+  }
+}
+
+template <typename T>
+inline void forward_final_output(GRUMetaValue<T> value, int frame_size,
+                                 int batch_size, ActivationType active_node) {
+  for (int b = 0; b < batch_size; ++b) {
+    switch (active_node) {
+      case RELU:
+        FORWARD_FINAL_OUTPUT(RELU, value, frame_size);
+        break;
+      case SIGMOID:
+        FORWARD_FINAL_OUTPUT(SIGMOID, value, frame_size);
+        break;
+      case TANH:
+        FORWARD_FINAL_OUTPUT(TANH, value, frame_size);
+        break;
+      default:
+        FORWARD_FINAL_OUTPUT(IDENTITY, value, frame_size);
+    }
+    value.gate_value += frame_size * 3;
+    value.output_value += frame_size;
+    if (value.prev_out_value) {
+      value.prev_out_value += frame_size;
+    }
+  }
+}
+
+template <typename T>
 struct GRUUnitFunctor {
-  static void compute(GRUMetaValue<T> value, int frame_size, int batch_size,
+  static void compute(GRUMetaValue<float> value, int frame_size, int batch_size,
                       const ActivationType active_node,
-                      const ActivationType active_gate);
+                      const ActivationType active_gate) {
+    if (value.prev_out_value) {
+      cblas_sgemm(false, false, batch_size, frame_size * 2, frame_size, 1.f,
+                  value.prev_out_value, frame_size, value.gate_weight,
+                  frame_size * 2, 1.f, value.gate_value, frame_size * 3);
+    }
+
+    forward_reset_output(value, frame_size, batch_size, active_gate);
+
+    if (value.prev_out_value) {
+      cblas_sgemm(false, false, batch_size, frame_size, frame_size, 1.f,
+                  value.reset_output_value, frame_size, value.state_weight,
+                  frame_size, 1.f, value.gate_value + frame_size * 2,
+                  frame_size * 3);
+    }
+
+    forward_final_output(value, frame_size, batch_size, active_node);
+  }
 };
 
 }  // namespace math

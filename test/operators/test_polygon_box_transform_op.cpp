@@ -18,10 +18,9 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename Dtype>
 class TestPolygonBoxTransformOp {
  public:
-  explicit TestPolygonBoxTransformOp(const Program<Dtype> p) : program_(p) {
+  explicit TestPolygonBoxTransformOp(const Program<float> p) : program_(p) {
     if (use_optimize_) {
       to_predict_program_ = program_.optimizeProgram;
     } else {
@@ -40,9 +39,8 @@ class TestPolygonBoxTransformOp {
           DLOG << " outputs size: " << op->GetOutputs().size();
           DLOG << " output is : " << op->Output("Output")[0];
           output_var_name = op->Output("Output")[0];
-          std::shared_ptr<operators::PolygonBoxTransformOp<Dtype, float>>
-              op_ptr = std::make_shared<
-                  operators::PolygonBoxTransformOp<Dtype, float>>(
+          std::shared_ptr<operators::PolygonBoxTransformOp<float>> op_ptr =
+              std::make_shared<operators::PolygonBoxTransformOp<float>>(
                   op->Type(), op->GetInputs(), op->GetOutputs(),
                   op->GetAttrMap(), program_.scope.get());
           ops_of_block_[*block_desc.get()].push_back(op_ptr);
@@ -70,10 +68,9 @@ class TestPolygonBoxTransformOp {
   }
 
  private:
-  const framework::Program<Dtype> program_;
+  const framework::Program<float> program_;
   std::shared_ptr<ProgramDesc> to_predict_program_;
-  std::map<framework::BlockDesc,
-           std::vector<std::shared_ptr<OperatorBase<Dtype>>>>
+  std::map<framework::BlockDesc, std::vector<std::shared_ptr<OperatorBase>>>
       ops_of_block_;
   bool use_optimize_ = false;
   string input_var_name;
@@ -89,14 +86,13 @@ class TestPolygonBoxTransformOp {
   }
 };
 
-template class TestPolygonBoxTransformOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 
 int main() {
   DLOG << "----------**********----------";
   DLOG << "begin to run PolygonBoxTransform Test";
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(std::string(g_ocr));
 
   paddle_mobile::framework::Tensor input;
@@ -111,8 +107,8 @@ int main() {
     DLOG << " index " << i << " : " << input_ptr[i];
   }
 
-  paddle_mobile::framework::TestPolygonBoxTransformOp<paddle_mobile::CPU>
-      testPolygonBoxTransformOp(program);
+  paddle_mobile::framework::TestPolygonBoxTransformOp testPolygonBoxTransformOp(
+      program);
 
   auto output = testPolygonBoxTransformOp.predict(input);
   auto *output_ptr = output->data<float>();

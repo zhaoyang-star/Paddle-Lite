@@ -250,9 +250,12 @@ bool BeamSearchKernelCpu<float>::Init(BeamSearchParam *param) {
 template <>
 void BeamSearchKernelCpu<float>::Compute(const BeamSearchParam &param) {
   BeamSearchFunctor<float> alg;
-  alg(param.pre_ids_->InnerLoDTensor(), param.pre_scores_->InnerLoDTensor(), param.ids_->InnerLoDTensor(), param.scores_->InnerLoDTensor(),
-      param.selected_ids_->InnerLoDTensor(), param.selected_scores_->InnerLoDTensor(), param.parent_idx_->InnerLoDTensor(),
-      param.level_, param.beam_size_, param.end_id_, param.is_accumulated_);
+  alg(param.pre_ids_->InnerLoDTensor(), param.pre_scores_->InnerLoDTensor(),
+      param.ids_->InnerLoDTensor(), param.scores_->InnerLoDTensor(),
+      param.selected_ids_->InnerLoDTensor(),
+      param.selected_scores_->InnerLoDTensor(),
+      param.parent_idx_->InnerLoDTensor(), param.level_, param.beam_size_,
+      param.end_id_, param.is_accumulated_);
 }
 
 }  // namespace operators

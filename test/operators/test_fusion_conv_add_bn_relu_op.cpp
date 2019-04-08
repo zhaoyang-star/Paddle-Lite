@@ -17,15 +17,14 @@ limitations under the License. */
 #include "operators/fusion_conv_add_bn_relu_op.h"
 
 int main() {
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   //  ../models/image_classification_resnet.inference.model
   auto program = loader.Load(g_mobilenet, true);
 
   PADDLE_MOBILE_ENFORCE(program.originProgram != nullptr,
                         "program file read fail");
 
-  Executor4Test<paddle_mobile::paddle_mobile::operators::FusionConvAddBNReluOp<
-      paddle_mobile::float>>
+  Executor4Test<paddle_mobile::operators::FusionConvAddBNReluOp<float>>
       executor(program, "fusion_conv_add_bn_relu", true);
 
   std::cout << "executor 4 test: " << std::endl;

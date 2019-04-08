@@ -39,7 +39,7 @@ void LrnCompute(const LrnParam &param) {
   lrnFunctor(*input_x, out, N, C, H, W, n, k, alpha, beta);
 }
 
-//template class LrnKernel<float>;
+// template class LrnKernel<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

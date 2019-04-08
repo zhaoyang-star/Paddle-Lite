@@ -123,13 +123,16 @@ void SumCompute(const SumParam &param) {
 
       for (size_t i = 0; i < in_array->size(); ++i) {
         const framework::TensorWrapper &tensor_wrapper = (*in_array)[i];
-        auto tensor = *static_cast<framework::TensorWrapper> (tensor_wrapper).InnerLoDTensor();
+        auto tensor = *static_cast<framework::TensorWrapper>(tensor_wrapper)
+                           .InnerLoDTensor();
         if (tensor.numel() != 0) {
           if (i >= out_array.size()) {
             out_array.resize(i + 1);
           }
           const framework::TensorWrapper &tensor_out_wrapper = out_array[i];
-          auto tensor_out = *static_cast<framework::TensorWrapper> (tensor_out_wrapper).InnerLoDTensor();
+          auto tensor_out =
+              *static_cast<framework::TensorWrapper>(tensor_out_wrapper)
+                   .InnerLoDTensor();
 
           if (tensor_out.numel() == 0) {
             framework::TensorCopy(tensor, &tensor_out);

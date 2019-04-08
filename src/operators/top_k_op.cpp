@@ -29,7 +29,8 @@ void TopKOp<T>::InferShape() const {
   this->param_.indices_->InnerLoDTensor()->Resize(dims);
   this->param_.output_->InnerLoDTensor()->set_lod(
       this->param_.input_->InnerLoDTensor()->lod());
-  this->param_.indices_->InnerLoDTensor()->set_lod(this->param_.input_->InnerLoDTensor()->lod());
+  this->param_.indices_->InnerLoDTensor()->set_lod(
+      this->param_.input_->InnerLoDTensor()->lod());
 }
 
 }  // namespace operators

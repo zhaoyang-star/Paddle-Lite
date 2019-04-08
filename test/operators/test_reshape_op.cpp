@@ -16,14 +16,13 @@ limitations under the License. */
 #include "operators/reshape_op.h"
 
 int main() {
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(std::string(g_mobilenet_ssd));
   if (program.originProgram == nullptr) {
     DLOG << "program read file";
   }
-  Executor4Test<
-      paddle_mobile::paddle_mobile::operators::ReshapeOp<paddle_mobile::float>>
-      executor(program, "reshape");
+  Executor4Test<paddle_mobile::operators::ReshapeOp<float>> executor(program,
+                                                                     "reshape");
   paddle_mobile::framework::Tensor input;
   SetupTensor<float>(&input, {2, 3, 3, 2}, static_cast<float>(0),
                      static_cast<float>(1));

@@ -18,10 +18,9 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename Dtype>
 class TestBoxCoderOp {
  public:
-  explicit TestBoxCoderOp(const Program<Dtype> p) : program_(p) {
+  explicit TestBoxCoderOp(const Program<float> p) : program_(p) {
     if (use_optimize_) {
       to_predict_program_ = program_.optimizeProgram;
     } else {
@@ -46,8 +45,8 @@ class TestBoxCoderOp {
           DLOG << " OutputBox is : " << op->Output("OutputBox")[0];
           DLOG << " code_type : "
                << op->GetAttrMap().at("code_type").GetString();
-          std::shared_ptr<operators::BoxCoderOp<Dtype, float>> boxcoder =
-              std::make_shared<operators::BoxCoderOp<Dtype, float>>(
+          std::shared_ptr<operators::BoxCoderOp<float>> boxcoder =
+              std::make_shared<operators::BoxCoderOp<float>>(
                   op->Type(), op->GetInputs(), op->GetOutputs(),
                   op->GetAttrMap(), program_.scope.get());
           ops_of_block_[*block_desc.get()].push_back(boxcoder);
@@ -88,10 +87,9 @@ class TestBoxCoderOp {
   }
 
  private:
-  const framework::Program<Dtype> program_;
+  const framework::Program<float> program_;
   std::shared_ptr<ProgramDesc> to_predict_program_;
-  std::map<framework::BlockDesc,
-           std::vector<std::shared_ptr<OperatorBase<Dtype>>>>
+  std::map<framework::BlockDesc, std::vector<std::shared_ptr<OperatorBase>>>
       ops_of_block_;
   bool use_optimize_ = false;
 
@@ -107,14 +105,13 @@ class TestBoxCoderOp {
   }
 };
 
-template class TestBoxCoderOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 
 int main() {
   DLOG << "----------**********----------";
   DLOG << "begin to run BoxCoderOp Test";
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(std::string(g_mobilenet_ssd));
 
   paddle_mobile::framework::Tensor priorbox;
@@ -132,8 +129,7 @@ int main() {
                      static_cast<float>(1));
   auto *targetbox_ptr = targetbox.data<float>();
 
-  paddle_mobile::framework::TestBoxCoderOp<paddle_mobile::CPU> testBoxCoderOp(
-      program);
+  paddle_mobile::framework::TestBoxCoderOp testBoxCoderOp(program);
 
   auto output_boxcoder =
       testBoxCoderOp.predict_boxcoder(priorbox, priorboxvar, targetbox);

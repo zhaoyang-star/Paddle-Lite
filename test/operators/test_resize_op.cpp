@@ -16,14 +16,13 @@ limitations under the License. */
 #include "operators/resize_op.h"
 
 int main() {
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(std::string(g_mobilenet_ssd));
   if (program.originProgram == nullptr) {
     DLOG << "program read file";
   }
-  Executor4Test<
-      paddle_mobile::paddle_mobile::operators::ResizeOp<paddle_mobile::float>>
-      executor(program, "resize");
+  Executor4Test<paddle_mobile::operators::ResizeOp<float>> executor(program,
+                                                                    "resize");
   paddle_mobile::framework::Tensor input;
   SetupTensor<float>(&input, {2, 3, 3, 2}, static_cast<float>(0),
                      static_cast<float>(1));

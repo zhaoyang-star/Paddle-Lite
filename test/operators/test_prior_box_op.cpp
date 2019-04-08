@@ -18,10 +18,9 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename Dtype>
 class TestPriorBoxOp {
  public:
-  explicit TestPriorBoxOp(const Program<Dtype> p) : program_(p) {
+  explicit TestPriorBoxOp(const Program<float> p) : program_(p) {
     if (use_optimize_) {
       to_predict_program_ = program_.optimizeProgram;
     } else {
@@ -57,8 +56,8 @@ class TestPriorBoxOp {
           //                            op->GetAttrMap().at("min_sizes").Get<std::vector<float>>();
           //                            DLOG << " max_sizes : " <<
           //                            op->GetAttrMap().at("max_sizes").Get<std::vector<float>>();
-          std::shared_ptr<operators::PriorBoxOp<Dtype, float>> priorbox =
-              std::make_shared<operators::PriorBoxOp<Dtype, float>>(
+          std::shared_ptr<operators::PriorBoxOp<float>> priorbox =
+              std::make_shared<operators::PriorBoxOp<float>>(
                   op->Type(), op->GetInputs(), op->GetOutputs(),
                   op->GetAttrMap(), program_.scope.get());
           ops_of_block_[*block_desc.get()].push_back(priorbox);
@@ -100,10 +99,9 @@ class TestPriorBoxOp {
   }
 
  private:
-  const framework::Program<Dtype> program_;
+  const framework::Program<float> program_;
   std::shared_ptr<ProgramDesc> to_predict_program_;
-  std::map<framework::BlockDesc,
-           std::vector<std::shared_ptr<OperatorBase<Dtype>>>>
+  std::map<framework::BlockDesc, std::vector<std::shared_ptr<OperatorBase>>>
       ops_of_block_;
   bool use_optimize_ = false;
 
@@ -118,14 +116,13 @@ class TestPriorBoxOp {
   }
 };
 
-template class TestPriorBoxOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 
 int main() {
   DLOG << "----------**********----------";
   DLOG << "begin to run PriorBoxOp Test";
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(std::string(g_mobilenet_ssd));
 
   /// input x (1,3,300,300)
@@ -139,8 +136,7 @@ int main() {
                      static_cast<float>(1));
   auto *inputx1_ptr = inputx1.data<float>();
 
-  paddle_mobile::framework::TestPriorBoxOp<paddle_mobile::CPU> testPriorBoxOp(
-      program);
+  paddle_mobile::framework::TestPriorBoxOp testPriorBoxOp(program);
 
   auto output_priorbox = testPriorBoxOp.predict_priorbox(input_image, inputx1);
   auto *output_priorbox_ptr = output_priorbox->data<float>();

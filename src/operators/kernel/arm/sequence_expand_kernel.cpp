@@ -98,7 +98,11 @@ void SequenceExpandKernelCpu<float>::Compute(const SequenceExpandParam &param) {
   }
   SequenceExpandImpl<float>(*input_x, y_lod[ref_level], output);
 }
-
+template <>
+bool SequenceExpandKernelCpu<float>::Init(
+    paddle_mobile::operators::SequenceExpandParam *param) {
+  return true;
+}
 // template class SequenceExpandKernelCpu<float>;
 // template class SequenceExpandKernelCpu< int64_t>;
 

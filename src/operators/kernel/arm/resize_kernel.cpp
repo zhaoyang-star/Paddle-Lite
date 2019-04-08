@@ -117,7 +117,10 @@ void ResizeKernelCpu<float>::Compute(const ResizeParam& param) {
   out->Resize(out_dims);
   ResizeTensor(input_x, out);
 }
-
+template <>
+bool ResizeKernelCpu<float>::Init(ResizeParam* param) {
+  return true;
+}
 }  // namespace operators
 }  // namespace paddle_mobile
 

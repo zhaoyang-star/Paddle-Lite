@@ -20,7 +20,7 @@ namespace operators {
 namespace math {
 template <typename T>
 class PadFunctor {
-public:
+ public:
   void operator()(const framework::Tensor &input, const int pad_top,
                   const int pad_bottom, const int pad_left, const int pad_right,
                   framework::Tensor *output) {

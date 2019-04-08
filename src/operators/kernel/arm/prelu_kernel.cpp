@@ -116,6 +116,11 @@ void PReluKernelCpu<float>::Compute(const PReluParam &param) {
   }
 #endif
 }
+
+template <>
+bool PReluKernelCpu<float>::Init(PReluParam *param) {
+  return true;
+}
 }  // namespace operators
 }  // namespace paddle_mobile
 

@@ -17,14 +17,13 @@ limitations under the License. */
 #include "operators/prelu_op.h"
 
 int main() {
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(g_resnet);
   PADDLE_MOBILE_ENFORCE(program.originProgram != nullptr,
                         "program file read fail");
 
-  Executor4Test<
-      paddle_mobile::paddle_mobile::operators::PReluOp<paddle_mobile::float>>
-      executor(program, "prelu");
+  Executor4Test<paddle_mobile::operators::PReluOp<float>> executor(program,
+                                                                   "prelu");
 
   // 1. input_tensors;
   vector<Tensor> input_tensors;

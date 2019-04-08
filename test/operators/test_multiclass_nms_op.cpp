@@ -18,10 +18,9 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-template <typename Dtype>
 class TestMultiClassNMSOp {
  public:
-  explicit TestMultiClassNMSOp(const Program<Dtype> p) : program_(p) {
+  explicit TestMultiClassNMSOp(const Program<float> p) : program_(p) {
     if (use_optimize_) {
       to_predict_program_ = program_.optimizeProgram;
     } else {
@@ -52,8 +51,8 @@ class TestMultiClassNMSOp {
                << op->GetAttrMap().at("nms_top_k").Get<int>();
           DLOG << " score_threshold : "
                << op->GetAttrMap().at("score_threshold").Get<float>();
-          std::shared_ptr<operators::MultiClassNMSOp<Dtype, float>> priorbox =
-              std::make_shared<operators::MultiClassNMSOp<Dtype, float>>(
+          std::shared_ptr<operators::MultiClassNMSOp<float>> priorbox =
+              std::make_shared<operators::MultiClassNMSOp<float>>(
                   op->Type(), op->GetInputs(), op->GetOutputs(),
                   op->GetAttrMap(), program_.scope.get());
           ops_of_block_[*block_desc.get()].push_back(priorbox);
@@ -86,10 +85,9 @@ class TestMultiClassNMSOp {
   }
 
  private:
-  const framework::Program<Dtype> program_;
+  const framework::Program<float> program_;
   std::shared_ptr<ProgramDesc> to_predict_program_;
-  std::map<framework::BlockDesc,
-           std::vector<std::shared_ptr<OperatorBase<Dtype>>>>
+  std::map<framework::BlockDesc, std::vector<std::shared_ptr<OperatorBase>>>
       ops_of_block_;
   bool use_optimize_ = false;
 
@@ -104,14 +102,13 @@ class TestMultiClassNMSOp {
   }
 };
 
-template class TestMultiClassNMSOp;
 }  // namespace framework
 }  // namespace paddle_mobile
 
 int main() {
   DLOG << "----------**********----------";
   DLOG << "begin to run MulticlassNMS Test";
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   auto program = loader.Load(std::string(g_mobilenet_ssd));
   paddle_mobile::framework::Tensor inputx1;
   SetupTensor<float>(&inputx1, {1, 2, 4}, static_cast<float>(0),
@@ -131,8 +128,7 @@ int main() {
     *(inputx2_ptr + i) = x2[i];
   }
 
-  paddle_mobile::framework::TestMultiClassNMSOp<paddle_mobile::CPU>
-      testMultiClassNMSOp(program);
+  paddle_mobile::framework::TestMultiClassNMSOp testMultiClassNMSOp(program);
 
   auto output = testMultiClassNMSOp.predict(inputx1, inputx2);
   auto *output_ptr = output->data<float>();

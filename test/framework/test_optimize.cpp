@@ -18,7 +18,7 @@ limitations under the License. */
 #include "framework/program/program-optimize/program_optimize.h"
 
 int main() {
-  paddle_mobile::framework::Loader<paddle_mobile::CPU> loader;
+  paddle_mobile::framework::Loader<float> loader;
   //    "../../../test/models/googlenet"
   auto program = loader.Load(g_mobilenet_ssd, true);
   paddle_mobile::framework::ProgramOptimize optimize;
