@@ -20,7 +20,6 @@ namespace operators {
 
 template <>
 bool FeedKernelGpu<float>::Init(FeedParam *param) {
-  DLOG << "Init feed";
   this->cl_helper_.AddKernel("feed", "feed_kernel.cl");
   return true;
 }

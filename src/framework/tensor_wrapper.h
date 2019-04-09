@@ -70,9 +70,7 @@ class TensorWrapper {
 
 #ifdef PADDLE_MOBILE_CL
 
-  framework::CLImage *MuteClImage() {
-    return this->InnerCLImage();
-  }
+  framework::CLImage *MuteClImage() { return this->InnerCLImage(); }
 #endif
   framework::LoDTensor *MuteLodTensor() { return this->InnerLoDTensor(); }
 
@@ -81,20 +79,15 @@ class TensorWrapper {
     if (this->GetMemType() == MEM_GPU) {
       return this->GetGpu();
     } else {
-      DLOG << "--------------------  cpu ---> gpu----------------------";
-
+      DLOG << "----------begin-----  cpu ---> gpu----------------------";
       // conver cpu mem to gpu
       // cast gpu to cpu
       const LoDTensor *input = this->GetCpu();
       CLImage *output = this->GetGpu();
       CLHelper *helper = GpuRumtimeHelper::Instance()->GetClHelper();
-
       DLOG << "input->IsInitialized(): " << input->IsInitialized();
       if (input->IsInitialized()) {
         const float *input_data = input->data<float>();
-
-        // set TensorData;
-
         cl_context context = CLEngine::Instance()->getContext();
         cl_command_queue command_queue =
             CLEngine::Instance()->getClCommandQueue();
@@ -102,23 +95,15 @@ class TensorWrapper {
         const DDim &dims = output->dims();
         DLOG << "output->isInit():  " << output->isInit();
         DLOG << "IsPersistable()=======>  " << IsPersistable();
-/*
-        if (!output->isInit() && !IsPersistable()){
-
-        }else*/
-
         if (!output->isInit() && IsPersistable()) {
           // do nothing until init ?
-
           output->SetTensorData(const_cast<float *>(input_data), input->dims());
-
         } else {
           //      this->GetClHelper().AddKernel("feed", "feed_kernel.cl");
           cl_mem output_image = output->GetCLImage();
-          DLOG << "output_image : " << output_image;
           if (!output_image) {
             output->InitEmptyImage(context, command_queue, dims);
-            output_image=output->GetCLImage();
+            output_image = output->GetCLImage();
           } else {
             output->SetTensorData(const_cast<float *>(input_data),
                                   input->dims());
@@ -184,10 +169,7 @@ class TensorWrapper {
   }
 #endif
   framework::LoDTensor *InnerLoDTensor() {
-    /*   if (this->GetMemType() == MEM_UNKNOWN) {
-      DLOG << "tensor wrapper got MEM_UNKNOWN";
-      return this->MuteLodTensor();
-    } else*/ if (this->GetMemType() == MEM_CPU) {
+    if (this->GetMemType() == MEM_CPU) {
       return this->GetCpu();
     }
 #ifdef PADDLE_MOBILE_CL
@@ -196,17 +178,15 @@ class TensorWrapper {
       CLImage *input_climage = this->GetGpu();
 
       LoDTensor *output_lodtensor = this->GetCpu();
-      DLOG << " begin convert gpu image to cpu   ----   "
-              "input_climage->isInit(): "
-           << input_climage->isInit();
+      DLOG << "----------begin-----  gpu ---> cpu----------------------";
+
+      DLOG << "input_climage->isInit():  " << input_climage->isInit();
 
       if (input_climage->isInit()) {
-        DLOG << "inner conver";
         // cast gpu to cpu
         //        CLImage *image_p = input_climage;
         int width = input_climage->ImageDims()[0];
         int height = input_climage->ImageDims()[1];
-        DLOG << "inner conver 1";
 
         half_t *image_data = new half_t[height * width * 4];
         cl_int err;
@@ -214,34 +194,27 @@ class TensorWrapper {
         size_t origin[3] = {0, 0, 0};
         size_t region[3] = {static_cast<size_t>(width),
                             static_cast<size_t>(height), 1};
-        DLOG << "inner conver2";
-
         err =
             clEnqueueReadImage(input_climage->CommandQueue(), image, CL_TRUE,
                                origin, region, 0, 0, image_data, 0, NULL, NULL);
         CL_CHECK_ERRORS(err);
-        DLOG << "inner conver3";
 
         output_lodtensor->Resize(input_climage->dims());
         auto converter = input_climage->Converter();
-        DLOG << "inner conver4";
         if (!output_lodtensor->IsInitialized()) {
           output_lodtensor->mutable_data<float>();
         }
         converter->ImageToNCHW(image_data, output_lodtensor->data<float>(),
                                input_climage->ImageDims(),
                                input_climage->dims());
-        DLOG << "inner conver5";
-
         delete[](image_data);
       } else {
         const DDim &dims = input_climage->dims();
-        DLOG << "input_climage->dims(): " << dims;
         output_lodtensor->ResizeSafe(dims);
       }
 
       mem_type = MEM_CPU;
-      DLOG << " end convert gpu image to cpu";
+      DLOG << "----------success---  gpu ---> cpu----------------------";
 
       return output_lodtensor;
     }

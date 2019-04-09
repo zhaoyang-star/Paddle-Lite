@@ -57,8 +57,6 @@ OperatorBase::OperatorBase(const std::string &type,
 void OperatorBase::CheckAllInputOutputSet() const {}
 
 void OperatorBase::Run(int kernelType) {
-
-
 #ifdef PADDLE_MOBILE_DEBUG
   DLOG << "-------------" << type_ << "--------------------------";
 #endif

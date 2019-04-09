@@ -272,6 +272,7 @@ class FusionOpMatcher {
     void Init(int kernelType) { REGIST_INIT_CPU(OpParam); }                   \
     void RunImpl(int kernelType) {                                            \
       /* use pre defined kernel to run */                                     \
+      printf("kernel cpu run \n");                                            \
       kernelCpu_.Compute(framework::OperatorWithKernels<T, OpParam>::param_); \
     }                                                                         \
                                                                               \
@@ -299,7 +300,7 @@ class FusionOpMatcher {
         REGIST_INIT_GPU(OpParam);                                             \
       }                                                                       \
                                                                               \
-     /* REGIST_INIT_FPGA(OpParam); */                                             \
+      /* REGIST_INIT_FPGA(OpParam); */                                        \
     }                                                                         \
     void RunImpl(int kernelType) {                                            \
       /* use pre defined kernel to run */                                     \

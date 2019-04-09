@@ -38,14 +38,12 @@ class CLScope {
 
   std::unique_ptr<_cl_kernel, CLKernelDeleter> GetKernel(
       const std::string &kernel_name, const std::string &file_name) {
-    DLOG << " to get program " << file_name;
     auto program = Program(file_name);
-    DLOG << " end get program ~ ";
-    DLOG << " to create kernel: " << kernel_name;
+    DLOG << " get program success";
     std::unique_ptr<_cl_kernel, CLKernelDeleter> kernel(
         clCreateKernel(program, kernel_name.c_str(), &status_));
     CL_CHECK_ERRORS(status_);
-    DLOG << " end create kernel ~ ";
+    DLOG << "  create kernel success~ ";
     return std::move(kernel);
   }
 
@@ -61,9 +59,8 @@ class CLScope {
         context_,
         CLEngine::Instance()->GetCLPath() + "/cl_kernel/" + file_name);
 
-    DLOG << " --- begin build program -> " << file_name << " --- ";
     CLEngine::Instance()->BuildProgram(program.get());
-    DLOG << " --- end build program -> " << file_name << " --- ";
+    DLOG << " --- build program success-> " << file_name << " --- ";
 
     programs_[file_name] = std::move(program);
 

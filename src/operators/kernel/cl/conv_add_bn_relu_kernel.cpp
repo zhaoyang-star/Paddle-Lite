@@ -24,55 +24,21 @@ namespace operators {
 bool optimise = true;
 template <>
 bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
-  DLOG << "ConvAddBNReluKernelGpu<float>::Init:::  ";
   PADDLE_MOBILE_ENFORCE(param->Filter()->InnerCLImage()->dims()[2] ==
                                 param->Filter()->InnerCLImage()->dims()[3] &&
                             param->Paddings()[0] == param->Paddings()[1],
                         "need equal");
-
   param->Bias()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
                                              cl_helper_.CLCommandQueue());
-  //  const CL *mean = param->InputMean()->InnerCLImage();
   const framework::CLImage *mean = param->InputMean()->InnerCLImage();
   const framework::CLImage *variance = param->InputVariance()->InnerCLImage();
   const framework::CLImage *scale = param->InputScale()->InnerCLImage();
   const framework::CLImage *bias = param->InputBias()->InnerCLImage();
   const float epsilon = param->Epsilon();
-
   const int C = mean->numel();
-
-  //  for (int j = 0; j < C; ++j) {
-  //    DLOG << " mean - " << j << mean->data<float>()[j];
-  //  }
-  //
-  //  for (int j = 0; j < C; ++j) {
-  //    DLOG << " variance - " << j << variance->data<float>()[j];
-  //  }
-  //
-  //  for (int j = 0; j < C; ++j) {
-  //    DLOG << " scale - " << j << scale->data<float>()[j];
-  //  }
-  //
-  //  for (int j = 0; j < C; ++j) {
-  //    DLOG << " bias - " << j << bias->data<float>()[j];
-  //  }
-
-  //
-  //  DLOG << " climage mean: " << *mean;
-  //  DLOG << " climage variance: " << *variance;
-  //  DLOG << " climage scale: " << *scale;
-  //  DLOG << " climage bias: " << *bias;
-  DLOG << " get datas end -1";
-
   auto mean_ptr = mean->data<float>();
-  DLOG << " get datas end 0";
-
   auto variance_ptr = variance->data<float>();
-  DLOG << " get datas end 1";
-
   auto scale_ptr = scale->data<float>();
-  DLOG << " get datas end 2";
-
   auto bias_ptr = bias->data<float>();
 
   DLOG << " get datas end 3";
@@ -95,33 +61,13 @@ bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
   auto *new_scale = new_scale_w->MuteClImage();
   auto *new_bias = new_bias_w->MuteClImage();
 
-  //  framework::CLImage *new_scale = new framework::CLImage();
-
-  //  for (int j = 0; j < C; ++j) {
-  //    DLOG << " new scale - " << j << new_scale_ptr[j];
-  //  }
-  //
-  //  for (int j = 0; j < C; ++j) {
-  //    DLOG << " new bias - " << j << new_bias_ptr[j];
-  //  }
-
   new_scale->SetTensorData(new_scale_ptr, variance->dims());
   new_scale->InitCLImage(this->cl_helper_.CLContext(),
                          cl_helper_.CLCommandQueue());
 
-  //  DLOG << " climage - y bias: " << *(param->Bias()->InnerCLImage());
-  //
-  //  DLOG << " climage - new scale: " << *new_scale;
-
-  //  framework::CLImage *new_bias = new framework::CLImage();
-
   new_bias->SetTensorData(new_bias_ptr, variance->dims());
   new_bias->InitCLImage(this->cl_helper_.CLContext(),
                         cl_helper_.CLCommandQueue());
-
-  //  DLOG << " climage - new bias: " << *new_bias;
-  //
-  //  DLOG << " climage - filter: " << *(param->Filter()->InnerCLImage());
 
   param->SetNewScale(new_scale_w);
   param->SetNewBias(new_bias_w);
@@ -140,16 +86,6 @@ bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
 
   param->SetOffset(offset);
 
-  /*
-  if (param->Filter()->InnerCLImage()->dims()[2] == 1 &&
-      param->Filter()->InnerCLImage()->dims()[3] == 1 &&
-      (param->Filter()->InnerCLImage()->dims()[0] % 16) == 0) {
-    param->Filter()->InnerCLImage()->InitNImage(cl_helper_.CLContext(),
-                                cl_helper_.CLCommandQueue());
-    this->cl_helper_.AddKernel("conv_1x1_4", "conv_add_bn_relu_kernel.cl");
-    DLOG << " conv add bn relu conv 1x1 4";
-  }
-  */
   if (param->Filter()->InnerCLImage()->dims()[2] == 1 &&
       param->Filter()->InnerCLImage()->dims()[3] == 1) {
     param->Filter()->InnerCLImage()->InitNImage(cl_helper_.CLContext(),
@@ -187,7 +123,6 @@ bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
 template <>
 void ConvAddBNReluKernelGpu<float>::Compute(
     const FusionConvAddBNReluParam &param) {
-  DLOG << "ConvAddBNReluKernelGpu compute: ";
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size =
       this->cl_helper_.DefaultWorkSize(*param.Output()->InnerCLImage());
@@ -196,44 +131,22 @@ void ConvAddBNReluKernelGpu<float>::Compute(
   int w = default_work_size[1];
   int nh = default_work_size[2];
   auto input = param.Input()->InnerCLImage()->GetCLImage();
-  DLOG << "input climage: " << input;
   auto filter = param.Filter()->InnerCLImage()->GetCLImage();
   auto biase = param.Bias()->InnerCLImage()->GetCLImage();
   auto new_scale = param.NewScale()->InnerCLImage()->GetCLImage();
   auto new_bias = param.NewBias()->InnerCLImage()->GetCLImage();
   auto output = param.Output()->InnerCLImage()->GetCLImage();
-  DLOG << "ConvAddBNReluKernelGpu output end : ";
   int stride = param.Strides()[0];
-  DLOG << "ConvAddBNReluKernelGpu stride end : ";
   int offset = param.Offset();
-  DLOG << "ConvAddBNReluKernelGpu offset end : ";
   framework::CLImageConverterBase *const converter =
       param.Input()->InnerCLImage()->Converter();
-  DLOG << "ConvAddBNReluKernelGpu converter end : " << converter;
   int input_c = reinterpret_cast<framework::CLImageConverterFolder *>(converter)
                     ->GetCBlock();
-  DLOG << "ConvAddBNReluKernelGpu input_c end : ";
-
   int dilation = param.Dilations()[0];
   int input_width = param.Input()->InnerCLImage()->dims()[3];
   int input_height = param.Input()->InnerCLImage()->dims()[2];
   int output_width = param.Output()->InnerCLImage()->dims()[3];
   int output_height = param.Output()->InnerCLImage()->dims()[2];
-
-  //  DLOG << " c block " << c_block;
-  //  DLOG << " w " << w;
-  //  DLOG << " nh " << nh;
-  //  DLOG << " stride " << stride;
-  //  DLOG << " offset " << offset;
-  //  DLOG << " input_c " << input_c;
-  //  DLOG << " dilation " << dilation;
-  //  DLOG << " input width " << input_width;
-  //  DLOG << " input height " << input_height;
-  //  DLOG << " output width " << output_width;
-  //  DLOG << " output height " << output_height;
-  //  DLOG << " input dim " << param.Input()->InnerCLImage()->dims();
-  //  DLOG << " output dim " << param.Output()->InnerCLImage()->dims();
-  //  DLOG << " filter dim " << param.Filter()->InnerCLImage()->dims();
 
   cl_int status;
 
