@@ -582,7 +582,7 @@ PMStatus ExecutorClImpl<T>::Predict() {
     if (lod_mode_) {
       op_handler->InferShape();
     }
-    op_handler->Run();
+    op_handler->Run(TYPE_GPU);
 #ifdef PADDLE_MOBILE_PROFILE
     clock_gettime(CLOCK_MONOTONIC, &ts);
     profile[op_index].runEnd = (uint64_t)ts.tv_sec * 1e9 + ts.tv_nsec;

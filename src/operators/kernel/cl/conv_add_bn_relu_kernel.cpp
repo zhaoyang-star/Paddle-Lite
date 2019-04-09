@@ -32,7 +32,6 @@ bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
 
   param->Bias()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
                                              cl_helper_.CLCommandQueue());
-
   //  const CL *mean = param->InputMean()->InnerCLImage();
   const framework::CLImage *mean = param->InputMean()->InnerCLImage();
   const framework::CLImage *variance = param->InputVariance()->InnerCLImage();
@@ -63,11 +62,20 @@ bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
   //  DLOG << " climage variance: " << *variance;
   //  DLOG << " climage scale: " << *scale;
   //  DLOG << " climage bias: " << *bias;
+  DLOG << " get datas end -1";
 
   auto mean_ptr = mean->data<float>();
+  DLOG << " get datas end 0";
+
   auto variance_ptr = variance->data<float>();
+  DLOG << " get datas end 1";
+
   auto scale_ptr = scale->data<float>();
+  DLOG << " get datas end 2";
+
   auto bias_ptr = bias->data<float>();
+
+  DLOG << " get datas end 3";
 
   float inv_std_ptr[C];
   for (int i = 0; i < C; i++) {
@@ -172,30 +180,40 @@ bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
   } else {
     PADDLE_MOBILE_THROW_EXCEPTION(" not support ");
   }
-
+  DLOG << "ConvAddBNReluKernelGpu end: ";
   return true;
 }
 
 template <>
 void ConvAddBNReluKernelGpu<float>::Compute(
     const FusionConvAddBNReluParam &param) {
+  DLOG << "ConvAddBNReluKernelGpu compute: ";
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size =
       this->cl_helper_.DefaultWorkSize(*param.Output()->InnerCLImage());
+
   int c_block = default_work_size[0];
   int w = default_work_size[1];
   int nh = default_work_size[2];
   auto input = param.Input()->InnerCLImage()->GetCLImage();
+  DLOG << "input climage: " << input;
   auto filter = param.Filter()->InnerCLImage()->GetCLImage();
   auto biase = param.Bias()->InnerCLImage()->GetCLImage();
   auto new_scale = param.NewScale()->InnerCLImage()->GetCLImage();
   auto new_bias = param.NewBias()->InnerCLImage()->GetCLImage();
   auto output = param.Output()->InnerCLImage()->GetCLImage();
+  DLOG << "ConvAddBNReluKernelGpu output end : ";
   int stride = param.Strides()[0];
+  DLOG << "ConvAddBNReluKernelGpu stride end : ";
   int offset = param.Offset();
-  int input_c = reinterpret_cast<framework::CLImageConverterFolder *>(
-                    param.Input()->InnerCLImage()->Converter())
+  DLOG << "ConvAddBNReluKernelGpu offset end : ";
+  framework::CLImageConverterBase *const converter =
+      param.Input()->InnerCLImage()->Converter();
+  DLOG << "ConvAddBNReluKernelGpu converter end : " << converter;
+  int input_c = reinterpret_cast<framework::CLImageConverterFolder *>(converter)
                     ->GetCBlock();
+  DLOG << "ConvAddBNReluKernelGpu input_c end : ";
+
   int dilation = param.Dilations()[0];
   int input_width = param.Input()->InnerCLImage()->dims()[3];
   int input_height = param.Input()->InnerCLImage()->dims()[2];

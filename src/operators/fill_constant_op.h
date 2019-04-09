@@ -97,7 +97,7 @@ class FillConstantOp : public framework::OperatorBase {
       : framework::OperatorBase(type, inputs, outputs, attrs, scope),
         param_(inputs, outputs, attrs, scope) {}
 
-  void RunImpl() {
+  void RunImpl(int kernelType) {
     auto data_type =
         static_cast<_PaddleMobile__Framework__Proto__VarType__Type>(
             param_.DataDtype());

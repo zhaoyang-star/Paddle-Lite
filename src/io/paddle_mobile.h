@@ -15,8 +15,7 @@ limitations under the License. */
 #pragma once
 
 #include <framework/executor.h>
-#include <framework/executor_cl_impl.h>
-#include <framework/executor_cpu_impl.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -105,7 +104,7 @@ class PaddleMobile {
 
  private:
   std::shared_ptr<framework::Loader<T>> loader_;
-  std::shared_ptr<framework::ExecutorClImpl<T>> executor_;
+  std::shared_ptr<framework::Executor<T>> executor_;
   PaddleMobileConfigInternal config_;
 };
 

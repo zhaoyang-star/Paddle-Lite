@@ -71,7 +71,7 @@ class FusionConvAddBNReluOp
  protected:
 };*/
 
-DECLARE_OPERATOR_WITH_PARAMS(FusionConvAddBNRelu, FusionConvAddBNReluParam,
+DECLARE_OPERATOR_MIXED_WITH_PARAMS(FusionConvAddBNRelu, FusionConvAddBNReluParam,
                              ConvAddBNReluKernel);
 
 }  // namespace operators

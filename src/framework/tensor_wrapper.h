@@ -47,7 +47,10 @@ class TensorWrapper {
 #else
   TensorWrapper() : holder_cpu_(new LoDTensor()) {}
 #endif
-
+  bool IsPersistable() { return is_persistable_; }
+  void SetPersistable(bool is_persistable) {
+    this->is_persistable_ = is_persistable;
+  }
   int GetMemType() const {
     if (holder_cpu_ && mem_type == MEM_CPU) {
       return MEM_CPU;
@@ -68,7 +71,6 @@ class TensorWrapper {
 #ifdef PADDLE_MOBILE_CL
 
   framework::CLImage *MuteClImage() {
-    DLOG << "InnerCLImage ====> ";
     return this->InnerCLImage();
   }
 #endif
@@ -79,7 +81,7 @@ class TensorWrapper {
     if (this->GetMemType() == MEM_GPU) {
       return this->GetGpu();
     } else {
-      DLOG << " begin convert cpu image to gpu";
+      DLOG << "--------------------  cpu ---> gpu----------------------";
 
       // conver cpu mem to gpu
       // cast gpu to cpu
@@ -90,74 +92,92 @@ class TensorWrapper {
       DLOG << "input->IsInitialized(): " << input->IsInitialized();
       if (input->IsInitialized()) {
         const float *input_data = input->data<float>();
+
+        // set TensorData;
+
         cl_context context = CLEngine::Instance()->getContext();
         cl_command_queue command_queue =
             CLEngine::Instance()->getClCommandQueue();
 
         const DDim &dims = output->dims();
-        DLOG << "output->dims():  " << dims;
-        if (!output->isInit()) {
-          output->InitEmptyImage(context, command_queue, dims);
+        DLOG << "output->isInit():  " << output->isInit();
+        DLOG << "IsPersistable()=======>  " << IsPersistable();
+/*
+        if (!output->isInit() && !IsPersistable()){
+
+        }else*/
+
+        if (!output->isInit() && IsPersistable()) {
+          // do nothing until init ?
+
+          output->SetTensorData(const_cast<float *>(input_data), input->dims());
+
+        } else {
+          //      this->GetClHelper().AddKernel("feed", "feed_kernel.cl");
+          cl_mem output_image = output->GetCLImage();
+          DLOG << "output_image : " << output_image;
+          if (!output_image) {
+            output->InitEmptyImage(context, command_queue, dims);
+            output_image=output->GetCLImage();
+          } else {
+            output->SetTensorData(const_cast<float *>(input_data),
+                                  input->dims());
+          }
+          size_t new_dims[] = {1, 1, 1, 1};
+          for (int j = 0; j < dims.size(); ++j) {
+            new_dims[4 - dims.size() + j] = dims[j];
+          }
+
+          size_t N, C, H, W;
+          N = new_dims[0];
+          C = new_dims[1];
+          H = new_dims[2];
+          W = new_dims[3];
+
+          const int out_C = C;
+          const int out_H = H;
+          const int out_W = W;
+          const int Stride2 = out_C * out_H * out_W;
+          const int Stride1 = out_H * out_W;
+          const int Stride0 = out_W;
+
+          framework::CLTensor input_cl_tensor(helper->CLContext(),
+                                              helper->CLCommandQueue());
+          input_cl_tensor.Resize(input->dims());
+          cl_mem inputBuffer =
+              input_cl_tensor.mutable_with_data<float>(input_data);
+          auto kernel = helper->KernelAt(0);
+          auto default_work_size = helper->DefaultWorkSize(*(output));
+          cl_int status;
+          status = clSetKernelArg(kernel, 0, sizeof(cl_mem), &inputBuffer);
+          CL_CHECK_ERRORS(status);
+          status = clSetKernelArg(kernel, 1, sizeof(cl_mem), &output_image);
+          CL_CHECK_ERRORS(status);
+          status = clSetKernelArg(kernel, 2, sizeof(cl_int), &out_H);
+          CL_CHECK_ERRORS(status);
+          status = clSetKernelArg(kernel, 3, sizeof(cl_int), &out_W);
+          CL_CHECK_ERRORS(status);
+          status = clSetKernelArg(kernel, 4, sizeof(cl_int), &out_C);
+          CL_CHECK_ERRORS(status);
+          status = clSetKernelArg(kernel, 5, sizeof(cl_int), &Stride0);
+          CL_CHECK_ERRORS(status);
+          status = clSetKernelArg(kernel, 6, sizeof(cl_int), &Stride1);
+          CL_CHECK_ERRORS(status);
+          status = clSetKernelArg(kernel, 7, sizeof(cl_int), &Stride2);
+          CL_CHECK_ERRORS(status);
+          status = clEnqueueNDRangeKernel(
+              helper->CLCommandQueue(), kernel, default_work_size.size(), NULL,
+              default_work_size.data(), NULL, 0, NULL, NULL);
+          CL_CHECK_ERRORS(status);
         }
 
-        //      this->GetClHelper().AddKernel("feed", "feed_kernel.cl");
-        cl_mem output_image = output->GetCLImage();
-
-        size_t new_dims[] = {1, 1, 1, 1};
-        for (int j = 0; j < dims.size(); ++j) {
-          new_dims[4 - dims.size() + j] = dims[j];
-        }
-
-        size_t N, C, H, W;
-        N = new_dims[0];
-        C = new_dims[1];
-        H = new_dims[2];
-        W = new_dims[3];
-
-        const int out_C = C;
-        const int out_H = H;
-        const int out_W = W;
-        const int Stride2 = out_C * out_H * out_W;
-        const int Stride1 = out_H * out_W;
-        const int Stride0 = out_W;
-
-        framework::CLTensor input_cl_tensor(helper->CLContext(),
-                                            helper->CLCommandQueue());
-        input_cl_tensor.Resize(input->dims());
-        cl_mem inputBuffer =
-            input_cl_tensor.mutable_with_data<float>(input_data);
-        auto kernel = helper->KernelAt(0);
-        auto default_work_size = helper->DefaultWorkSize(*(output));
-        cl_int status;
-        status = clSetKernelArg(kernel, 0, sizeof(cl_mem), &inputBuffer);
-        CL_CHECK_ERRORS(status);
-        status = clSetKernelArg(kernel, 1, sizeof(cl_mem), &output_image);
-        CL_CHECK_ERRORS(status);
-        status = clSetKernelArg(kernel, 2, sizeof(cl_int), &out_H);
-        CL_CHECK_ERRORS(status);
-        status = clSetKernelArg(kernel, 3, sizeof(cl_int), &out_W);
-        CL_CHECK_ERRORS(status);
-        status = clSetKernelArg(kernel, 4, sizeof(cl_int), &out_C);
-        CL_CHECK_ERRORS(status);
-        status = clSetKernelArg(kernel, 5, sizeof(cl_int), &Stride0);
-        CL_CHECK_ERRORS(status);
-        status = clSetKernelArg(kernel, 6, sizeof(cl_int), &Stride1);
-        CL_CHECK_ERRORS(status);
-        status = clSetKernelArg(kernel, 7, sizeof(cl_int), &Stride2);
-        CL_CHECK_ERRORS(status);
-        status = clEnqueueNDRangeKernel(
-            helper->CLCommandQueue(), kernel, default_work_size.size(), NULL,
-            default_work_size.data(), NULL, 0, NULL, NULL);
-        CL_CHECK_ERRORS(status);
         mem_type = MEM_GPU;
       } else {
-        DLOG << "input->dims(): " << input->dims();
         output->Resize(input->dims());
-        DLOG << output;
         mem_type = MEM_GPU;
         //        output->InitEmptyImage(helper->CLContext(),helper->CLCommandQueue(),input->dims());
       }
-      DLOG << " end convert cpu image to gpu ";
+      DLOG << "----------success---  cpu ---> gpu----------------------";
 
       return output;
     }
@@ -246,6 +266,8 @@ class TensorWrapper {
 
   std::shared_ptr<LoDTensor> holder_cpu_;
   int mem_type = MEM_CPU;
+
+  bool is_persistable_ = false;
 
 #ifdef PADDLE_MOBILE_CL
   std::shared_ptr<CLImage> holder_gpu_;

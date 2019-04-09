@@ -36,6 +36,7 @@ void Loader<T>::InitMemoryFromProgram(
           DLOG << "InitMemoryFromProgram vardesc: " << var_desc->Name();
           auto dim = var_desc->Tensor_desc().Dims();
           auto tensor_w = var->GetMutable<TensorWrapper>();
+          tensor_w->SetPersistable(true);
           DLOG << "mutelodtensor  ===>";
           auto tensor = tensor_w->MuteLodTensor();
           tensor->Resize(make_ddim(dim));
@@ -49,6 +50,8 @@ void Loader<T>::InitMemoryFromProgram(
           if (dim.size() == 0) {
             framework::DDim dDim = {0};
             auto tensor_w = var->GetMutable<TensorWrapper>();
+            tensor_w->SetPersistable(false);
+
             LoDTensor *const tensor = tensor_w->MuteLodTensor();
             tensor->Resize(dDim);
 #ifdef PADDLE_MOBILE_CL

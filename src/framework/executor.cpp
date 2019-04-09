@@ -124,7 +124,7 @@ Executor<T>::Executor(const Program<T> &program,
   int count = 0;
   for (auto &op_handler : ops_of_block0_) {
     DLOG << "Initialize op[" << count++ << "]: ";
-    op_handler->Init();
+    op_handler->Init(TYPE_GPU);
   }
 }
 
@@ -247,6 +247,7 @@ void Executor<T>::InitMemory() {
             ReadFileToBuff(program_.model_path + "/" + var_desc->Name());
         char *data = origin_data;
         auto tensor_w = var->template GetMutable<TensorWrapper>();
+        tensor_w->SetPersistable(true);
         LoadMemory(reinterpret_cast<void **>(&data), var_desc,
                    tensor_w->MuteLodTensor());
         delete[] origin_data;
@@ -282,6 +283,8 @@ void Executor<T>::InitCombineMemory() {
         DLOG << " init combine memory persistable: " << var_desc->Name();
         auto tensor_wrapper = var->template GetMutable<TensorWrapper>();
         //        LoDTensor *tensor = tensor_wrapper->MuteLodTensor();
+        tensor_wrapper->SetPersistable(true);
+
         LoadMemory(reinterpret_cast<void **>(&data), var_desc,
                    tensor_wrapper->MuteLodTensor());
       } else {
@@ -504,7 +507,7 @@ PMStatus Executor<T>::Predict() {
     if (lod_mode_) {
       op_handler->InferShape();
     }
-    op_handler->Run();
+    op_handler->Run(TYPE_GPU);
 #ifdef PADDLE_MOBILE_PROFILE
     clock_gettime(CLOCK_MONOTONIC, &ts);
     profile[op_index].runEnd = (uint64_t)ts.tv_sec * 1e9 + ts.tv_nsec;
