@@ -77,12 +77,20 @@ Executor<T>::Executor(const Program<T> &program,
     auto op_handler = OpRegistry::CreateOp(
         op_desc->Type(), op_desc->GetInputs(), op_desc->GetOutputs(),
         op_desc->GetAttrMap(), program_.scope.get());
+
+    for (auto iter = config.running_expected_map_.begin();
+         iter != config.running_expected_map_.end(); iter++) {
+      DLOG << iter->first << "  want to to run in type " << iter->second;
+      if (op_desc->Type().find(iter->first.c_str()) != -1) {
+        op_handler->SetExpectedKernelRunningType(iter->second);
+      }
+    }
+
     // infer shape to reshape inputs and outputs before predict,
     // but for lod mode, it still need to infer shape in runtime
     if (!lod_mode) {
       op_handler->InferShape();
     }
-
     /*
         AttributeMap &opAttrMap = op_desc->GetAttrMap();
 
@@ -124,7 +132,7 @@ Executor<T>::Executor(const Program<T> &program,
   int count = 0;
   for (auto &op_handler : ops_of_block0_) {
     DLOG << "Initialize op[" << count++ << "]: ";
-    op_handler->Init(TYPE_GPU);
+    op_handler->Init();
   }
 }
 
@@ -507,7 +515,7 @@ PMStatus Executor<T>::Predict() {
     if (lod_mode_) {
       op_handler->InferShape();
     }
-    op_handler->Run(TYPE_GPU);
+    op_handler->Run();
 #ifdef PADDLE_MOBILE_PROFILE
     clock_gettime(CLOCK_MONOTONIC, &ts);
     profile[op_index].runEnd = (uint64_t)ts.tv_sec * 1e9 + ts.tv_nsec;

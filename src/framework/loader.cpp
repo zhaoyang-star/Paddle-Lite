@@ -185,12 +185,12 @@ const Program<T> Loader<T>::LoadProgram(const std::string &model_path,
 #ifdef PADDLE_MOBILE_CL
   GpuRumtimeHelper::Instance()->Init(program.scope->GetCLScpoe());
 
-  const std::unordered_map<string, OpInfo> &op_info_map =
+/*  const std::unordered_map<string, OpInfo> &op_info_map =
       OpInfoMap::Instance()->map();
 
   for (auto iter = op_info_map.begin(); iter != op_info_map.end(); iter++) {
     DLOG << " op info map:   " << iter->first << "   ----    ";
-  }
+  }*/
 
 #endif
   return program;

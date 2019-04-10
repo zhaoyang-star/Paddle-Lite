@@ -101,7 +101,7 @@ class TensorWrapper {
         } else {
           //      this->GetClHelper().AddKernel("feed", "feed_kernel.cl");
           cl_mem output_image = output->GetCLImage();
-          if (!output_image) {
+          if (output_image == nullptr) {
             output->InitEmptyImage(context, command_queue, dims);
             output_image = output->GetCLImage();
           } else {

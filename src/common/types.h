@@ -120,7 +120,7 @@ enum PoolingType {
 
 struct PaddleMobileConfigInternal {
   bool load_when_predict = false;
-  int running_mode = TYPE_CPU;
+  std::unordered_map<std::string, int> running_expected_map_;
 };
 
 extern const char *G_OP_TYPE_CONV;

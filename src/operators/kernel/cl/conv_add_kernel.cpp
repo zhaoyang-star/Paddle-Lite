@@ -84,9 +84,9 @@ void ConvAddKernelGpu<float>::Compute(const FusionConvAddParam &param) {
   auto input = param.Input()->InnerCLImage()->GetCLImage();
   auto filter = param.Filter()->InnerCLImage()->GetCLImage();
   auto biase = param.Bias()->InnerCLImage()->GetCLImage();
-  param.Output()->InnerCLImage()->InitEmptyImage(
-      cl_helper_.CLContext(), cl_helper_.CLCommandQueue(),
-      param.Output()->InnerCLImage()->dims());
+  //  param.Output()->InnerCLImage()->InitEmptyImage(
+  //      cl_helper_.CLContext(), cl_helper_.CLCommandQueue(),
+  //      param.Output()->InnerCLImage()->dims());
   auto output = param.Output()->InnerCLImage()->GetCLImage();
   int stride = param.Strides()[0];
   int offset = param.Offset();

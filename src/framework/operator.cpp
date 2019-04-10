@@ -56,11 +56,11 @@ OperatorBase::OperatorBase(const std::string &type,
 
 void OperatorBase::CheckAllInputOutputSet() const {}
 
-void OperatorBase::Run(int kernelType) {
+void OperatorBase::Run() {
 #ifdef PADDLE_MOBILE_DEBUG
   DLOG << "-------------" << type_ << "--------------------------";
 #endif
-  RunImpl(kernelType);
+  RunImpl(expected_kernel_type_);
 #ifdef PADDLE_MOBILE_DEBUG
   vector<string> input_keys = GetInputKeys();
   for (const auto key : input_keys) {

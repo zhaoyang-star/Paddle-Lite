@@ -76,7 +76,7 @@ ExecutorClImpl<T>::ExecutorClImpl(
     auto op_handler = OpRegistry::CreateOp(
         op_desc->Type(), op_desc->GetInputs(), op_desc->GetOutputs(),
         op_desc->GetAttrMap(), program_.scope.get());
-
+    op_handler->expected_kernel_type_ = TYPE_GPU;
     DLOG << "create op end of : " << op_desc->Type();
 
     // infer shape to reshape inputs and outputs before predict,
@@ -582,7 +582,7 @@ PMStatus ExecutorClImpl<T>::Predict() {
     if (lod_mode_) {
       op_handler->InferShape();
     }
-    op_handler->Run(TYPE_GPU);
+    op_handler->Run();
 #ifdef PADDLE_MOBILE_PROFILE
     clock_gettime(CLOCK_MONOTONIC, &ts);
     profile[op_index].runEnd = (uint64_t)ts.tv_sec * 1e9 + ts.tv_nsec;

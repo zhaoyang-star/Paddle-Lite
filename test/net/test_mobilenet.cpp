@@ -17,7 +17,11 @@ limitations under the License. */
 #include "../test_include.h"
 
 int main() {
-  paddle_mobile::PaddleMobile<float> paddle_mobile;
+  PaddleMobileConfigInternal configInternalGpu = PaddleMobileConfigInternal();
+  configInternalGpu.running_expected_map_.insert(std::make_pair("conv", TYPE_GPU));
+
+  paddle_mobile::PaddleMobile<float> paddle_mobile(configInternalGpu);
+
   paddle_mobile.SetThreadNum(4);
   auto time1 = paddle_mobile::time();
   //  auto isok = paddle_mobile.Load(std::string(g_mobilenet_detect) + "/model",

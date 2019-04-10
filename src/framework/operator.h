@@ -59,9 +59,9 @@ class OperatorBase {
                framework::Scope *scope);
   virtual ~OperatorBase() {}
 
-  virtual void Init(int kernelType = KERNEL_CPU) = 0;
+  virtual void Init() = 0;
   virtual void InferShape() const = 0;
-  virtual void Run(int kernelType = TYPE_CPU);
+  virtual void Run();
   virtual void RunImpl(int kernelType = TYPE_CPU) = 0;
 
   std::vector<std::string> GetOutKeys() const;
@@ -72,6 +72,9 @@ class OperatorBase {
   const std::string &Type() const { return type_; }
   const AttributeMap &Attrs() const { return attrs_; }
 
+  void SetExpectedKernelRunningType(int expected_type){
+    expected_kernel_type_ = expected_type;
+  }
   void ClearVariables(const std::vector<std::string> &var_names) const {
     if (this->scope_) {
       this->scope_->EraseVars(var_names);
@@ -80,6 +83,7 @@ class OperatorBase {
 #ifdef PADDLE_MOBILE_FPGA
   void InsertTensors();
 #endif
+  int expected_kernel_type_ = TYPE_CPU;
 
  protected:
   framework::Scope *scope_;
@@ -114,13 +118,6 @@ class OpKernelBase {
 #endif
 };
 
-/*template <typename P>
-class OpKernelImpl : public framework::OpKernelBase<P> {
- public:
-  bool Init(P *param) { return false; };
-  void Compute(const P &param){};
-};*/
-
 template <typename T, typename ParamType>
 class OperatorWithKernels : public OperatorBase {
  public:
@@ -129,43 +126,13 @@ class OperatorWithKernels : public OperatorBase {
                       framework::Scope *scope)
 
       : OperatorBase(type, inputs, outputs, attrs, scope),
-        param_(inputs, outputs, attrs, scope) {
-    // move to impls
-    //#ifdef PADDLE_MOBILE_CL
-    //    //    kernel_.InitCLHelper(scope->GetCLScpoe());
-    //    kernels.at(KERNEL_GPU).InitCLHelper(scope->GetCLScpoe());
-    //#endif
-  }
-  virtual void RunImpl(int kernelType) {
-    // to be impl with config
-    DLOG << "op run impl @ .......";
-    /*#ifdef PADDLE_MOBILE_CPU
-        kernels.at(KERNEL_CPU).Compute(this->param_);
-    #endif*/
-  }
-
+        param_(inputs, outputs, attrs, scope) {}
+  virtual void RunImpl(int kernelType) { DLOG << "op run impl @ ......."; }
   virtual void InferShape() const = 0;
   ParamType param_;
-
-  // use config to specific kernel to run
-  void Init(int kernelType = TYPE_CPU) {
-    /*#ifdef PADDLE_MOBILE_CPU
-        PADDLE_MOBILE_ENFORCE(kernels.at(KERNEL_CPU).Init(&param_),
-                              "  %s kernel initfailed", this->type_.c_str());
-    #endif
-    #ifdef PADDLE_MOBILE_CL
-        PADDLE_MOBILE_ENFORCE(kernels.at(KERNEL_GPU).Init(&param_),
-                              "  %s kernel initfailed", this->type_.c_str());
-    #endif
-    #ifdef PADDLE_MOBILE_FPGA
-        PADDLE_MOBILE_ENFORCE(kernels.at(KERNEL_FPGA).Init(&param_),
-                              "  %s kernel initfailed", this->type_.c_str());
-    #endif*/
-  }
-  //  std::unordered_map<int, OpKernelBase<ParamType>> kernels;
+  void Init() {}
 
  protected:
-  //  OpKernelBase<ParamType> kernel_;
 };
 
 class FusionOpMatcher {
@@ -196,11 +163,6 @@ class FusionOpMatcher {
 #else
 #endif
 // define operators
-
-/*#define INIT_KERNEKS(OpName, OpParam, KernelType, DeviceName) \
-  framework::OperatorWithKernels<T, OpParam>::kernels.insert( \
-      KernelType, kernel##DeviceName##_);*/
-
 #define REGIST_KERNEL_TYPE(OpName, DeviceName, KernelNamePrifix) \
   KernelNamePrifix##DeviceName<T> kernel##DeviceName##_;
 
@@ -269,7 +231,7 @@ class FusionOpMatcher {
                                                      attrs, scope) {          \
       INIT_KERNEKS_CPU(OpName, OpParam);                                      \
     }                                                                         \
-    void Init(int kernelType) { REGIST_INIT_CPU(OpParam); }                   \
+    void Init() { REGIST_INIT_CPU(OpParam); }                                 \
     void RunImpl(int kernelType) {                                            \
       /* use pre defined kernel to run */                                     \
       printf("kernel cpu run \n");                                            \
@@ -293,10 +255,13 @@ class FusionOpMatcher {
       INIT_KERNEKS_CPU(OpName, OpParam);                                      \
       INIT_KERNEKS_FPGA(OpName, OpParam);                                     \
     }                                                                         \
-    void Init(int kernelType) {                                               \
-      if (kernelType == TYPE_CPU) {                                           \
+    void Init() {                                                             \
+      if (framework::OperatorWithKernels<                                     \
+              T, OpParam>::OperatorBase::expected_kernel_type_ == TYPE_CPU) { \
         REGIST_INIT_CPU(OpParam);                                             \
-      } else if (kernelType == TYPE_GPU) {                                    \
+      } else if (framework::OperatorWithKernels<                              \
+                     T, OpParam>::OperatorBase::expected_kernel_type_ ==      \
+                 TYPE_GPU) {                                                  \
         REGIST_INIT_GPU(OpParam);                                             \
       }                                                                       \
                                                                               \

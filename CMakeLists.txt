@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.0.0)
 
 option(USE_OPENMP    "build with openmp support" OFF)
 option(USE_EXCEPTION "build with exception" ON)
-option(WITH_LOGGING  "print logging for debug" OFF)
+option(WITH_LOGGING  "print logging for debug" ON)
 option(WITH_SYMBOL   "build with all symbols" ON) # turn off if use jni or ios io
-option(WITH_PROFILE  "print op profile for debug" OFF)
+option(WITH_PROFILE  "print op profile for debug" ON)
 option(WITH_TEST     "build with unit tests" ON)
 
 # select the platform to build
