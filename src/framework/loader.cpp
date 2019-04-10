@@ -183,7 +183,7 @@ const Program<T> Loader<T>::LoadProgram(const std::string &model_path,
   free(buf);
 
 #ifdef PADDLE_MOBILE_CL
-  GpuRumtimeHelper::Instance()->Init(program.scope->GetCLScpoe());
+  CLRumtimeHelper::Instance()->Init(program.scope->GetCLScpoe());
 
 /*  const std::unordered_map<string, OpInfo> &op_info_map =
       OpInfoMap::Instance()->map();

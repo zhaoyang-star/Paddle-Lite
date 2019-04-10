@@ -21,7 +21,9 @@ limitations under the License. */
 #include <arm_neon.h>
 #endif
 #include "common/common.h"
+#ifdef PADDLE_MOBILE_CL
 #include "framework/cl/cl_tool.h"
+#endif
 #include "framework/ddim.h"
 #include "framework/operator.h"
 #include "operators/math/depthwise_conv3x3.h"

@@ -26,13 +26,13 @@ limitations under the License. */
 #include "cl/cl_image.h"
 #include "framework/cl/cl_helper.h"
 #include "framework/cl/cl_tensor.h"
+#include "framework/cl/cl_runtime_helper.h"
 #endif
 
 #include "common/enforce.h"
 #include "common/types.h"
 
 #include "framework/data_layout.h"
-#include "framework/image_converter.h"
 #include "framework/lod_tensor.h"
 #include "framework/tensor.h"
 #include "memory/t_malloc.h"
@@ -84,7 +84,7 @@ class TensorWrapper {
       // cast gpu to cpu
       const LoDTensor *input = this->GetCpu();
       CLImage *output = this->GetGpu();
-      CLHelper *helper = GpuRumtimeHelper::Instance()->GetClHelper();
+      CLHelper *helper = CLRumtimeHelper::Instance()->GetClHelper();
       DLOG << "input->IsInitialized(): " << input->IsInitialized();
       if (input->IsInitialized()) {
         const float *input_data = input->data<float>();

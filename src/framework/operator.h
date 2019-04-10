@@ -72,7 +72,7 @@ class OperatorBase {
   const std::string &Type() const { return type_; }
   const AttributeMap &Attrs() const { return attrs_; }
 
-  void SetExpectedKernelRunningType(int expected_type){
+  void SetExpectedKernelRunningType(int expected_type) {
     expected_kernel_type_ = expected_type;
   }
   void ClearVariables(const std::vector<std::string> &var_names) const {
@@ -242,6 +242,7 @@ class FusionOpMatcher {
     REGIST_KERNEL_CPU_WITH_KERNEL_PREFIX(OpName, KernelNamePrifix);           \
   };
 
+#ifdef PADDLE_MOBILE_CL
 #define DECLARE_OPERATOR_MIXED_WITH_PARAMS(OpName, OpParam, KernelNamePrifix) \
   template <typename T>                                                       \
   class OpName##Op : public framework::OperatorWithKernels<T, OpParam> {      \
@@ -286,10 +287,15 @@ class FusionOpMatcher {
     REGIST_KERNEL_FPGA_WITH_KERNEL_PREFIX(OpName, KernelNamePrifix);          \
   };
 
+#else
+#define DECLARE_OPERATOR_MIXED_WITH_PARAMS(OpName, OpParam, KernelNamePrifix) \
+  DECLARE_OPERATOR_WITH_PARAMS(OpName, OpParam, KernelNamePrifix)
+#endif
+
 #define DECLARE_OPERATOR(OpName) \
   DECLARE_OPERATOR_WITH_PARAMS(OpName, OpName##Param, OpName##Kernel)
 
-#define DECLARE_OPERATOR_WITH_GPU(OpName) \
+#define DECLARE_OPERATOR_MIXED(OpName) \
   DECLARE_OPERATOR_MIXED_WITH_PARAMS(OpName, OpName##Param, OpName##Kernel)
 
 #define DECLARE_KERNEL_WITHPARAMS(OpName, DeviceName, DeviceType, OpParam)     \
