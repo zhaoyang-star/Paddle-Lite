@@ -76,7 +76,9 @@ class TensorWrapper {
 
 #ifdef PADDLE_MOBILE_CL
   CLImage *InnerCLImage() {
-    if (this->GetMemType() == MEM_GPU) {
+    if (this->GetMemType() == MEM_GPU || (is_persistable_ && is_gpu_got)) {
+      mem_type = MEM_GPU;
+
       return this->GetGpu();
     } else {
       DLOG << "----------begin-----  cpu ---> gpu----------------------";
@@ -155,7 +157,7 @@ class TensorWrapper {
               default_work_size.data(), NULL, 0, NULL, NULL);
           CL_CHECK_ERRORS(status);
         }
-
+        is_gpu_got = true;
         mem_type = MEM_GPU;
       } else {
         output->Resize(input->dims());
@@ -169,7 +171,8 @@ class TensorWrapper {
   }
 #endif
   framework::LoDTensor *InnerLoDTensor() {
-    if (this->GetMemType() == MEM_CPU) {
+    if (this->GetMemType() == MEM_CPU  || (is_persistable_ && is_cpu_got)) {
+      mem_type = MEM_CPU;
       return this->GetCpu();
     }
 #ifdef PADDLE_MOBILE_CL
@@ -212,7 +215,7 @@ class TensorWrapper {
         const DDim &dims = input_climage->dims();
         output_lodtensor->ResizeSafe(dims);
       }
-
+      is_cpu_got = true;
       mem_type = MEM_CPU;
       DLOG << "----------success---  gpu ---> cpu----------------------";
 
@@ -239,6 +242,8 @@ class TensorWrapper {
 
   std::shared_ptr<LoDTensor> holder_cpu_;
   int mem_type = MEM_CPU;
+  bool is_gpu_got = false;
+  bool is_cpu_got = false;
 
   bool is_persistable_ = false;
 

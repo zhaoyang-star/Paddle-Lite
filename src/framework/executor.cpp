@@ -80,7 +80,11 @@ Executor<T>::Executor(const Program<T> &program,
 
     for (auto iter = config.running_expected_map_.begin();
          iter != config.running_expected_map_.end(); iter++) {
-      if (op_desc->Type().find(iter->first.c_str()) != -1) {
+
+      printf("当前的: %s   ------被查找的 %s \n ",op_desc->Type().c_str(),iter->first.c_str());
+
+      if (op_desc->Type().find(iter->first.c_str()) != string::npos) {
+        printf("命中!\n");
         op_handler->SetExpectedKernelRunningType(iter->second);
       }
     }
@@ -514,6 +518,7 @@ PMStatus Executor<T>::Predict() {
     if (lod_mode_) {
       op_handler->InferShape();
     }
+    printf("%s ==================\n",op_handler->Type().c_str());
     op_handler->Run();
 #ifdef PADDLE_MOBILE_PROFILE
     clock_gettime(CLOCK_MONOTONIC, &ts);

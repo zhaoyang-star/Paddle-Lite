@@ -20,6 +20,19 @@ int main() {
   PaddleMobileConfigInternal configInternalGpu = PaddleMobileConfigInternal();
   configInternalGpu.running_expected_map_.insert(
       std::make_pair("conv", TYPE_GPU));
+
+  configInternalGpu.running_expected_map_.insert(
+      std::make_pair("batch_norm", TYPE_GPU));
+
+  configInternalGpu.running_expected_map_.insert(
+      std::make_pair("sigmoid", TYPE_GPU));
+
+  configInternalGpu.running_expected_map_.insert(
+      std::make_pair("relu", TYPE_GPU));
+
+  configInternalGpu.running_expected_map_.insert(
+      std::make_pair("concat", TYPE_CPU));
+
   paddle_mobile::PaddleMobile<float> paddle_mobile(configInternalGpu);
   //    paddle_mobile.SetThreadNum(4);
   auto time1 = paddle_mobile::time();

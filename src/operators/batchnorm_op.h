@@ -43,7 +43,7 @@ class BatchNormOp
 };*/
 
 // DECLARE_OPERATOR_WITH_PARAMS(BatchNorm, BatchNormParam);
-DECLARE_OPERATOR(BatchNorm);
+DECLARE_OPERATOR_MIXED(BatchNorm);
 
 }  // namespace operators
 }  // namespace paddle_mobile

@@ -22,7 +22,7 @@ limitations under the License. */
 #include "operators/op_param.h"
 namespace paddle_mobile {
 namespace operators {
-DECLARE_OPERATOR(Concat);
+DECLARE_OPERATOR_MIXED(Concat);
 }  // namespace operators
 }  // namespace paddle_mobile
 

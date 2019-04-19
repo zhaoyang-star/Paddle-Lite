@@ -39,7 +39,7 @@ class DepthwiseConvOp : public framework::OperatorWithKernel<
 // typedef ConvKernelGpu<float> DepthwiseConvKernelGpu;
 // typedef ConvKernelCpu<float> DepthwiseConvKernelCpu;
 
-DECLARE_OPERATOR_WITH_PARAMS(DepthwiseConv, ConvParam, ConvKernel);
+DECLARE_OPERATOR_MIXED_WITH_PARAMS(DepthwiseConv, ConvParam, ConvKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

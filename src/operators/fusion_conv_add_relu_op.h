@@ -62,7 +62,7 @@ class FusionConvAddReluOp : public framework::OperatorWithKernel<
  protected:
 };*/
 
-DECLARE_OPERATOR_WITH_PARAMS(FusionConvAddRelu, FusionConvAddReluParam,
+DECLARE_OPERATOR_MIXED_WITH_PARAMS(FusionConvAddRelu, FusionConvAddReluParam,
                              ConvAddReluKernel);
 
 }  // namespace operators

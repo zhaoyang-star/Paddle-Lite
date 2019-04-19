@@ -78,7 +78,7 @@ class FusionConvBNAddReluOp
  protected:
 };
 */
-DECLARE_OPERATOR_WITH_PARAMS(FusionConvBNAddRelu, FusionConvBNAddReluParam,
+DECLARE_OPERATOR_MIXED_WITH_PARAMS(FusionConvBNAddRelu, FusionConvBNAddReluParam,
                              ConvBNAddReluKernel);
 }  // namespace operators
 }  // namespace paddle_mobile
