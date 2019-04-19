@@ -41,7 +41,6 @@ bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
   auto scale_ptr = scale->data<float>();
   auto bias_ptr = bias->data<float>();
 
-
   float inv_std_ptr[C];
   for (int i = 0; i < C; i++) {
     inv_std_ptr[i] =

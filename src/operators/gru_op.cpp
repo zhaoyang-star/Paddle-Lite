@@ -33,7 +33,7 @@ void GruOp<T>::InferShape() const {
   PADDLE_MOBILE_ENFORCE(
       (weight_dims[1] == frame_size * 3),
       "The shape of Weight matrix must be [frame_size, frame_size * 3].");
-  if (this->param_.InputH0()->InnerLoDTensor()) {
+  if (this->param_.InputH0() && this->param_.InputH0()->InnerLoDTensor()) {
     auto h0_dims = this->param_.InputH0()->InnerLoDTensor()->dims();
     PADDLE_MOBILE_ENFORCE((h0_dims[1] == frame_size),
                           "The width of H0 must be equal to frame_size.");

@@ -59,7 +59,8 @@ class FusionConvAddOp : public framework::OperatorWithKernel<
 
  protected:
 };*/
-DECLARE_OPERATOR_MIXED_WITH_PARAMS(FusionConvAdd, FusionConvAddParam, ConvAddKernel);
+DECLARE_OPERATOR_MIXED_WITH_PARAMS(FusionConvAdd, FusionConvAddParam,
+                                   ConvAddKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

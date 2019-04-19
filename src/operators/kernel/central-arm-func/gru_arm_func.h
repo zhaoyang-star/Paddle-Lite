@@ -37,7 +37,7 @@ inline void ReorderInitState(const framework::Tensor& src,
 template <typename T>
 void GruCompute(const GruParam& param) {
   auto* input = param.InputInput()->InnerLoDTensor();
-  auto* h0 = param.InputH0()->InnerLoDTensor();
+  auto* h0w = param.InputH0();
   auto* weight = param.InputWeight()->InnerLoDTensor();
   const auto* weight_data = weight->data<float>();
   auto* bias = param.InputBias()->InnerLoDTensor();
@@ -66,7 +66,8 @@ void GruCompute(const GruParam& param) {
       const_cast<float*>(weight_data + 2 * frame_size * frame_size);
   framework::Tensor ordered_h0;
   std::vector<size_t> order(batch_gate->lod()[2]);
-  if (h0) {
+  if (h0w) {
+    auto h0 = h0w->InnerLoDTensor();
     // Since the batch computing for GRU reorders the input sequences
     // according to their length. The initialized cell state also needs
     // to reorder.

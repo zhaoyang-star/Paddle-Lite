@@ -2,15 +2,15 @@ cmake_minimum_required(VERSION 3.0.0)
 
 option(USE_OPENMP    "build with openmp support" OFF)
 option(USE_EXCEPTION "build with exception" ON)
-option(WITH_LOGGING  "print logging for debug" ON)
+option(WITH_LOGGING  "print logging for debug" OFF)
 option(WITH_SYMBOL   "build with all symbols" ON) # turn off if use jni or ios io
-option(WITH_PROFILE  "print op profile for debug" ON)
+option(WITH_PROFILE  "print op profile for debug" OFF)
 option(WITH_TEST     "build with unit tests" ON)
 
 # select the platform to build
 option(CPU        "build with arm CPU support" ON)
-option(GPU_CL     "build with OpenCL support" OFF)
-option(FPGA       "build with FPGA support" ON)
+option(GPU_CL     "build with OpenCL support" ON)
+option(FPGA       "build with FPGA support" OFF)
 if(FPGA)
   option(FPGAV1     "build with fpga v1 support" ON)
   option(FPGAV2     "build with fpga v2 support" OFF)

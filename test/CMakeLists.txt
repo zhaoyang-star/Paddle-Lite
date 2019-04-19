@@ -471,4 +471,7 @@ if (NOT FOUND_MATCH)
 
     ADD_EXECUTABLE(test-dwconv-bn-relu-op operators/test_dwconv_bn_relu_op.cpp test_helper.h test_include.h)
     target_link_libraries(test-dwconv-bn-relu-op paddle-mobile)
+
+    ADD_EXECUTABLE(test_ocr_detect net/test_ocr_detect.cpp test_helper.h test_include.h)
+    target_link_libraries(test_ocr_detect paddle-mobile)
 endif ()

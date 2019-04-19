@@ -80,7 +80,6 @@ Executor<T>::Executor(const Program<T> &program,
 
     for (auto iter = config.running_expected_map_.begin();
          iter != config.running_expected_map_.end(); iter++) {
-      DLOG << iter->first << "  want to to run in type " << iter->second;
       if (op_desc->Type().find(iter->first.c_str()) != -1) {
         op_handler->SetExpectedKernelRunningType(iter->second);
       }

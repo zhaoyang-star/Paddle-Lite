@@ -25,8 +25,8 @@ limitations under the License. */
 #ifdef PADDLE_MOBILE_CL
 #include "cl/cl_image.h"
 #include "framework/cl/cl_helper.h"
-#include "framework/cl/cl_tensor.h"
 #include "framework/cl/cl_runtime_helper.h"
+#include "framework/cl/cl_tensor.h"
 #endif
 
 #include "common/enforce.h"

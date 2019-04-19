@@ -21,8 +21,8 @@ limitations under the License. */
 void t1() {
   PaddleMobileConfigInternal configInternalCpu;
   PaddleMobileConfigInternal configInternalGpu;
-  configInternalGpu.running_expected_map_
-  .insert(std::make_pair("conv",TYPE_GPU));
+  configInternalGpu.running_expected_map_.insert(
+      std::make_pair("conv", TYPE_GPU));
 
   paddle_mobile::PaddleMobile<float> paddle_mobile_gpu(configInternalGpu);
   paddle_mobile::PaddleMobile<float> paddle_mobile_cpu(configInternalCpu);
