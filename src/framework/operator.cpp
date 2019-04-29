@@ -49,9 +49,6 @@ OperatorBase::OperatorBase(const std::string &type,
 {
   // DLOG << "construtor of OperatorBase !";
   CheckAllInputOutputSet();
-#ifdef PADDLE_MOBILE_FPGA
-  InsertTensors();
-#endif
 }
 
 void OperatorBase::CheckAllInputOutputSet() const {}
@@ -73,6 +70,9 @@ void OperatorBase::Run() {
             const_cast<TensorWrapper *>(var->template Get<TensorWrapper>());
         auto *tensor = tensor_w->InnerLoDTensor();
         if (tensor) DLOG << type_ << " input- " << key << "=" << *tensor;
+#ifdef PADDLE_MOBILE_FPGA
+        DLOG << var_vec_in[i];
+#endif
       }
     }
   }
@@ -86,10 +86,12 @@ void OperatorBase::Run() {
             const_cast<TensorWrapper *>(var->template Get<TensorWrapper>());
         auto *tensor = tensor_w->InnerLoDTensor();
         if (tensor) DLOG << type_ << " output- " << key << "=" << *tensor;
+#ifdef PADDLE_MOBILE_FPGA
+        DLOG << var_vec_out[i];
+#endif
       }
     }
   }
-
 #endif
 }
 

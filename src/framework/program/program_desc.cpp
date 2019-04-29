@@ -46,7 +46,7 @@ ProgramDesc::ProgramDesc(PaddleMobile__Framework__Proto__ProgramDesc *desc) {
   }
 }
 
-void ProgramDesc::Description(std::string header) {
+void ProgramDesc::Description(std::string header) const {
 #ifdef PADDLE_MOBILE_DEBUG
   if (header.size()) {
     LOG(kLOG_INFO) << header;
@@ -72,7 +72,7 @@ void ProgramDesc::Description(std::string header) {
         }
       }
       for (auto &attr : op->GetAttrMap()) {
-        if (attr.first == "op_callstack") continue;
+        if (attr.first == "op_callstack" || attr.first == "sub_block") continue;
         LOG(kLOG_DEBUG2) << "attr name: " << attr.first;
         LOG(kLOG_DEBUG3) << "argument - " << attr.second;
       }

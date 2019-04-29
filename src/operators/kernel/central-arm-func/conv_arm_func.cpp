@@ -19,6 +19,7 @@ limitations under the License. */
 #include "operators/math/im2col.h"
 #include "operators/math/math_function.h"
 #include "operators/math/pad.h"
+#include "operators/math/slidingwindow_conv3x3.h"
 #include "operators/math/vol2col.h"
 #include "operators/math/winograd/winograd_transform.h"
 #include "operators/op_param.h"
@@ -47,6 +48,7 @@ bool IsExpand(const std::vector<int64_t> &filter_dim,
   return !(filter_1 && strides_1 && padding_0 && dilation_1);
 }
 
+#ifdef PADDLE_MOBILE_CPU
 template <typename Itype, typename Otype>
 void GemmConv(const ConvParam &param) {
   const Tensor *input = param.Input()->InnerLoDTensor();
@@ -231,15 +233,35 @@ void DepthwiseConv5x5(const ConvParam &param) {
   }
 }
 
+template <typename Itype, typename Otype>
+void SlidingwindowConv3x3(const ConvParam &param) {
+  const Tensor *input = param.Input()->InnerLoDTensor();
+  const Tensor *filter = param.Filter()->InnerLoDTensor();
+  const std::vector<int> &paddings = param.Paddings();
+  const std::vector<int> &strides = param.Strides();
+  Tensor *output = param.Output()->InnerLoDTensor();
+  output->mutable_data<Otype>();
+
+  if (strides[0] == 1) {
+    math::SlidingwindowConv3x3s1<Itype, Otype>(input, filter, paddings, output);
+  } else if (strides[0] == 2) {
+    math::SlidingwindowConv3x3s2<Itype, Otype>(input, filter, paddings, output);
+  } else {
+    GemmConv<Itype, Otype>(param);
+  }
+}
+
 template void GemmConv<float, float>(const ConvParam &param);
 template void WinogradConv3x3<8, 3>(const ConvParam &param);
 template void DepthwiseConv3x3<float, float>(const ConvParam &param);
 template void DepthwiseConv5x5<float, float>(const ConvParam &param);
+template void SlidingwindowConv3x3<float, float>(const ConvParam &param);
 
 #ifndef __aarch64__
 template void GemmConv<int8_t, int32_t>(const ConvParam &param);
 template void DepthwiseConv3x3<int8_t, int32_t>(const ConvParam &param);
 template void DepthwiseConv5x5<int8_t, int32_t>(const ConvParam &param);
+#endif
 #endif
 
 }  // namespace operators

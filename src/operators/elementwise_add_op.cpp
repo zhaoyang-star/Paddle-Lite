@@ -31,5 +31,5 @@ void ElementwiseAddOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(elementwise_add, ops::ElementwiseAddOp);
-
+// fixme #if defined(PADDLE_MOBILE_FPGA) || defined(PADDLE_MOBILE_FPGA_KD)
 #endif

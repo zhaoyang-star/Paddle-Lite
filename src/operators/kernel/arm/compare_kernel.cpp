@@ -79,7 +79,7 @@ struct CompareCompute<float, Comp> {
     if (elementwise_num == 1) {
       int remain_start = 0;
 #if defined(__ARM_NEON__) || defined(__ARM_NEON)
-      remain_start = channels & 0xfff8;
+      remain_start = channels & 0xfffffff8;
       uint8x8_t __mask = vdup_n_u8(0x1);
       for (int i = 0; i < batch; ++i) {
         for (int j = 0; j < channels - 7; j += 8) {
@@ -112,7 +112,7 @@ struct CompareCompute<float, Comp> {
           int y_offset = j * elementwise_num;
           int remain_start = 0;
 #if defined(__ARM_NEON__) || defined(__ARM_NEON)
-          remain_start = elementwise_num & 0xfff8;
+          remain_start = elementwise_num & 0xfffffff8;
           uint8x8_t __mask = vdup_n_u8(0x1);
           for (int k = 0; k < elementwise_num - 7; k += 8) {
             float32x4_t __x0 = vld1q_f32(x + x_offset);
@@ -192,14 +192,12 @@ bool LessThanKernelCpu<float>::Init(CompareParam *param) {
 
 template <>
 void LessThanKernelCpu<float>::Compute(const CompareParam &param) {
-  if (param.input_x_->InnerLoDTensor()->type() == typeid(int64_t)) {
-    CompareCompute<int64_t, LESS_THAN>()(
-        param.input_x_->InnerLoDTensor(), param.input_y_->InnerLoDTensor(),
-        param.axis_, param.output_->InnerLoDTensor());
-  } else if (param.input_x_->InnerLoDTensor()->type() == typeid(float)) {
-    CompareCompute<float, LESS_THAN>()(
-        param.input_x_->InnerLoDTensor(), param.input_y_->InnerLoDTensor(),
-        param.axis_, param.output_->InnerLoDTensor());
+  if (param.input_x_->InnerLoDTensor()->type() == type_id<int64_t>().hash_code()) {
+    CompareCompute<int64_t, LESS_THAN>()(param.input_x_->InnerLoDTensor(), param.input_y_->InnerLoDTensor(),
+                                         param.axis_, param.output_->InnerLoDTensor());
+  } else if (param.input_x_->InnerLoDTensor()->type() == type_id<float>().hash_code()) {
+    CompareCompute<float, LESS_THAN>()(param.input_x_->InnerLoDTensor(), param.input_y_->InnerLoDTensor(),
+                                       param.axis_, param.output_->InnerLoDTensor());
   } else {
     PADDLE_MOBILE_THROW_EXCEPTION(
         "LessThan only support int64_t and float data type.");

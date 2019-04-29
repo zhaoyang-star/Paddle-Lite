@@ -16,9 +16,10 @@ limitations under the License. */
 
 #include "operators/kernel/dwconv_bn_relu_kernel.h"
 #include <cmath>
+#include <framework/tensor_wrapper.h>
 #include "operators/kernel/arm/convolution/conv_common.h"
 #include "operators/kernel/central-arm-func/conv_arm_func.h"
-#include "operators/math/channel_wise.h"
+#include "operators/math/element_wise.h"
 
 namespace paddle_mobile {
 namespace operators {
@@ -42,16 +43,15 @@ bool DWConvBNReluKernelCpu<float>::Init(FusionDWConvBNReluParam *param) {
     inv_std_ptr[i] =
         1 / static_cast<float>(pow((variance_ptr[i] + epsilon), 0.5));
   }
-  //  LoDTensor *new_scale = new LoDTensor();
-  //  LoDTensor *new_bias = new LoDTensor();
+  Variable *scale_var = param->GetScope()->Var();
+  Variable *bias_var = param->GetScope()->Var();
+  framework::TensorWrapper *new_scale_w = scale_var->GetMutable<framework::TensorWrapper>();
+  framework::TensorWrapper *new_bias_w = bias_var->GetMutable<framework::TensorWrapper>();
+  Tensor *new_scale = new_scale_w->InnerLoDTensor();
+  Tensor *new_bias = new_bias_w->InnerLoDTensor();
 
-  auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
-  auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
-  LoDTensor *new_scale = new_scale_w->MuteLodTensor();
-  LoDTensor *new_bias = new_bias_w->MuteLodTensor();
-
-  auto new_scale_ptr = new_scale->mutable_data<float>({C});
-  auto new_bias_ptr = new_bias->mutable_data<float>({C});
+  float *new_scale_ptr = new_scale->mutable_data<float>({C});
+  float *new_bias_ptr = new_bias->mutable_data<float>({C});
   for (int i = 0; i < C; i++) {
     new_scale_ptr[i] = inv_std_ptr[i] * scale_ptr[i];
     new_bias_ptr[i] = bias_ptr[i] - mean_ptr[i] * inv_std_ptr[i] * scale_ptr[i];
@@ -64,7 +64,7 @@ bool DWConvBNReluKernelCpu<float>::Init(FusionDWConvBNReluParam *param) {
 }
 
 template <>
-void DWConvBNReluKernelCpu<float>::Compute(
+void DWConvBNReluKernelCpu< float>::Compute(
     const FusionDWConvBNReluParam &param) {
   switch (param.ExecMode()) {
     case ConvParam::EXEC_DEPTHWISE3x3S1_FLOAT:
@@ -84,9 +84,8 @@ void DWConvBNReluKernelCpu<float>::Compute(
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",
                                     param.ExecMode());
   }
-  math::ScaleAddChannelWise<RELU>(
-      param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
-      param.NewBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
+  math::ScaleAddChannelWise<RELU>(param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
+                                  param.NewBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
 }
 
 template class DWConvBNReluKernelCpu<float>;

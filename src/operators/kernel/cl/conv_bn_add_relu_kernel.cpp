@@ -16,16 +16,18 @@ limitations under the License. */
 
 #include "operators/kernel/conv_bn_add_relu_kernel.h"
 #include <cmath>
+#include "operators/kernel/cl/cl-kernel-func/conv_func.h"
 
 namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ConvBNAddReluKernelGpu<float>::Init(FusionConvBNAddReluParam *param) {
-  PADDLE_MOBILE_ENFORCE(param->Filter()->InnerCLImage()->dims()[2] ==
-                                param->Filter()->InnerCLImage()->dims()[3] &&
-                            param->Paddings()[0] == param->Paddings()[1],
-                        "need equal");
+bool ConvBNAddReluKernelGpu< float>::Init(
+    FusionConvBNAddReluParam *param) {
+  PADDLE_MOBILE_ENFORCE(
+      param->Filter()->InnerCLImage()->dims()[2] == param->Filter()->InnerCLImage()->dims()[3] &&
+          param->Paddings()[0] == param->Paddings()[1],
+      "need equal");
 
   const framework::CLImage *mean = param->InputMean()->InnerCLImage();
   const framework::CLImage *variance = param->InputVariance()->InnerCLImage();
@@ -54,10 +56,8 @@ bool ConvBNAddReluKernelGpu<float>::Init(FusionConvBNAddReluParam *param) {
     new_bias_ptr[i] = bias_ptr[i] - mean_ptr[i] * inv_std_ptr[i] * scale_ptr[i];
   }
 
-  auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
-  auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
-  auto *new_scale = new_scale_w->MuteClImage();
-  auto *new_bias = new_bias_w->MuteClImage();
+  framework::CLImage *new_scale = new framework::CLImage();
+
   //  for (int j = 0; j < C; ++j) {
   //    DLOG << " new scale - " << j << new_scale_ptr[j];
   //  }
@@ -70,11 +70,11 @@ bool ConvBNAddReluKernelGpu<float>::Init(FusionConvBNAddReluParam *param) {
   new_scale->InitCLImage(this->cl_helper_.CLContext(),
                          cl_helper_.CLCommandQueue());
 
-  //  DLOG << " climage - y bias: " << *(param->Bias()->InnerCLImage());
+  //  DLOG << " climage - y bias: " << *(param->Bias());
   //
   //  DLOG << " climage - new scale: " << *new_scale;
 
-  //  framework::CLImage *new_bias = new framework::CLImage();
+  framework::CLImage *new_bias = new framework::CLImage();
 
   new_bias->SetTensorData(new_bias_ptr, variance->dims());
   new_bias->InitCLImage(this->cl_helper_.CLContext(),
@@ -82,37 +82,35 @@ bool ConvBNAddReluKernelGpu<float>::Init(FusionConvBNAddReluParam *param) {
 
   //  DLOG << " climage - new bias: " << *new_bias;
   //
-  //  DLOG << " climage - filter: " << *(param->Filter()->InnerCLImage());
+  //  DLOG << " climage - filter: " << *(param->Filter());
 
-  param->SetNewScale(new_scale_w);
-  param->SetNewBias(new_bias_w);
+  param->SetNewScale(new_scale);
+  param->SetNewBias(new_bias);
 
   delete[](new_scale_ptr);
   delete[](new_bias_ptr);
 
-  PADDLE_MOBILE_ENFORCE(param->Filter()->InnerCLImage()->dims()[2] ==
-                                param->Filter()->InnerCLImage()->dims()[3] &&
-                            param->Paddings()[0] == param->Paddings()[1],
-                        "need equal");
+  PADDLE_MOBILE_ENFORCE(
+      param->Filter()->InnerCLImage()->dims()[2] == param->Filter()->InnerCLImage()->dims()[3] &&
+          param->Paddings()[0] == param->Paddings()[1],
+      "need equal");
 
-  int offset =
-      static_cast<int>(param->Filter()->InnerCLImage()->dims()[2]) / 2 -
-      static_cast<int>(param->Paddings()[1]);
+  int offset = static_cast<int>(param->Filter()->InnerCLImage()->dims()[2]) / 2 -
+               static_cast<int>(param->Paddings()[1]);
 
   param->SetOffset(offset);
 
-  if (param->Filter()->InnerCLImage()->dims()[2] == 1 &&
-      param->Filter()->InnerCLImage()->dims()[3] == 1) {
+  if (param->Filter()->InnerCLImage()->dims()[2] == 1 && param->Filter()->InnerCLImage()->dims()[3] == 1) {
     param->Filter()->InnerCLImage()->InitNImage(cl_helper_.CLContext(),
-                                                cl_helper_.CLCommandQueue());
-    this->cl_helper_.AddKernel("convBNAdd_1x1", "conv_bn_add_relu_kernel.cl");
+                                cl_helper_.CLCommandQueue());
+    this->cl_helper_.AddKernel("convBNAdd_1x1_spl",
+                               "conv_bn_add_relu_kernel.cl");
     DLOG << " conv bn add relu conv 1x1";
   } else if (param->Filter()->InnerCLImage()->dims()[1] == 1 &&
-             param->Input()->InnerCLImage()->dims()[1] ==
-                 param->Output()->InnerCLImage()->dims()[1] &&
+             param->Input()->InnerCLImage()->dims()[1] == param->Output()->InnerCLImage()->dims()[1] &&
              param->Filter()->InnerCLImage()->dims()[2] == 3) {
     param->Filter()->InnerCLImage()->InitDWImage(cl_helper_.CLContext(),
-                                                 cl_helper_.CLCommandQueue());
+                                 cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("depth_convBNAdd_3x3",
                                "conv_bn_add_relu_kernel.cl");
     DLOG << " conv bn add relu depth_conv_3x3";
@@ -120,7 +118,7 @@ bool ConvBNAddReluKernelGpu<float>::Init(FusionConvBNAddReluParam *param) {
   } else if (param->Filter()->InnerCLImage()->dims()[2] == 3 &&
              param->Filter()->InnerCLImage()->dims()[3] == 3) {
     param->Filter()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
-                                                 cl_helper_.CLCommandQueue());
+                                 cl_helper_.CLCommandQueue());
 
     this->cl_helper_.AddKernel("convBNAdd_3x3", "conv_bn_add_relu_kernel.cl");
     DLOG << " conv bn add relu conv_3x3";
@@ -132,106 +130,12 @@ bool ConvBNAddReluKernelGpu<float>::Init(FusionConvBNAddReluParam *param) {
 }
 
 template <>
-void ConvBNAddReluKernelGpu<float>::Compute(
+void ConvBNAddReluKernelGpu< float>::Compute(
     const FusionConvBNAddReluParam &param) {
-  auto kernel = this->cl_helper_.KernelAt(0);
-  auto default_work_size =
-      this->cl_helper_.DefaultWorkSize(*param.Output()->InnerCLImage());
-  int c_block = default_work_size[0];
-  int w = default_work_size[1];
-  int nh = default_work_size[2];
-  auto input = param.Input()->InnerCLImage()->GetCLImage();
-  auto filter = param.Filter()->InnerCLImage()->GetCLImage();
-  auto biase = param.Bias()->InnerCLImage()->GetCLImage();
-  auto new_scale = param.NewScale()->InnerCLImage()->GetCLImage();
-  auto new_bias = param.NewBias()->InnerCLImage()->GetCLImage();
-  auto output = param.Output()->InnerCLImage()->GetCLImage();
-  int stride = param.Strides()[0];
-  int offset = param.Offset();
-  int input_c = reinterpret_cast<framework::CLImageConverterFolder *>(
-                    param.Input()->InnerCLImage()->Converter())
-                    ->GetCBlock();
-  int dilation = param.Dilations()[0];
-  int input_width = param.Input()->InnerCLImage()->dims()[3];
-  int input_height = param.Input()->InnerCLImage()->dims()[2];
-  int output_width = param.Output()->InnerCLImage()->dims()[3];
-  int output_height = param.Output()->InnerCLImage()->dims()[2];
-
-  //              DLOG << " c block " << c_block;
-  //              DLOG << " w " << w;
-  //              DLOG << " nh " << nh;
-  //              DLOG << " stride " << stride;
-  //              DLOG << " offset " << offset;
-  //              DLOG << " input_c " << input_c;
-  //              DLOG << " dilation " << dilation;
-  //              DLOG << " input width " << input_width;
-  //              DLOG << " input height " << input_height;
-  //              DLOG << " output width " << output_width;
-  //              DLOG << " output height " << output_height;
-  //              DLOG << " input dim " << *param.Input()->InnerCLImage();
-  //              DLOG << " output dim " <<* param.Output()->InnerCLImage();
-  //              DLOG << " filter dim " << *param.Filter()->InnerCLImage();
-  //              DLOG<<*param.Bias()->InnerCLImage();
-
-  cl_int status;
-
-  status = clSetKernelArg(kernel, 0, sizeof(int), &c_block);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 1, sizeof(int), &w);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 2, sizeof(int), &nh);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 3, sizeof(cl_mem), &input);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 4, sizeof(cl_mem), &filter);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 5, sizeof(cl_mem), &biase);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 6, sizeof(cl_mem), &new_scale);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 7, sizeof(cl_mem), &new_bias);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 8, sizeof(cl_mem), &output);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 9, sizeof(int), &stride);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 10, sizeof(int), &offset);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 11, sizeof(int), &input_c);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 12, sizeof(int), &dilation);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 13, sizeof(int), &input_width);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 14, sizeof(int), &input_height);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 15, sizeof(int), &output_width);
-  CL_CHECK_ERRORS(status);
-
-  status = clSetKernelArg(kernel, 16, sizeof(int), &output_height);
-  CL_CHECK_ERRORS(status);
-
-  status = clEnqueueNDRangeKernel(
-      this->cl_helper_.CLCommandQueue(), kernel, default_work_size.size(), NULL,
-      default_work_size.data(), NULL, 0, NULL, NULL);
-  CL_CHECK_ERRORS(status);
+  ConvAddBnRelu(this->cl_helper_, param, true, param.Bias(), param.NewScale()->InnerCLImage(),
+                param.NewBias()->InnerCLImage());
 }
-template class ConvBNAddReluKernelGpu<float>;
+template class ConvBNAddReluKernelGpu< float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

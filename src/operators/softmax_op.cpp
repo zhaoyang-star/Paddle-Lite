@@ -30,5 +30,5 @@ void SoftmaxOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(softmax, ops::SoftmaxOp);
-
+// fixme use #if defined(PADDLE_MOBILE_FPGA) || defined(PADDLE_MOBILE_FPGA_KD) to control fpga
 #endif

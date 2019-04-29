@@ -22,9 +22,6 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-#define GET_VAR_AS_LOD_TENSOR(name, name_dict, scope) \
-  OpParam::GetVarValue<framework::TensorWrapper>(name, name_dict, scope)
-
 class OnehotParam : public OpParam {
  public:
   OnehotParam(const VariableNameMap &inputs, const VariableNameMap &outputs,

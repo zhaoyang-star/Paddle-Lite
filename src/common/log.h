@@ -36,16 +36,20 @@ static const char *ANDROID_LOG_TAG =
 
 #define ANDROIDLOGI(...)                                               \
   __android_log_print(ANDROID_LOG_INFO, ANDROID_LOG_TAG, __VA_ARGS__); \
-  printf(__VA_ARGS__)
+  fprintf(stderr, "%s\n", __VA_ARGS__);                                \
+  fflush(stderr)
 #define ANDROIDLOGW(...)                                                  \
   __android_log_print(ANDROID_LOG_WARNING, ANDROID_LOG_TAG, __VA_ARGS__); \
-  printf(__VA_ARGS__)
+  fprintf(stderr, "%s\n", __VA_ARGS__);                                   \
+  fflush(stderr)
 #define ANDROIDLOGD(...)                                                \
   __android_log_print(ANDROID_LOG_DEBUG, ANDROID_LOG_TAG, __VA_ARGS__); \
-  printf(__VA_ARGS__)
+  fprintf(stderr, "%s\n", __VA_ARGS__);                                 \
+  fflush(stderr)
 #define ANDROIDLOGE(...)                                                \
   __android_log_print(ANDROID_LOG_ERROR, ANDROID_LOG_TAG, __VA_ARGS__); \
-  printf(__VA_ARGS__)
+  fprintf(stderr, "%s\n", __VA_ARGS__);                                 \
+  fflush(stderr)
 #else
 #define ANDROIDLOGI(...)
 #define ANDROIDLOGW(...)
@@ -88,9 +92,17 @@ struct Print {
   void print(LogLevel level) {
     // buffer_ << std::endl;
     if (level == kLOG_ERROR) {
+#ifdef ANDROID
+      ANDROIDLOGE(buffer_.str().c_str());
+#else
       std::cerr << buffer_.str() << std::endl;
+#endif
     } else {
+#ifdef ANDROID
+      ANDROIDLOGI(buffer_.str().c_str());
+#else
       std::cout << buffer_.str() << std::endl;
+#endif
     }
   }
   std::ostringstream buffer_;

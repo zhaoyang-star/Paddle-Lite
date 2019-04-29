@@ -31,19 +31,12 @@ void FlattenOp<T>::InferShape() const {
                         "The axis should be greater than or equal to 0.");
 
   auto &in_dims = this->param_.InputX()->InnerLoDTensor()->dims();
-  //  const auto &in_dims = ctx->GetInputDim("X");
   PADDLE_MOBILE_ENFORCE(
       axis <= in_dims.size(),
       "The axis should be less than or equal to input tensor's rank.");
 
   const auto &out_dims = GetOutputShape(axis, in_dims);
   this->param_.Out()->InnerLoDTensor()->Resize(in_dims);
-  // todo supprot lodtensor
-  //  if (in_dims[0] == out_dims[0]) {
-  //    // Only pass LoD when the first dimension of output and Input(X)
-  //    // are the same.
-  //    ctx->ShareLoD("X", "Out");
-  //  }
 }
 
 }  // namespace operators
@@ -51,5 +44,6 @@ void FlattenOp<T>::InferShape() const {
 
 namespace ops = paddle_mobile::operators;
 REGISTER_OPERATOR(flatten, ops::FlattenOp);
+REGISTER_OPERATOR(flatten2, ops::Flatten2Op);
 
-#endif
+#endif  // FLATTEN_OP

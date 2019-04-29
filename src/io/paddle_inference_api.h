@@ -24,16 +24,22 @@ limitations under the License. */
 #include <cassert>
 #include <memory>
 #include <string>
-#include <typeindex>
 #include <vector>
+#include "common/type_define.h"
 
 namespace paddle_mobile {
 
 #ifdef PADDLE_MOBILE_FPGA
+
 namespace fpga {
 int open_device();
 void* fpga_malloc(size_t size);
 void fpga_free(void* ptr);
+
+//  Usage:
+//  auto version = fpga::paddle_mobile_version();
+//  std::cout << "0X0" << std::hex << version << std::endl;
+uint32_t paddle_mobile_version();
 }  // namespace fpga
 #endif
 
@@ -86,7 +92,7 @@ struct PaddleTensor {
   // TODO(Superjomn) for LoD support, add a vector<vector<int>> field if needed.
   PaddleBuf data;  // blob of data.
   PaddleDType dtype;
-  std::type_index dtypeid = typeid(float);
+  kTypeId_t dtypeid;
   LayoutType layout;
 };
 

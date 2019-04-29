@@ -239,6 +239,11 @@ template <typename T>
 void PaddleMobile<T>::FeedData(const std::vector<void *> &v) {
   executor_->FeedData(v);
 }
+template <typename Device, typename T>
+void PaddleMobile<Device, T>::FeedTensorData(
+    const std::vector<framework::Tensor> &v) {
+  executor_->FeedTensorData(v);
+}
 
 template <typename T>
 void PaddleMobile<T>::GetResults(std::vector<void *> *v) {

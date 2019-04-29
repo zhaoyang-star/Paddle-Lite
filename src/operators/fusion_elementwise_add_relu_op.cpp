@@ -34,5 +34,6 @@ REGISTER_FUSION_MATCHER(fusion_elementwise_add_relu,
 
 // REGISTER_OPERATOR(fusion_elementwise_add_relu,
 //                      ops::FusionElementwiseAddReluOp);
-
+REGISTER_OPERATOR(fusion_elementwise_add_relu, ops::FusionElementwiseAddReluOp);
+// fixme use #if defined(PADDLE_MOBILE_FPGA) || defined(PADDLE_MOBILE_FPGA_KD)
 #endif

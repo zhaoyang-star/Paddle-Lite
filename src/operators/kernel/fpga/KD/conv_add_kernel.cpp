@@ -12,23 +12,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-#ifdef FUSION_DECONVRELU_OP
+#ifdef FUSION_CONVADD_OP
 
-#include "operators/kernel/deconv_relu_kernel.h"
-#include "framework/operator.h"
-#include "operators/op_param.h"
+#include "operators/kernel/conv_add_kernel.h"
 
 namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool DeconvReluKernel<FPGA, float>::Init(FusionDeconvReluParam<FPGA> *param) {
+bool ConvAddKernel<FPGA, float>::Init(FusionConvAddParam<FPGA> *param) {
   return true;
 }
 
 template <>
-void DeconvReluKernel<FPGA, float>::Compute(
-    const FusionDeconvReluParam<FPGA> &param) {}
+void ConvAddKernel<FPGA, float>::Compute(
+    const FusionConvAddParam<FPGA> &param) {}
 
 }  // namespace operators
 }  // namespace paddle_mobile

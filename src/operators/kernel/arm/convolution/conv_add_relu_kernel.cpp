@@ -17,7 +17,7 @@ limitations under the License. */
 #include "operators/kernel/conv_add_relu_kernel.h"
 #include "operators/kernel/arm/convolution/conv_common.h"
 #include "operators/kernel/central-arm-func/conv_arm_func.h"
-#include "operators/math/channel_wise.h"
+#include "operators/math/element_wise.h"
 
 namespace paddle_mobile {
 namespace operators {
@@ -43,6 +43,10 @@ void ConvAddReluKernelCpu<float>::Compute(const FusionConvAddReluParam &param) {
       break;
     case ConvParam::EXEC_GEMM_FLOAT:
       GemmConv<float, float>(param);
+      break;
+    case ConvParam<CPU>::EXEC_SLIDINGWINDOW3x3S1_FLOAT:
+    case ConvParam<CPU>::EXEC_SLIDINGWINDOW3x3S2_FLOAT:
+      SlidingwindowConv3x3<float, float>(param);
       break;
     default:
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",

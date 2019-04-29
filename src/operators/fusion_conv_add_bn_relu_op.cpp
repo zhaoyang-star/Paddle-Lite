@@ -53,5 +53,5 @@ REGISTER_FUSION_MATCHER(fusion_conv_add_bn_relu,
                         ops::FusionConvAddBNReluMatcher);
 
 REGISTER_OPERATOR(fusion_conv_add_bn_relu, ops::FusionConvAddBNReluOp);
-
+// fixme #if defined(PADDLE_MOBILE_FPGA) || defined(PADDLE_MOBILE_FPGA_KD)
 #endif

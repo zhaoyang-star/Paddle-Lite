@@ -25,6 +25,7 @@ limitations under the License. */
 
 namespace paddle_mobile {
 namespace operators {
+
 inline std::vector<int32_t> GetOutputShape(const int axis,
                                            const framework::DDim &in_dims) {
   int64_t outer = 1, inner = 1;
@@ -57,6 +58,7 @@ class FlattenOp : public framework::OperatorWithKernel<
 };*/
 
 DECLARE_OPERATOR(Flatten);
+DECLARE_OPERATOR_WITH_PARAMS(Flatten2,FlattenParam,FlattenKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

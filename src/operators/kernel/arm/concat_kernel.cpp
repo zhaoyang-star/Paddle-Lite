@@ -27,13 +27,12 @@ bool ConcatKernelCpu<float>::Init(ConcatParam *param) {
 
 template <>
 void ConcatKernelCpu<float>::Compute(const ConcatParam &param) {
-  if (param.Inputs()[0]->InnerLoDTensor()->type() == typeid(int8_t)) {
+  if (param.Inputs()[0]->InnerLoDTensor()->type() == type_id<int8_t>().hash_code()) {
     ConcatCompute<int8_t>(param);
   } else {
     ConcatCompute<float>(param);
   }
-  param.Out()->InnerLoDTensor()->set_lod(
-      param.Inputs()[0]->InnerLoDTensor()->lod());
+  param.Out()->InnerLoDTensor()->set_lod(param.Inputs()[0]->InnerLoDTensor()->lod());
 }
 
 }  // namespace operators

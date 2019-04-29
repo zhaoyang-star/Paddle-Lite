@@ -19,6 +19,7 @@ limitations under the License. */
 #include "common/log.h"
 #include "common/type_define.h"
 #include "common/types.h"
+#include "framework/attribute.h"
 #include "framework/lod_tensor.h"
 #include "framework/scope.h"
 #include "framework/tensor.h"
@@ -31,6 +32,10 @@ limitations under the License. */
 
 #ifdef PADDLE_MOBILE_FPGA_V2
 #include "fpga/V2/api.h"
+#endif
+
+#ifdef PADDLE_MOBILE_FPGA_KD
+#include "fpga/KD/context.hpp"
 #endif
 
 #ifdef PADDLE_MOBILE_CL
@@ -86,27 +91,17 @@ struct DtypeTensorTrait<GPU_CL> {
 class OpParam {
  public:
   OpParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
-          const AttributeMap &attrs, Scope *scope) {
-    scope_pointer_ = scope;
-    inputs_ = inputs;
-  }
+          const AttributeMap &attrs, Scope *scope)
+      : scope_(scope) {}
 
-  template <typename T>
-  T *CreateNewScale() {
-    std::string scale_key = Getkey("Scale", inputs_, 0);
-    auto var = scope_pointer_->Var(scale_key + "_new");
-    return var->GetMutable<T>();
-  }
+  Scope *GetScope() const { return scope_; }
+  Scope *scope_ = nullptr;
 
-  template <typename T>
-  T *CreateNewBiase() {
-    std::string biase_key = Getkey("Bias", inputs_, 0);
-    auto var = scope_pointer_->Var(biase_key + "_new");
-    return var->GetMutable<T>();
-  }
+#ifdef PADDLE_MOBILE_FPGA_KD
+  zynqmp::Context &context() { return context_; }
 
-  VariableNameMap inputs_;
-  Scope *scope_pointer_ = nullptr;
+  zynqmp::Context context_;
+#endif
 
  protected:
   template <typename T>
@@ -448,37 +443,11 @@ class OpParam {
   }
 };
 
-/*template <>
-LoDTensor *OpParam::GetVarValue(const string &key,
-                                const VariableNameMap &var_map,
-                                const Scope &scope) {
-  PADDLE_MOBILE_ENFORCE(var_map.count(key) > 0,
-                        "%s is not contained in var_map", key.c_str())
-  auto var_vec = var_map.at(key);
-  if (!var_vec.empty()) {
-    auto var = scope.FindVar(var_vec[0]);
-    return var->GetMutable<framework::TensorWrapper>()->InnerLoDTensor();
-  } else {
-    return nullptr;
-  }
-}
-#ifdef PADDLE_MOBILE_CL
+#define GET_VAR_AS_TENSOR(name, name_dict, scope) \
+  OpParam::GetVarValue<framework::Tensor>(name, name_dict, scope)
 
-template <>
-framework::CLImage *OpParam::GetVarValue(const string &key,
-                                         const VariableNameMap &var_map,
-                                         const Scope &scope) {
-  PADDLE_MOBILE_ENFORCE(var_map.count(key) > 0,
-                        "%s is not contained in var_map", key.c_str())
-  auto var_vec = var_map.at(key);
-  if (!var_vec.empty()) {
-    auto var = scope.FindVar(var_vec[0]);
-    return var->GetMutable<framework::TensorWrapper>()->InnerCLImage();
-  } else {
-    return nullptr;
-  }
-}
-#endif*/
+#define GET_VAR_AS_LOD_TENSOR(name, name_dict, scope) \
+  OpParam::GetVarValue<framework::LoDTensor>(name, name_dict, scope)
 
 class ConvParam : public OpParam {
   typedef typename DtypeTensorTrait::gtype GType;
@@ -499,12 +468,11 @@ class ConvParam : public OpParam {
     groups = OpParam::GetAttr<int>("groups", attrs);
   }
 
-  RType *Input() const { return input_; }
+  GType *Input() const { return input_; }
 
-  RType *Filter() const { return filter_; }
+  GType *Filter() const { return filter_; }
 
   RType *Output() const { return output_; }
-  RType *TransformedFilter() const { return transformed_filter_; }
 
   const vector<int> &Strides() const { return strides_; }
 
@@ -523,6 +491,8 @@ class ConvParam : public OpParam {
     EXEC_GEMM_INT8,
     EXEC_DEPTHWISE3x3_INT8,
     EXEC_DEPTHWISE5x5_INT8,
+    EXEC_SLIDINGWINDOW3x3S1_FLOAT,
+    EXEC_SLIDINGWINDOW3x3S2_FLOAT,
   };
 
   ExecMode &ExecMode() const { return exec_mode_; }
@@ -540,11 +510,10 @@ class ConvParam : public OpParam {
   GType *input_;
   GType *output_;
   GType *filter_;
+  GType *transformed_filter_;
   vector<int> strides_;
   vector<int> paddings_;
   vector<int> dilations_;
-  GType *transformed_filter_;
-
   mutable enum ExecMode exec_mode_;
   int groups;
 
@@ -587,11 +556,11 @@ class ElementwiseAddParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  RType *InputX() const { return input_x_; }
+  const GType *InputX() const { return input_x_; }
 
-  RType *InputY() const { return input_y_; }
+  const GType *InputY() const { return input_y_; }
 
-  RType *Out() const { return out_; }
+  GType *Out() const { return out_; }
 
   const int &Axis() const { return axis_; }
 
@@ -632,11 +601,11 @@ class ElementwiseMulParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  RType *InputX() const { return input_x_; }
+  const GType *InputX() const { return input_x_; }
 
-  RType *InputY() const { return input_y_; }
+  const GType *InputY() const { return input_y_; }
 
-  RType *Out() const { return out_; }
+  GType *Out() const { return out_; }
 
   const int &Axis() const { return axis_; }
 
@@ -676,11 +645,11 @@ class ElementwiseSubParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  RType *InputX() const { return input_x_; }
+  const GType *InputX() const { return input_x_; }
 
-  RType *InputY() const { return input_y_; }
+  const GType *InputY() const { return input_y_; }
 
-  RType *Out() const { return out_; }
+  GType *Out() const { return out_; }
 
   const int &Axis() const { return axis_; }
 
@@ -1314,6 +1283,7 @@ class FetchParam : public OpParam {
 
  public:
   fpga::BypassArgs fpga_bypass_args;
+  Tensor aligned_out;
 #endif
 };
 

@@ -18,22 +18,26 @@ limitations under the License. */
 #include <cmath>
 #include "operators/kernel/arm/convolution/conv_common.h"
 #include "operators/kernel/central-arm-func/conv_arm_func.h"
-#include "operators/math/channel_wise.h"
+#include "operators/math/element_wise.h"
 
 namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ConvAddBNReluKernelCpu<float>::Init(FusionConvAddBNReluParam *param) {
+bool ConvAddBNReluKernelCpu<float>::Init(
+    FusionConvAddBNReluParam *param) {
   const Tensor *mean = param->InputMean()->InnerLoDTensor();
   const Tensor *variance = param->InputVariance()->InnerLoDTensor();
   const Tensor *scale = param->InputScale()->InnerLoDTensor();
   const Tensor *bias = param->InputBias()->InnerLoDTensor();
+  const Tensor *bias1 = param->Bias()->InnerLoDTensor();
   const float epsilon = param->Epsilon();
+
   auto mean_ptr = mean->data<float>();
   auto variance_ptr = variance->data<float>();
   auto scale_ptr = scale->data<float>();
   auto bias_ptr = bias->data<float>();
+  auto bias1_ptr = bias1->data<float>();
 
   const int C = mean->numel();
   float inv_std_ptr[C];
@@ -41,23 +45,19 @@ bool ConvAddBNReluKernelCpu<float>::Init(FusionConvAddBNReluParam *param) {
     inv_std_ptr[i] =
         1 / static_cast<float>(pow((variance_ptr[i] + epsilon), 0.5));
   }
-  //  Tensor *new_scale = new Tensor();
-  //  Tensor *new_bias = new Tensor();
-  /* auto *new_scale = param->CreateNewScale<framework::LoDTensor>();
-   auto *new_bias = param->CreateNewBiase<framework::LoDTensor>(); */
+
 
   auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
   auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
   LoDTensor *new_scale = new_scale_w->MuteLodTensor();
   LoDTensor *new_bias = new_bias_w->MuteLodTensor();
-  /* auto *new_scale = param->CreateNewScale<framework::LoDTensor>();
-   auto *new_bias = param->CreateNewBiase<framework::LoDTensor>();
- */
+
   auto new_scale_ptr = new_scale->mutable_data<float>({C});
   auto new_bias_ptr = new_bias->mutable_data<float>({C});
   for (int i = 0; i < C; i++) {
     new_scale_ptr[i] = inv_std_ptr[i] * scale_ptr[i];
-    new_bias_ptr[i] = bias_ptr[i] - mean_ptr[i] * inv_std_ptr[i] * scale_ptr[i];
+    new_bias_ptr[i] = bias_ptr[i] + (bias1_ptr[i] - mean_ptr[i]) *
+                                        inv_std_ptr[i] * scale_ptr[i];
   }
   param->SetNewScale(new_scale_w);
   param->SetNewBias(new_bias_w);
@@ -82,6 +82,10 @@ void ConvAddBNReluKernelCpu<float>::Compute(
       break;
     case ConvParam::EXEC_GEMM_FLOAT:
       GemmConv<float, float>(param);
+      break;
+    case ConvParam<CPU>::EXEC_SLIDINGWINDOW3x3S1_FLOAT:
+    case ConvParam<CPU>::EXEC_SLIDINGWINDOW3x3S2_FLOAT:
+      SlidingwindowConv3x3<float, float>(param);
       break;
     default:
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",

@@ -36,5 +36,6 @@ void Pad2DOp<T>::InferShape() const {
 namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(pad2d, ops::Pad2DOp);
+//fixme use #if defined(PADDLE_MOBILE_FPGA) || defined(PADDLE_MOBILE_FPGA_KD) to control fpga
 
 #endif  // PAD2D_OP

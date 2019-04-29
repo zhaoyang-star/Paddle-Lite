@@ -41,6 +41,9 @@ void DepthwiseConv3x3(const ConvParam &param);
 template <typename Itype, typename Otype>
 void DepthwiseConv5x5(const ConvParam &param);
 
+template <typename Itype, typename Otype>
+void SlidingwindowConv3x3(const ConvParam<CPU> &param);
+
 }  // namespace operators
 }  // namespace paddle_mobile
 

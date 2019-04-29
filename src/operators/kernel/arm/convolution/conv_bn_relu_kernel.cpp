@@ -18,7 +18,7 @@ limitations under the License. */
 #include <cmath>
 #include "operators/kernel/arm/convolution/conv_common.h"
 #include "operators/kernel/central-arm-func/conv_arm_func.h"
-#include "operators/math/channel_wise.h"
+#include "operators/math/element_wise.h"
 
 namespace paddle_mobile {
 namespace operators {
@@ -43,12 +43,17 @@ bool ConvBNReluKernelCpu<float>::Init(FusionConvBNReluParam *param) {
         1 / static_cast<float>(pow((variance_ptr[i] + epsilon), 0.5));
   }
 
-  auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
-  auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
+  Variable *scale_var = param->GetScope()->Var();
+  Variable *bias_var = param->GetScope()->Var();
+  TensorWrapper *new_scale_w = scale_var->GetMutable<TensorWrapper>();
+  TensorWrapper *new_bias_w = bias_var->GetMutable<TensorWrapper>();
+
   LoDTensor *new_scale = new_scale_w->MuteLodTensor();
   LoDTensor *new_bias = new_bias_w->MuteLodTensor();
-  auto new_scale_ptr = new_scale->mutable_data<float>({C});
-  auto new_bias_ptr = new_bias->mutable_data<float>({C});
+
+
+  float *new_scale_ptr = new_scale->mutable_data<float>({C});
+  float *new_bias_ptr = new_bias->mutable_data<float>({C});
   for (int i = 0; i < C; i++) {
     new_scale_ptr[i] = inv_std_ptr[i] * scale_ptr[i];
     new_bias_ptr[i] = bias_ptr[i] - mean_ptr[i] * inv_std_ptr[i] * scale_ptr[i];
@@ -75,6 +80,10 @@ void ConvBNReluKernelCpu<float>::Compute(const FusionConvBNReluParam &param) {
       break;
     case ConvParam::EXEC_GEMM_FLOAT:
       GemmConv<float, float>(param);
+      break;
+    case ConvParam::EXEC_SLIDINGWINDOW3x3S1_FLOAT:
+    case ConvParam::EXEC_SLIDINGWINDOW3x3S2_FLOAT:
+      SlidingwindowConv3x3<float, float>(param);
       break;
     default:
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",

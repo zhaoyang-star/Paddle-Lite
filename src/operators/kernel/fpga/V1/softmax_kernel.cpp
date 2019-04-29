@@ -26,7 +26,7 @@ bool SoftmaxKernel<FPGA, float>::Init(SoftmaxParam<FPGA> *param) {
   auto dims = framework::vectorize(input->dims());
   half *input_ptr;
   auto out = param->Out();
-  if (input->type() == typeid(float)) {
+  if (input->type() == type_id<float>()) {
     out->Resize(framework::make_ddim(dims));
     out->mutable_data<float>(framework::make_ddim(dims));
   } else {
@@ -50,7 +50,7 @@ bool SoftmaxKernel<FPGA, float>::Init(SoftmaxParam<FPGA> *param) {
   if (channel != 2) {  // Use CPU
     out->Resize(framework::make_ddim(dims));
     out->mutable_data<float>(framework::make_ddim(dims));
-    float_input->init(typeid(float));
+    float_input->init(type_id<float>().hash_code());
     float_input->mutable_data<float>(framework::make_ddim(dims));
     //  fpga::format_fp32_ofm(float_input);
     // fpga::format_fp32_ofm(out);
@@ -90,24 +90,24 @@ bool SoftmaxKernel<FPGA, float>::Init(SoftmaxParam<FPGA> *param) {
 
 template <>
 void SoftmaxKernel<FPGA, float>::Compute(const SoftmaxParam<FPGA> &param) {
-  auto *in_x = (param.InputX()->InnerLoDTensor());
-  if (in_x->type() == typeid(half)) {
+  auto *in_x = (param.InputX());
+  if (in_x->type() == type_id<half>()) {
     fpga::PerformBypass(param.FpgaArgs());
     if (param.FpgaArgs().output.activation.activation_type != fpga::SOFTMAX) {
-      Tensor *out = param.Out()->InnerLoDTensor();
+      Tensor *out = param.Out();
       Tensor *in_x2 = param.FloatInput();
 
       fpga::fpga_invalidate(in_x2->data<float>(),
                             in_x2->numel() * sizeof(float));
-      math::SoftmaxFuntor<float>()(in_x2, out);
+      math::SoftmaxFuntor<CPU, float>()(in_x2, out);
       fpga::fpga_flush(out->data<float>(), out->memory_size());
     }
   } else {
     if (param.FpgaArgs().output.activation.activation_type != fpga::SOFTMAX) {
-      Tensor *out = param.Out()->InnerLoDTensor();
+      Tensor *out = param.Out();
       out->Resize(
           {in_x->dims()[0], out->dims()[1], out->dims()[2], out->dims()[3]});
-      math::SoftmaxFuntor<float>()(in_x, out);
+      math::SoftmaxFuntor<CPU, float>()(in_x, out);
     }
   }
 }

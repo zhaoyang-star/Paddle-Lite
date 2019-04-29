@@ -18,7 +18,7 @@ limitations under the License. */
 #include <cmath>
 #include "operators/kernel/arm/convolution/conv_common.h"
 #include "operators/kernel/central-arm-func/conv_arm_func.h"
-#include "operators/math/channel_wise.h"
+#include "operators/math/element_wise.h"
 
 namespace paddle_mobile {
 namespace operators {
@@ -33,29 +33,14 @@ bool ConvBNAddReluKernelCpu<float>::Init(FusionConvBNAddReluParam *param) {
 
   auto mean_ptr = mean->data<float>();
   auto variance_ptr = variance->data<float>();
-  auto scale_ptr = scale->data<float>();
-  auto bias_ptr = bias->data<float>();
+  auto scale_ptr = const_cast<float *>(scale->data<float>());
+  auto bias_ptr = const_cast<float *>(bias->data<float>());
 
-  const int C = mean->numel();
-  float inv_std_ptr[C];
-  for (int i = 0; i < C; i++) {
-    inv_std_ptr[i] =
-        1 / static_cast<float>(pow((variance_ptr[i] + epsilon), 0.5));
+  for (int c = 0; c < scale->numel(); ++c) {
+    float inv_scale = 1.f / (pow(variance_ptr[c] + epsilon, 0.5));
+    bias_ptr[c] -= inv_scale * scale_ptr[c] * mean_ptr[c];
+    scale_ptr[c] *= inv_scale;
   }
-
-  auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
-  auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
-  LoDTensor *new_scale = new_scale_w->MuteLodTensor();
-  LoDTensor *new_bias = new_bias_w->MuteLodTensor();
-
-  auto new_scale_ptr = new_scale->mutable_data<float>({C});
-  auto new_bias_ptr = new_bias->mutable_data<float>({C});
-  for (int i = 0; i < C; i++) {
-    new_scale_ptr[i] = inv_std_ptr[i] * scale_ptr[i];
-    new_bias_ptr[i] = bias_ptr[i] - mean_ptr[i] * inv_std_ptr[i] * scale_ptr[i];
-  }
-  param->SetNewScale(new_scale_w);
-  param->SetNewBias(new_bias_w);
 
   InitBaseConvKernel(param);
   return true;
@@ -78,14 +63,27 @@ void ConvBNAddReluKernelCpu<float>::Compute(
     case ConvParam::EXEC_GEMM_FLOAT:
       GemmConv<float, float>(param);
       break;
+    case ConvParam<CPU>::EXEC_SLIDINGWINDOW3x3S1_FLOAT:
+    case ConvParam<CPU>::EXEC_SLIDINGWINDOW3x3S2_FLOAT:
+      SlidingwindowConv3x3<float, float>(param);
+      break;
     default:
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",
                                     param.ExecMode());
   }
-  math::ScaleAddChannelWise<RELU>(
-      param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
-      param.NewBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
+
+  if (param.Bias()->dims() == param.Output()->dims()) {
+    math::ScaleAddChannelWise<RELU>(param.Output()->InnerLoDTensor(), param.InputScale()->InnerLoDTensor(),
+                                    param.InputBias()->InnerLoDTensor(), param.Bias()->InnerLoDTensor(),
+                                    param.Output()->InnerLoDTensor());
+  } else {
+    math::ScaleAddChannelWise<IDENTITY>(param.Output()->InnerLoDTensor(), param.InputScale()->InnerLoDTensor(),
+                                        param.InputBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
+    math::AddElememtWise<RELU>(param.Output()->InnerLoDTensor(), param.Bias()->InnerLoDTensor(), param.Axis()->InnerLoDTensor(),
+                               param.Output()->InnerLoDTensor());
+  }
 }
+
 template class ConvBNAddReluKernelCpu<float>;
 
 }  // namespace operators

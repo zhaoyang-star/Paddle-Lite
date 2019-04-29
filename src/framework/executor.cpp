@@ -1,16 +1,16 @@
 /* Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License. */
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. */
 
 #include "framework/executor.h"
 #include <algorithm>
@@ -29,7 +29,7 @@
 #include "framework/tensor.h"
 #include "framework/tensor_wrapper.h"
 #include "memory/t_malloc.h"
-
+#include "pass/memory_optimize.h"
 #ifdef PADDLE_MOBILE_CL
 #include "framework/cl/cl_image.h"
 #endif
@@ -63,10 +63,13 @@ Executor<T>::Executor(const Program<T> &program,
       use_optimize_ ? program_.optimizeProgram : program_.originProgram;
   PADDLE_MOBILE_ENFORCE(program_desc_ != nullptr,
                         "program_desc_ should not be nullptr");
+#if !defined(PADDLE_MOBILE_FPGA) && !defined(PADDLE_MOBILE_FPGA_KD) && \
+    !defined(PADDLE_MOBILE_CL)
+  pass::MemoryOptPass()(program_desc_.get(), program_.scope.get());
+#endif
   // resize feed and fetch list
   // should init feed and fetch variables before infer shape
   InitFeedFetchList();
-
   const auto &blocks = program_desc_->Blocks();
   std::shared_ptr<BlockDesc> block_desc = blocks[0];
   std::vector<std::shared_ptr<OpDesc>> ops = block_desc->Ops();
@@ -94,47 +97,20 @@ Executor<T>::Executor(const Program<T> &program,
     if (!lod_mode) {
       op_handler->InferShape();
     }
-    /*
-        AttributeMap &opAttrMap = op_desc->GetAttrMap();
-
-        for (AttributeMap::iterator iter = opAttrMap.begin();
-             iter != opAttrMap.end(); iter++) {
-          DLOG << "attr:  " <<iter->first << "\t" << iter->second;
-        }
-
-        VariableNameMap &inputs = op_desc->GetInputs();
-        for (VariableNameMap::iterator input_iter = inputs.begin();
-             input_iter != inputs.end(); input_iter++) {
-          DLOG << "inputs:  " <<input_iter->first << "\t" <<
-          input_iter->second;
-        }
-
-
-        VariableNameMap &outputs = op_desc->GetOutputs();
-        for (VariableNameMap::iterator output_iter = outputs.begin();
-             output_iter != outputs.end(); output_iter++) {
-          DLOG << "outputs:  " <<output_iter->first << "\t" <<
-       output_iter->second;
-        }
-
-    */
-
     ops_of_block0_.push_back(op_handler);
   }
+#ifdef PADDLE_MOBILE_FPGA_V2
+  InitQuantMemory();
+#endif
   if (program_.combined) {
     InitCombineMemory();
   } else {
     InitMemory();
   }
 
-#ifdef PADDLE_MOBILE_FPGA
-  program_.scope->EraseVars({"feed", "fetch"});
-  program_.scope->print_vars();
-#endif
-
   int count = 0;
   for (auto &op_handler : ops_of_block0_) {
-    DLOG << "Initialize op[" << count++ << "]: ";
+    DLOG << "Initialize op[" << count++ << "]: " << op_handler->Type();
     op_handler->Init();
   }
 }
@@ -254,6 +230,7 @@ void Executor<T>::InitMemory() {
           var->template GetMutable<framework::TensorWrapperArray>();
           continue;
         }
+        DLOG << "init persistable var: " << var_desc->Name();
         char *origin_data =
             ReadFileToBuff(program_.model_path + "/" + var_desc->Name());
         char *data = origin_data;
@@ -275,7 +252,8 @@ void Executor<T>::InitCombineMemory() {
   char *origin_data = nullptr;
   bool self_alloc = false;
   if (program_.combined_params_buf && program_.combined_params_len) {
-    origin_data = reinterpret_cast<char *>(program_.combined_params_buf);
+    origin_data = reinterpret_cast<char *>(
+        const_cast<uint8_t *>(program_.combined_params_buf));
   } else {
     self_alloc = true;
     origin_data = ReadFileToBuff(program_.para_path);
@@ -308,6 +286,20 @@ void Executor<T>::InitCombineMemory() {
     delete[] origin_data;
   }
   LOG(kLOG_INFO) << "init combine memory finish";
+}
+
+static void ClearNoPersistableTensorArray(const framework::ProgramDesc *program,
+                                          framework::Scope *scope) {
+  for (const auto &block : program->Blocks()) {
+    for (const auto &var_desc : block->Vars()) {
+      if (!var_desc->Persistable() &&
+          var_desc->Type() == VARTYPE_TYPE_STEP_LOD_TENSOR_ARRAY) {
+        auto var = scope->Var(var_desc->Name());
+        auto array = var->template GetMutable<framework::LoDTensorArray>();
+        array->resize(1);
+      }
+    }
+  }
 }
 
 template <typename T>
@@ -348,28 +340,11 @@ bool Executor<T>::varInputMemory(const std::shared_ptr<VarDesc> &var_desc,
                                  Variable *var) const {
 #ifdef PADDLE_MOBILE_FPGA
   framework::LoDTensor *tensor = var->template GetMutable<LoDTensor>();
-  tensor->init(typeid(float));
+  tensor->init(type_id<float>().hash_code());
   return true;
 #endif
-  auto TypeId = [](const VarType_Type &type) -> std::type_index {
-    switch (type) {
-      case VARTYPE_TYPE_BOOL:
-        return typeid(bool);
-      case VARTYPE_TYPE_FP32:
-        return typeid(float);
-      case VARTYPE_TYPE_INT8:
-        return typeid(int8_t);
-      case VARTYPE_TYPE_INT32:
-        return typeid(int);
-      case VARTYPE_TYPE_INT64:
-        return typeid(int64_t);
-      default:
-        PADDLE_MOBILE_THROW_EXCEPTION("got unhandled var type `%d`", type);
-    }
-  };
 
   auto type = var_desc->Type();
-  DLOG << "var_desc->Type():  " << type;
   if (type == VARTYPE_TYPE_LOD_TENSOR) {
     auto data_type = var_desc->Tensor_desc().DataType();
     auto *tensor_w = var->template GetMutable<TensorWrapper>();
@@ -441,13 +416,6 @@ void Executor<T>::SetInput(const Tensor &input, const std::string &var_name) {
            ->at(index)
            .MuteLodTensor();
 
-  if (config_.load_when_predict) {
-    if (input_dim_last_ != input.dims()) {
-      InitNoPersistableMemory(input);
-      input_dim_last_ = input.dims();
-    }
-  }
-
   target.Resize(input.dims());
   target.ShareDataWith(input);
 }
@@ -464,13 +432,6 @@ void Executor<T>::SetInput(const LoDTensor &input,
       *feed_var->template GetMutable<framework::TensorWrapperArray>()
            ->at(index)
            .MuteLodTensor();
-
-  if (config_.load_when_predict) {
-    if (input_dim_last_ != input.dims()) {
-      InitNoPersistableMemory(input);
-      input_dim_last_ = input.dims();
-    }
-  }
 
   target.Resize(input.dims());
   target.ShareDataWith(input);
@@ -505,6 +466,10 @@ PMStatus Executor<T>::Predict() {
 #if _OPENMP
   omp_set_num_threads(get_global_num_threads());
 #endif
+  // clear all no persistable tensor array since write_to_array
+  // is always push back a new tensor in the array
+  ClearNoPersistableTensorArray(program_desc_.get(), program_.scope.get());
+
 #ifdef PADDLE_MOBILE_PROFILE
   std::vector<ProfInfo> profile(ops_of_block0_.size());
   struct timespec ts;
@@ -515,10 +480,10 @@ PMStatus Executor<T>::Predict() {
     clock_gettime(CLOCK_MONOTONIC, &ts);
     profile[op_index].runBegin = (uint64_t)ts.tv_sec * 1e9 + ts.tv_nsec;
 #endif
+    DLOG << "run op: " << op_handler->Type();
     if (lod_mode_) {
       op_handler->InferShape();
     }
-    printf("%s ==================\n",op_handler->Type().c_str());
     op_handler->Run();
 #ifdef PADDLE_MOBILE_PROFILE
     clock_gettime(CLOCK_MONOTONIC, &ts);
@@ -565,6 +530,32 @@ PMStatus Executor<T>::Predict() {
   return PMSuccess;
 }
 
+template <typename Device, typename T>
+void Executor<Device, T>::FeedTensorData(const vector<framework::Tensor> &v) {
+  auto input_size = v.size();
+  auto *feed_var = program_.scope->Var("feed");
+
+  PADDLE_MOBILE_ENFORCE(input_size == feed_indices_.size(),
+                        "input data number not correct");
+  for (int i = 0; i < input_size; i++) {
+    framework::LoDTensor &target =
+        feed_var->template GetMutable<framework::LoDTensorArray>()->at(i);
+    target.ShareDataWith(v[input_size - i - 1]);
+  }
+}
+
+template <typename Device, typename T>
+void Executor<Device, T>::GetTensorResults(
+    std::vector<framework::Tensor *> *v) {
+  auto *fetch_var = program_.scope->Var("fetch");
+  auto output_size = fetch_indices_.size();
+  for (int i = 0; i < output_size; i++) {
+    framework::LoDTensor &target =
+        fetch_var->template GetMutable<framework::LoDTensorArray>()->at(i);
+    v->push_back(&target);
+  }
+}
+
 #ifdef PADDLE_MOBILE_FPGA
 template <typename T>
 void Executor<T>::InjectVariable(const Tensor &t, std::string var_name) {
@@ -609,20 +600,9 @@ void Executor<T>::GetResults(std::vector<void *> *v) {
   }
 }
 
-template <typename T>
-void Executor<T>::GetTensorResults(std::vector<framework::Tensor *> *v) {
-  int index = 0;
-  auto vars = program_.scope->VarContain("fetch", &index);
-  auto output_size = vars.size();
-  for (int i = 0; i < output_size; i++) {
-    auto var = program_.scope->Var("fetch", i + index);
-    auto fetch_tensor = var->template GetMutable<LoDTensor>();
-    v->push_back(fetch_tensor);
-  }
-}
-
-template <typename T>
-framework::Tensor *Executor<T>::GetTensorByName(const std::string &name) {
+template <typename Device, typename T>
+framework::Tensor *Executor<Device, T>::GetTensorByName(
+    const std::string &name) {
   auto var = program_.scope->Var(name);
   return var->template GetMutable<LoDTensor>();
 }
@@ -676,8 +656,74 @@ template <typename T>
 void Executor<T>::Predict_To(int end) {
   Predict_From_To(0, end);
 }
-#endif
+#ifdef PADDLE_MOBILE_FPGA_V2
+std::map<std::string, float> LoadQuantValFromFile(std::string filename) {
+  std::map<std::string, float> quantValList;
+  std::ifstream in;
+  in.open(filename, std::ios::in);
+  if (!in.is_open()) {
+    std::cout << "open File Failed." << std::endl;
+    exit(-1);
+  }
 
+  std::string line;
+  while (getline(in, line)) {
+    std::string splitStr = " : ";
+    std::string::size_type pos;
+    pos = line.find(splitStr);
+    std::string subStr[2];
+    subStr[0] = line.substr(0, pos);
+    subStr[1] = line.substr(pos + splitStr.size(), line.size());
+    quantValList.insert(std::make_pair(subStr[0], atof(subStr[1].c_str())));
+  }
+  in.close();
+  return quantValList;
+}
+
+template <typename Device, typename T>
+void Executor<Device, T>::InitQuantMemory() {
+  std::string quantValFilePath;
+  if (program_.combined) {
+    quantValFilePath = program_.para_path;
+    quantValFilePath =
+        quantValFilePath.substr(0, (quantValFilePath.length() - 6));
+    quantValFilePath = quantValFilePath + "scale";
+  } else {
+    quantValFilePath = program_.model_path + "/scale";
+  }
+  std::map<std::string, float> quantValList =
+      LoadQuantValFromFile(quantValFilePath);
+  auto ops = ops_of_block0_;
+  for (int id = 0; id < ops.size(); id++) {
+    auto op = ops[id];
+    auto input_keys = op->GetInputKeys();
+    auto inputs = op->Inputs();
+    for (auto key = input_keys.begin(); key != input_keys.end(); key++) {
+      auto inputs_vars = inputs[*key];
+      int count = inputs_vars.size();
+      for (int i = 0; i < count; i++) {
+        auto tensor = GetTensorByName(inputs_vars[i]);
+        tensor->scale[0] = quantValList[inputs_vars[i]];
+        std::cout << "input variance name : " << inputs_vars[i]
+                  << ", scale value : " << tensor->scale[0] << std::endl;
+      }
+    }
+    auto output_keys = op->GetOutKeys();
+    auto outputs = op->Outputs();
+    for (auto key = output_keys.begin(); key != output_keys.end(); key++) {
+      auto outputs_vars = outputs[*key];
+      int count = outputs_vars.size();
+      for (int i = 0; i < count; i++) {
+        auto tensor = GetTensorByName(outputs_vars[i]);
+        tensor->scale[0] = quantValList[outputs_vars[i]];
+        std::cout << "output variance name : " << outputs_vars[i]
+                  << ", scale value : " << tensor->scale[0] << std::endl;
+      }
+    }
+  }
+}
+#endif
+#endif
 /*
 #ifdef PADDLE_MOBILE_CL
 template <>
@@ -748,9 +794,9 @@ void Executor<GPU_CL, float>::SetInput(const Tensor &input,
   input_dim_last_ = static_cast<DDim>(dim);
 }
 
-template <typename T>
-void Executor<T>::LoadMemory(const VarDesc var_desc, float *tensorInput,
-                             char **data) {}
+template <typename Device, typename T>
+void Executor<Device, T>::LoadMemory(const VarDesc var_desc, float *tensorInput,
+                                     char **data) {}
 
 template <>
 void Executor<GPU_CL, float>::LoadMemory(const VarDesc var_desc,
@@ -859,7 +905,6 @@ void Executor<GPU_CL, float>::InitMemory() {
         DDim ddim = make_ddim(desc.Dims());
 
         // has not init
-        // 内存直接放到clImage
         cl_image->SetTensorData(tensorInput, ddim);
 
         delete origin_data;
@@ -950,10 +995,7 @@ void Executor<GPU_CL, float>::InitCombineMemory() {
 */
 
 template class Executor<float>;
-/*
-template class Executor<FPGA, float>;
 
-template class Executor<GPU_CL, float>;*/
 
 }  // namespace framework
 }  // namespace paddle_mobile

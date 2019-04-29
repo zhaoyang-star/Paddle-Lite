@@ -52,5 +52,5 @@ namespace ops = paddle_mobile::operators;
 REGISTER_FUSION_MATCHER(fusion_conv_add, ops::FusionConvAddMatcher);
 
 REGISTER_OPERATOR(fusion_conv_add, ops::FusionConvAddOp);
-
+// fixme #if defined(PADDLE_MOBILE_FPGA) || defined(PADDLE_MOBILE_FPGA_KD)
 #endif
