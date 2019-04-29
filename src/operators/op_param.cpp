@@ -83,8 +83,7 @@ Print &operator<<(Print &printer, const FusionConvAddParam &conv_param) {
           << "\n";
   printer << "  filter dims: " << conv_param.Filter()->LodTensor()->dims()
           << "\n";
-  printer << "  bias dims: " << conv_param.Bias()->LodTensor()->dims()
-          << "\n";
+  printer << "  bias dims: " << conv_param.Bias()->LodTensor()->dims() << "\n";
   printer << "  output dims: " << conv_param.Output()->LodTensor()->dims();
   return printer;
 }

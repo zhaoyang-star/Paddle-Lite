@@ -24,8 +24,7 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ConvAddBNReluKernelCpu<float>::Init(
-    FusionConvAddBNReluParam *param) {
+bool ConvAddBNReluKernelCpu<float>::Init(FusionConvAddBNReluParam *param) {
   const Tensor *mean = param->InputMean()->LodTensor();
   const Tensor *variance = param->InputVariance()->LodTensor();
   const Tensor *scale = param->InputScale()->LodTensor();
@@ -46,15 +45,15 @@ bool ConvAddBNReluKernelCpu<float>::Init(
         1 / static_cast<float>(pow((variance_ptr[i] + epsilon), 0.5));
   }
 
-
   Variable *scale_var = param->GetScope()->Var();
   Variable *bias_var = param->GetScope()->Var();
-  framework::MobileTensor *new_scale_w = scale_var->GetMutable<framework::MobileTensor>();
-  framework::MobileTensor *new_bias_w = bias_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_scale_w =
+      scale_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_bias_w =
+      bias_var->GetMutable<framework::MobileTensor>();
 
   LoDTensor *new_scale = new_scale_w->MuteLodTensor();
   LoDTensor *new_bias = new_bias_w->MuteLodTensor();
-
 
   float *new_scale_ptr = new_scale->mutable_data<float>({C});
   float *new_bias_ptr = new_bias->mutable_data<float>({C});

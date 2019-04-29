@@ -27,12 +27,12 @@ template <>
 void WinogradConv3x3<4, 3>(framework::CLHelper &cl_helper,
                            const ConvParam &param) {}
 
-void ConvAddBnRelu(framework::CLHelper &cl_helper,
-                   const ConvParam &param, bool ifRelu,
-                   const CLImage *biase, const CLImage *new_scale,
+void ConvAddBnRelu(framework::CLHelper &cl_helper, const ConvParam &param,
+                   bool ifRelu, const CLImage *biase, const CLImage *new_scale,
                    const CLImage *new_bias) {
   auto kernel = cl_helper.KernelAt(0);
-  auto default_work_size = cl_helper.DefaultWorkSize(*param.Output()->ClImage());
+  auto default_work_size =
+      cl_helper.DefaultWorkSize(*param.Output()->ClImage());
   int c_block = default_work_size[0];
   int w = default_work_size[1];
   int nh = default_work_size[2];
@@ -43,7 +43,7 @@ void ConvAddBnRelu(framework::CLHelper &cl_helper,
   int stride = param.Strides()[0];
   int offset = param.Offset();
   int input_c = reinterpret_cast<framework::CLImageConverterFolder *>(
-      param.Input()->ClImage()->Converter())
+                    param.Input()->ClImage()->Converter())
                     ->GetCBlock();
   int dilation = param.Dilations()[0];
   int input_width = param.Input()->ClImage()->dims()[3];
@@ -69,7 +69,8 @@ void ConvAddBnRelu(framework::CLHelper &cl_helper,
   cl_int status;
   int index = 0;
 
-  if (param.Filter()->ClImage()->dims()[2] == 1 && param.Filter()->ClImage()->dims()[3] == 1) {
+  if (param.Filter()->ClImage()->dims()[2] == 1 &&
+      param.Filter()->ClImage()->dims()[3] == 1) {
     status = clSetKernelArg(kernel, index++, sizeof(int), &c_block);
     CL_CHECK_ERRORS(status);
 

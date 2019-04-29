@@ -69,7 +69,7 @@ void DequantBNCompute(const FusionDequantBNParam *param) {
   int batch_size = param->input_->LodTensor()->dims()[0];
   int channels = param->input_->LodTensor()->dims()[1];
   size_t spatial_size = param->input_->LodTensor()->dims()[2] *
-      param->input_->LodTensor()->dims()[3];
+                        param->input_->LodTensor()->dims()[3];
 
   #pragma omp parallel for collapse(2)
   for (int batch = 0; batch < batch_size; ++batch) {

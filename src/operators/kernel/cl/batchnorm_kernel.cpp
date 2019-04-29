@@ -48,11 +48,12 @@ bool BatchNormKernelGpu<float>::Init(BatchNormParam *param) {
     new_bias_ptr[i] = bias_ptr[i] - mean_ptr[i] * inv_std_ptr[i] * scale_ptr[i];
   }
 
-
   Variable *scale_var = param->GetScope()->Var();
   Variable *bias_var = param->GetScope()->Var();
-  framework::MobileTensor *new_scale_w = scale_var->GetMutable<framework::MobileTensor>();
-  framework::MobileTensor *new_bias_w = bias_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_scale_w =
+      scale_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_bias_w =
+      bias_var->GetMutable<framework::MobileTensor>();
 
   auto *new_scale = new_scale_w->MuteClImage();
   auto *new_bias = new_bias_w->MuteClImage();

@@ -29,8 +29,7 @@ template <typename P>
 void BatchnormCompute(const BatchNormParam &param) {
   const float epsilon = param.Epsilon();
   const float *mean_ptr = param.InputMean()->LodTensor()->data<float>();
-  const float *variance_ptr =
-      param.InputVariance()->LodTensor()->data<float>();
+  const float *variance_ptr = param.InputVariance()->LodTensor()->data<float>();
   const float *scale_ptr = param.InputScale()->LodTensor()->data<float>();
   const float *bias_ptr = param.InputBias()->LodTensor()->data<float>();
 

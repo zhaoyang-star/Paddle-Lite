@@ -37,4 +37,5 @@ namespace ops = paddle_mobile::operators;
 
 REGISTER_OPERATOR(feed, ops::FeedOp);
 // fixme
-// #if defined(PADDLE_MOBILE_FPGA) || defined(PADDLE_MOBILE_FPGA_KD) to judge fpga
+// #if defined(PADDLE_MOBILE_FPGA) || defined(PADDLE_MOBILE_FPGA_KD) to judge
+// fpga

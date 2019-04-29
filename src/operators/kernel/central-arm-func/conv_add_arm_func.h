@@ -123,18 +123,17 @@ void ConvAddCompute(const FusionConvAddParam &param) {
           param.Output()->LodTensor()->dims()[1] &&
       param.Filter()->LodTensor()->dims()[2] ==
           param.Filter()->LodTensor()->dims()[3] &&
-      param.Filter()->LodTensor()->dims()[2] == 3 &&
-      param.Strides()[0] == 1 && param.paddings_[0] == 1) {
-    math::DepthwiseConv3x3s1p1(param.Input()->LodTensor(),
-                               param.Filter()->LodTensor(),
-                               param.Output()->LodTensor(),
-                               param.Bias()->LodTensor(), true, false);
+      param.Filter()->LodTensor()->dims()[2] == 3 && param.Strides()[0] == 1 &&
+      param.paddings_[0] == 1) {
+    math::DepthwiseConv3x3s1p1(
+        param.Input()->LodTensor(), param.Filter()->LodTensor(),
+        param.Output()->LodTensor(), param.Bias()->LodTensor(), true, false);
   } else if (param.Groups() == param.Input()->LodTensor()->dims()[1] &&
-      param.Input()->LodTensor()->dims()[1] ==
-          param.Output()->LodTensor()->dims()[1] &&
-      param.Filter()->LodTensor()->dims()[2] ==
-          param.Filter()->LodTensor()->dims()[3] &&
-      param.Filter()->LodTensor()->dims()[2] == 3 &&
+             param.Input()->LodTensor()->dims()[1] ==
+                 param.Output()->LodTensor()->dims()[1] &&
+             param.Filter()->LodTensor()->dims()[2] ==
+                 param.Filter()->LodTensor()->dims()[3] &&
+             param.Filter()->LodTensor()->dims()[2] == 3 &&
              param.Strides()[0] == 2) {
     //        math::DepthwiseConv3x3(param.Input()->LodTensor(),
     //        param.Strides(), param.Paddings(),
@@ -142,15 +141,13 @@ void ConvAddCompute(const FusionConvAddParam &param) {
     //                              param.Bias()->LodTensor(),
     //                               param.Output()->LodTensor(), false);
     if (param.Paddings()[0] == 0) {
-      math::DepthwiseConv3x3s2p0(param.Input()->LodTensor(),
-                                 param.Filter()->LodTensor(),
-                                 param.Output()->LodTensor(),
-                                 param.Bias()->LodTensor(), true, false);
+      math::DepthwiseConv3x3s2p0(
+          param.Input()->LodTensor(), param.Filter()->LodTensor(),
+          param.Output()->LodTensor(), param.Bias()->LodTensor(), true, false);
     } else {
-      math::DepthwiseConv3x3s2p1v2(param.Input()->LodTensor(),
-                                   param.Filter()->LodTensor(),
-                                   param.Output()->LodTensor(),
-                                   param.Bias()->LodTensor(), true, false);
+      math::DepthwiseConv3x3s2p1v2(
+          param.Input()->LodTensor(), param.Filter()->LodTensor(),
+          param.Output()->LodTensor(), param.Bias()->LodTensor(), true, false);
     }
   } else {
     ConvAddBasic(param);

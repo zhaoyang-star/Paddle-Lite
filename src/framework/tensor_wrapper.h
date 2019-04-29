@@ -85,7 +85,7 @@ class MobileTensor {
       // conver cpu mem to gpu
       // cast gpu to cpu
       const LoDTensor *input = this->GetCpu();
-      CLImage * output = this->GetGpu();
+      CLImage *output = this->GetGpu();
       CLHelper *helper = CLRumtimeHelper::Instance()->GetClHelper();
       DLOG << "input->IsInitialized(): " << input->IsInitialized();
       if (input->IsInitialized()) {
@@ -171,14 +171,14 @@ class MobileTensor {
   }
 #endif
   framework::LoDTensor *LodTensor() {
-    if (this->GetMemType() == MEM_CPU  || (is_persistable_ && is_cpu_got)) {
+    if (this->GetMemType() == MEM_CPU || (is_persistable_ && is_cpu_got)) {
       mem_type = MEM_CPU;
       return this->GetCpu();
     }
 #ifdef PADDLE_MOBILE_CL
     else {
 
-      CLImage * input_climage = this->GetGpu();
+      CLImage *input_climage = this->GetGpu();
 
       LoDTensor *output_lodtensor = this->GetCpu();
       DLOG << "----------begin-----  gpu ---> cpu----------------------";

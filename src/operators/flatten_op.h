@@ -58,7 +58,7 @@ class FlattenOp : public framework::OperatorWithKernel<
 };*/
 
 DECLARE_OPERATOR(Flatten);
-DECLARE_OPERATOR_WITH_PARAMS(Flatten2,FlattenParam,FlattenKernel);
+DECLARE_OPERATOR_WITH_PARAMS(Flatten2, FlattenParam, FlattenKernel);
 
 }  // namespace operators
 }  // namespace paddle_mobile

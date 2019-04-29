@@ -155,15 +155,12 @@ REGISTER_TYPE_ID(std::vector<framework::Tensor>, _tensors)
 REGISTER_TYPE_ID(std::vector<framework::LoDTensor>, _lod_tensors)
 REGISTER_TYPE_ID(std::vector<framework::MobileTensor>, _mobile_tensors)
 
-
-
 REGISTER_TYPE_ID(framework::BlockDesc *, _p_block)
 REGISTER_TYPE_ID(framework::Tensor *, _p_tensor)
 REGISTER_TYPE_ID(framework::LoDTensor *, _p_lod_tensor)
 REGISTER_TYPE_ID(std::vector<framework::BlockDesc *>, _p_blocks)
 REGISTER_TYPE_ID(std::vector<framework::Tensor *>, _p_tensors)
 REGISTER_TYPE_ID(std::vector<framework::LoDTensor *>, _p_lod_tensors)
-
 
 REGISTER_TYPE_ID(std::vector<framework::Scope *>, _scopes);
 REGISTER_TYPE_ID(framework::SelectedRows, _selected_rows)

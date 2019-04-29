@@ -54,17 +54,16 @@ inline void AssignValueOpFunctor::apply<float>() const {
 }
 
 template <>
-bool AssignValueKernelCpu< float>::Init(AssignValueParam* param) {
+bool AssignValueKernelCpu<float>::Init(AssignValueParam* param) {
   return true;
 }
 
 template <>
-void AssignValueKernelCpu< float>::Compute(
-    const AssignValueParam& param) {
+void AssignValueKernelCpu<float>::Compute(const AssignValueParam& param) {
   framework::VisitDataType(
       framework::ToDataType(param.dtype_),
-      AssignValueOpFunctor(param.output_->LodTensor(), param.shape_, param.fp32_values_,
-                           param.int32_values_));
+      AssignValueOpFunctor(param.output_->LodTensor(), param.shape_,
+                           param.fp32_values_, param.int32_values_));
 }
 
 }  // namespace operators

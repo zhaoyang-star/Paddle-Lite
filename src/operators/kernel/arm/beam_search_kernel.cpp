@@ -253,8 +253,7 @@ void BeamSearchKernelCpu<float>::Compute(const BeamSearchParam &param) {
   BeamSearchFunctor<float> alg;
   alg(param.pre_ids_->LodTensor(), param.pre_scores_->LodTensor(),
       param.ids_->LodTensor(), param.scores_->LodTensor(),
-      param.selected_ids_->LodTensor(),
-      param.selected_scores_->LodTensor(),
+      param.selected_ids_->LodTensor(), param.selected_scores_->LodTensor(),
       param.parent_idx_->LodTensor(), param.level_, param.beam_size_,
       param.end_id_, param.is_accumulated_);
 }

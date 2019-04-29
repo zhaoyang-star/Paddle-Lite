@@ -72,13 +72,16 @@ void ConvBNAddReluKernelCpu<float>::Compute(
                                     param.ExecMode());
   }
 
-  if (param.Bias()->LodTensor()->dims() == param.Output()->LodTensor()->dims()) {
-    math::ScaleAddChannelWise<RELU>(param.Output()->LodTensor(), param.InputScale()->LodTensor(),
-                                    param.InputBias()->LodTensor(), param.Bias()->LodTensor(),
-                                    param.Output()->LodTensor());
+  if (param.Bias()->LodTensor()->dims() ==
+      param.Output()->LodTensor()->dims()) {
+    math::ScaleAddChannelWise<RELU>(
+        param.Output()->LodTensor(), param.InputScale()->LodTensor(),
+        param.InputBias()->LodTensor(), param.Bias()->LodTensor(),
+        param.Output()->LodTensor());
   } else {
-    math::ScaleAddChannelWise<IDENTITY>(param.Output()->LodTensor(), param.InputScale()->LodTensor(),
-                                        param.InputBias()->LodTensor(), param.Output()->LodTensor());
+    math::ScaleAddChannelWise<IDENTITY>(
+        param.Output()->LodTensor(), param.InputScale()->LodTensor(),
+        param.InputBias()->LodTensor(), param.Output()->LodTensor());
     math::AddElememtWise<RELU>(param.Output()->LodTensor(),
                                param.Bias()->LodTensor(), param.Axis(),
                                param.Output()->LodTensor());

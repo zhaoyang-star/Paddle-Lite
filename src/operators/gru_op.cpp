@@ -52,8 +52,7 @@ void GruOp<T>::InferShape() const {
       {input_dims[0], frame_size});
   this->param_.OutBatchHidden()->LodTensor()->Resize(
       {input_dims[0], frame_size});
-  this->param_.OutHidden()->LodTensor()->Resize(
-      {input_dims[0], frame_size});
+  this->param_.OutHidden()->LodTensor()->Resize({input_dims[0], frame_size});
 }
 
 }  // namespace operators

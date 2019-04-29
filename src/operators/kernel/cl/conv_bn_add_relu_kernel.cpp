@@ -22,12 +22,11 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ConvBNAddReluKernelGpu< float>::Init(
-    FusionConvBNAddReluParam *param) {
-  PADDLE_MOBILE_ENFORCE(
-      param->Filter()->ClImage()->dims()[2] == param->Filter()->ClImage()->dims()[3] &&
-          param->Paddings()[0] == param->Paddings()[1],
-      "need equal");
+bool ConvBNAddReluKernelGpu<float>::Init(FusionConvBNAddReluParam *param) {
+  PADDLE_MOBILE_ENFORCE(param->Filter()->ClImage()->dims()[2] ==
+                                param->Filter()->ClImage()->dims()[3] &&
+                            param->Paddings()[0] == param->Paddings()[1],
+                        "need equal");
 
   const framework::CLImage *mean = param->InputMean()->ClImage();
   const framework::CLImage *variance = param->InputVariance()->ClImage();
@@ -58,8 +57,10 @@ bool ConvBNAddReluKernelGpu< float>::Init(
 
   Variable *scale_var = param->GetScope()->Var();
   Variable *bias_var = param->GetScope()->Var();
-  framework::MobileTensor *new_scale_w = scale_var->GetMutable<framework::MobileTensor>();
-  framework::MobileTensor *new_bias_w = bias_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_scale_w =
+      scale_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_bias_w =
+      bias_var->GetMutable<framework::MobileTensor>();
 
   auto *new_scale = new_scale_w->MuteClImage();
   auto *new_bias = new_bias_w->MuteClImage();
@@ -80,35 +81,37 @@ bool ConvBNAddReluKernelGpu< float>::Init(
   delete[](new_scale_ptr);
   delete[](new_bias_ptr);
 
-  PADDLE_MOBILE_ENFORCE(
-      param->Filter()->ClImage()->dims()[2] == param->Filter()->ClImage()->dims()[3] &&
-          param->Paddings()[0] == param->Paddings()[1],
-      "need equal");
+  PADDLE_MOBILE_ENFORCE(param->Filter()->ClImage()->dims()[2] ==
+                                param->Filter()->ClImage()->dims()[3] &&
+                            param->Paddings()[0] == param->Paddings()[1],
+                        "need equal");
 
   int offset = static_cast<int>(param->Filter()->ClImage()->dims()[2]) / 2 -
                static_cast<int>(param->Paddings()[1]);
 
   param->SetOffset(offset);
 
-  if (param->Filter()->ClImage()->dims()[2] == 1 && param->Filter()->ClImage()->dims()[3] == 1) {
+  if (param->Filter()->ClImage()->dims()[2] == 1 &&
+      param->Filter()->ClImage()->dims()[3] == 1) {
     param->Filter()->ClImage()->InitNImage(cl_helper_.CLContext(),
-                                cl_helper_.CLCommandQueue());
+                                           cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("convBNAdd_1x1_spl",
                                "conv_bn_add_relu_kernel.cl");
     DLOG << " conv bn add relu conv 1x1";
   } else if (param->Filter()->ClImage()->dims()[1] == 1 &&
-      param->Input()->ClImage()->dims()[1] == param->Output()->ClImage()->dims()[1] &&
-      param->Filter()->ClImage()->dims()[2] == 3) {
+             param->Input()->ClImage()->dims()[1] ==
+                 param->Output()->ClImage()->dims()[1] &&
+             param->Filter()->ClImage()->dims()[2] == 3) {
     param->Filter()->ClImage()->InitDWImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+                                            cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("depth_convBNAdd_3x3",
                                "conv_bn_add_relu_kernel.cl");
     DLOG << " conv bn add relu depth_conv_3x3";
 
   } else if (param->Filter()->ClImage()->dims()[2] == 3 &&
-      param->Filter()->ClImage()->dims()[3] == 3) {
+             param->Filter()->ClImage()->dims()[3] == 3) {
     param->Filter()->ClImage()->InitCLImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+                                            cl_helper_.CLCommandQueue());
 
     this->cl_helper_.AddKernel("convBNAdd_3x3", "conv_bn_add_relu_kernel.cl");
     DLOG << " conv bn add relu conv_3x3";
@@ -120,12 +123,12 @@ bool ConvBNAddReluKernelGpu< float>::Init(
 }
 
 template <>
-void ConvBNAddReluKernelGpu< float>::Compute(
+void ConvBNAddReluKernelGpu<float>::Compute(
     const FusionConvBNAddReluParam &param) {
-  ConvAddBnRelu(this->cl_helper_, param, true, param.Bias()->ClImage(), param.NewScale()->ClImage(),
-                param.NewBias()->ClImage());
+  ConvAddBnRelu(this->cl_helper_, param, true, param.Bias()->ClImage(),
+                param.NewScale()->ClImage(), param.NewBias()->ClImage());
 }
-template class ConvBNAddReluKernelGpu< float>;
+template class ConvBNAddReluKernelGpu<float>;
 
 }  // namespace operators
 }  // namespace paddle_mobile

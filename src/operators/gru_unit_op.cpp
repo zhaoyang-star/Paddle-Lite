@@ -22,8 +22,7 @@ namespace operators {
 template <typename T>
 void GruUnitOp<T>::InferShape() const {
   auto input_dims = this->param_.InputInput()->LodTensor()->dims();
-  auto hidden_prev_dims =
-      this->param_.InputHiddenPrev()->LodTensor()->dims();
+  auto hidden_prev_dims = this->param_.InputHiddenPrev()->LodTensor()->dims();
   auto weight_dims = this->param_.InputWeight()->LodTensor()->dims();
   int batch_size = input_dims[0];
   int input_size = input_dims[1];
@@ -48,8 +47,7 @@ void GruUnitOp<T>::InferShape() const {
     PADDLE_MOBILE_ENFORCE((bias_width == frame_size * 3),
                           "The shape of Bias must be [1, frame_size * 3].");
   }
-  this->param_.OutGate()->LodTensor()->Resize(
-      {batch_size, frame_size * 3});
+  this->param_.OutGate()->LodTensor()->Resize({batch_size, frame_size * 3});
   this->param_.OutResetHiddenPrev()->LodTensor()->Resize(
       {batch_size, frame_size});
   this->param_.OutHidden()->LodTensor()->Resize({batch_size, frame_size});

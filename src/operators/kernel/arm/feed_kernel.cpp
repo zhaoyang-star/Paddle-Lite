@@ -25,10 +25,8 @@ bool FeedKernelCpu<float>::Init(FeedParam *param) {
 template <>
 void FeedKernelCpu<float>::Compute(const FeedParam &param) {
   int col = param.Col();
-  param.Out()->LodTensor()->ShareDataWith(
-      *param.InputX()->at(col).LodTensor());
-  param.Out()->LodTensor()->set_lod(
-      param.InputX()->at(col).LodTensor()->lod());
+  param.Out()->LodTensor()->ShareDataWith(*param.InputX()->at(col).LodTensor());
+  param.Out()->LodTensor()->set_lod(param.InputX()->at(col).LodTensor()->lod());
 }
 
 template class FeedKernelCpu<float>;

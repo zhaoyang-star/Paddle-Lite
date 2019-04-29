@@ -28,8 +28,7 @@ bool SoftmaxKernelCpu<float>::Init(SoftmaxParam *param) {
 template <>
 void SoftmaxKernelCpu<float>::Compute(const SoftmaxParam &param) {
   SoftmaxCompute<float>(param);
-  param.Out()->LodTensor()->set_lod(
-      param.InputX()->LodTensor()->lod());
+  param.Out()->LodTensor()->set_lod(param.InputX()->LodTensor()->lod());
 }
 
 template class SoftmaxKernelCpu<float>;

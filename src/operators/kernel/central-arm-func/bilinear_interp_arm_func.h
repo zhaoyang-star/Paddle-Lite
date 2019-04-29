@@ -52,8 +52,7 @@ void BilinearInterpCompute(const BilinearInterpParam& param) {
       (out_w > 1) ? static_cast<float>(in_w - 1) / (out_w - 1) : 0.f;
 
   if (in_h == out_h && in_w == out_w) {
-    memcpy(output, input,
-           param.InputX()->LodTensor()->numel() * sizeof(float));
+    memcpy(output, input, param.InputX()->LodTensor()->numel() * sizeof(float));
   } else {
     for (int k = 0; k < batch_size; ++k) {  // loop for batches
       for (int i = 0; i < out_h; ++i) {     // loop for images

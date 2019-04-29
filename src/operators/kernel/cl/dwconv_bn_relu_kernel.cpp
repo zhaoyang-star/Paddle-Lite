@@ -23,7 +23,7 @@ namespace operators {
 template <>
 bool DWConvBNReluKernelGpu<float>::Init(FusionDWConvBNReluParam *param) {
   PADDLE_MOBILE_ENFORCE(param->Filter()->ClImage()->dims()[2] ==
-      param->Filter()->ClImage()->dims()[3] &&
+                                param->Filter()->ClImage()->dims()[3] &&
                             param->Paddings()[0] == param->Paddings()[1],
                         "need equal");
   const framework::CLImage *mean = param->InputMean()->ClImage();
@@ -45,8 +45,6 @@ bool DWConvBNReluKernelGpu<float>::Init(FusionDWConvBNReluParam *param) {
         1 / static_cast<float>(pow((variance_ptr[i] + epsilon), 0.5));
   }
 
-
-
   float *new_scale_ptr = new float[C];
   float *new_bias_ptr = new float[C];
 
@@ -57,8 +55,10 @@ bool DWConvBNReluKernelGpu<float>::Init(FusionDWConvBNReluParam *param) {
 
   Variable *scale_var = param->GetScope()->Var();
   Variable *bias_var = param->GetScope()->Var();
-  framework::MobileTensor *new_scale_w = scale_var->GetMutable<framework::MobileTensor>();
-  framework::MobileTensor *new_bias_w = bias_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_scale_w =
+      scale_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_bias_w =
+      bias_var->GetMutable<framework::MobileTensor>();
 
   auto *new_scale = new_scale_w->MuteClImage();
   auto *new_bias = new_bias_w->MuteClImage();
@@ -80,18 +80,17 @@ bool DWConvBNReluKernelGpu<float>::Init(FusionDWConvBNReluParam *param) {
   delete[](new_bias_ptr);
 
   PADDLE_MOBILE_ENFORCE(param->Filter()->ClImage()->dims()[2] ==
-      param->Filter()->ClImage()->dims()[3] &&
+                                param->Filter()->ClImage()->dims()[3] &&
                             param->Paddings()[0] == param->Paddings()[1],
                         "need equal");
 
-  int offset =
-      static_cast<int>(param->Filter()->ClImage()->dims()[2]) / 2 -
-      static_cast<int>(param->Paddings()[1]);
+  int offset = static_cast<int>(param->Filter()->ClImage()->dims()[2]) / 2 -
+               static_cast<int>(param->Paddings()[1]);
 
   param->SetOffset(offset);
 
   param->Filter()->ClImage()->InitDWImage(cl_helper_.CLContext(),
-                                               cl_helper_.CLCommandQueue());
+                                          cl_helper_.CLCommandQueue());
   this->cl_helper_.AddKernel("depth_conv_3x3", "conv_bn_relu_kernel.cl");
   DLOG << " conv bn relu depth_conv_3x3";
 
@@ -115,7 +114,7 @@ void DWConvBNReluKernelGpu<float>::Compute(
   int stride = param.Strides()[0];
   int offset = param.Offset();
   int input_c = reinterpret_cast<framework::CLImageConverterFolder *>(
-      param.Input()->ClImage()->Converter())
+                    param.Input()->ClImage()->Converter())
                     ->GetCBlock();
   int dilation = param.Dilations()[0];
   int input_width = param.Input()->ClImage()->dims()[3];

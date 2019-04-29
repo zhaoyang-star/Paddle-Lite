@@ -21,47 +21,48 @@ namespace paddle_mobile {
 namespace operators {
 
 template <>
-bool ConvAddReluKernelGpu< float>::Init(
-    FusionConvAddReluParam *param) {
-  PADDLE_MOBILE_ENFORCE(
-      param->Filter()->ClImage()->dims()[2] == param->Filter()->ClImage()->dims()[3] &&
-          param->Paddings()[0] == param->Paddings()[1],
-      "need equal");
+bool ConvAddReluKernelGpu<float>::Init(FusionConvAddReluParam *param) {
+  PADDLE_MOBILE_ENFORCE(param->Filter()->ClImage()->dims()[2] ==
+                                param->Filter()->ClImage()->dims()[3] &&
+                            param->Paddings()[0] == param->Paddings()[1],
+                        "need equal");
   param->Bias()->ClImage()->InitCLImage(cl_helper_.CLContext(),
-                             this->cl_helper_.CLCommandQueue());
+                                        this->cl_helper_.CLCommandQueue());
 
   int offset = static_cast<int>(param->Filter()->ClImage()->dims()[2]) / 2 -
                static_cast<int>(param->Paddings()[1]);
   param->SetOffset(offset);
 
-  if (param->Filter()->ClImage()->dims()[2] == 1 && param->Filter()->ClImage()->dims()[3] == 1) {
+  if (param->Filter()->ClImage()->dims()[2] == 1 &&
+      param->Filter()->ClImage()->dims()[3] == 1) {
     param->Filter()->ClImage()->InitNImage(cl_helper_.CLContext(),
-                                cl_helper_.CLCommandQueue());
+                                           cl_helper_.CLCommandQueue());
 
     this->cl_helper_.AddKernel("conv_1x1_spl", "conv_add_relu_kernel.cl");
   } else if (param->Filter()->ClImage()->dims()[1] == 1 &&
-      param->Input()->ClImage()->dims()[1] == param->Output()->ClImage()->dims()[1] &&
-      param->Filter()->ClImage()->dims()[2] == 3) {
+             param->Input()->ClImage()->dims()[1] ==
+                 param->Output()->ClImage()->dims()[1] &&
+             param->Filter()->ClImage()->dims()[2] == 3) {
     param->Filter()->ClImage()->InitDWImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+                                            cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("depth_conv_3x3", "conv_add_relu_kernel.cl");
 
   } else if (param->Filter()->ClImage()->dims()[2] == 3 &&
-      param->Filter()->ClImage()->dims()[3] == 3) {
+             param->Filter()->ClImage()->dims()[3] == 3) {
     param->Filter()->ClImage()->InitCLImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+                                            cl_helper_.CLCommandQueue());
 
     this->cl_helper_.AddKernel("conv_3x3", "conv_add_relu_kernel.cl");
 
   } else if (param->Filter()->ClImage()->dims()[2] == 7 &&
-      param->Filter()->ClImage()->dims()[3] == 7) {
+             param->Filter()->ClImage()->dims()[3] == 7) {
     param->Filter()->ClImage()->InitCLImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+                                            cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("conv_7x7", "conv_add_relu_kernel.cl");
   } else if (param->Filter()->ClImage()->dims()[2] == 5 &&
-      param->Filter()->ClImage()->dims()[3] == 5) {
+             param->Filter()->ClImage()->dims()[3] == 5) {
     param->Filter()->ClImage()->InitCLImage(cl_helper_.CLContext(),
-                                 cl_helper_.CLCommandQueue());
+                                            cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("conv_5x5", "conv_add_relu_kernel.cl");
   } else {
     PADDLE_MOBILE_THROW_EXCEPTION(" not support ");
@@ -71,8 +72,7 @@ bool ConvAddReluKernelGpu< float>::Init(
 }
 
 template <>
-void ConvAddReluKernelGpu< float>::Compute(
-    const FusionConvAddReluParam &param) {
+void ConvAddReluKernelGpu<float>::Compute(const FusionConvAddReluParam &param) {
   ConvAddBnRelu(this->cl_helper_, param, true, param.Bias()->ClImage());
 }
 

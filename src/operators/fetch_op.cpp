@@ -31,4 +31,3 @@ namespace ops = paddle_mobile::operators;
 REGISTER_OPERATOR(fetch, ops::FetchOp);
 
 // fixme #if defined(PADDLE_MOBILE_FPGA) || defined(PADDLE_MOBILE_FPGA_KD)
-

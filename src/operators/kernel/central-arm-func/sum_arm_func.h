@@ -123,8 +123,8 @@ void SumCompute(const SumParam &param) {
 
       for (size_t i = 0; i < in_array->size(); ++i) {
         const framework::MobileTensor &tensor_wrapper = (*in_array)[i];
-        auto tensor = *static_cast<framework::MobileTensor>(tensor_wrapper)
-            .LodTensor();
+        auto tensor =
+            *static_cast<framework::MobileTensor>(tensor_wrapper).LodTensor();
         if (tensor.numel() != 0) {
           if (i >= out_array.size()) {
             out_array.resize(i + 1);
@@ -132,7 +132,7 @@ void SumCompute(const SumParam &param) {
           const framework::MobileTensor &tensor_out_wrapper = out_array[i];
           auto tensor_out =
               *static_cast<framework::MobileTensor>(tensor_out_wrapper)
-                  .LodTensor();
+                   .LodTensor();
 
           if (tensor_out.numel() == 0) {
             framework::TensorCopy(tensor, &tensor_out);

@@ -68,7 +68,7 @@ class FusionConvBNReluOp : public framework::OperatorWithKernel<
  protected:
 };*/
 DECLARE_OPERATOR_MIXED_WITH_PARAMS(FusionConvBNRelu, FusionConvBNReluParam,
-                             ConvBNReluKernel);
+                                   ConvBNReluKernel);
 }  // namespace operators
 }  // namespace paddle_mobile
 

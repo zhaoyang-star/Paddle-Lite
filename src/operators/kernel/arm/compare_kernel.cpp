@@ -193,11 +193,14 @@ bool LessThanKernelCpu<float>::Init(CompareParam *param) {
 template <>
 void LessThanKernelCpu<float>::Compute(const CompareParam &param) {
   if (param.input_x_->LodTensor()->type() == type_id<int64_t>().hash_code()) {
-    CompareCompute<int64_t, LESS_THAN>()(param.input_x_->LodTensor(), param.input_y_->LodTensor(),
-                                         param.axis_, param.output_->LodTensor());
-  } else if (param.input_x_->LodTensor()->type() == type_id<float>().hash_code()) {
-    CompareCompute<float, LESS_THAN>()(param.input_x_->LodTensor(), param.input_y_->LodTensor(),
-                                       param.axis_, param.output_->LodTensor());
+    CompareCompute<int64_t, LESS_THAN>()(
+        param.input_x_->LodTensor(), param.input_y_->LodTensor(), param.axis_,
+        param.output_->LodTensor());
+  } else if (param.input_x_->LodTensor()->type() ==
+             type_id<float>().hash_code()) {
+    CompareCompute<float, LESS_THAN>()(param.input_x_->LodTensor(),
+                                       param.input_y_->LodTensor(), param.axis_,
+                                       param.output_->LodTensor());
   } else {
     PADDLE_MOBILE_THROW_EXCEPTION(
         "LessThan only support int64_t and float data type.");

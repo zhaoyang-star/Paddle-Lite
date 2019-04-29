@@ -15,8 +15,8 @@ limitations under the License. */
 #ifdef FUSION_DWCONVBNRELU_OP
 
 #include "operators/kernel/dwconv_bn_relu_kernel.h"
-#include <cmath>
 #include <framework/tensor_wrapper.h>
+#include <cmath>
 #include "operators/kernel/arm/convolution/conv_common.h"
 #include "operators/kernel/central-arm-func/conv_arm_func.h"
 #include "operators/math/element_wise.h"
@@ -45,8 +45,10 @@ bool DWConvBNReluKernelCpu<float>::Init(FusionDWConvBNReluParam *param) {
   }
   Variable *scale_var = param->GetScope()->Var();
   Variable *bias_var = param->GetScope()->Var();
-  framework::MobileTensor *new_scale_w = scale_var->GetMutable<framework::MobileTensor>();
-  framework::MobileTensor *new_bias_w = bias_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_scale_w =
+      scale_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_bias_w =
+      bias_var->GetMutable<framework::MobileTensor>();
   Tensor *new_scale = new_scale_w->LodTensor();
   Tensor *new_bias = new_bias_w->LodTensor();
 
@@ -64,7 +66,7 @@ bool DWConvBNReluKernelCpu<float>::Init(FusionDWConvBNReluParam *param) {
 }
 
 template <>
-void DWConvBNReluKernelCpu< float>::Compute(
+void DWConvBNReluKernelCpu<float>::Compute(
     const FusionDWConvBNReluParam &param) {
   switch (param.ExecMode()) {
     case ConvParam::EXEC_DEPTHWISE3x3S1_FLOAT:
@@ -84,8 +86,9 @@ void DWConvBNReluKernelCpu< float>::Compute(
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",
                                     param.ExecMode());
   }
-  math::ScaleAddChannelWise<RELU>(param.Output()->LodTensor(), param.NewScale()->LodTensor(),
-                                  param.NewBias()->LodTensor(), param.Output()->LodTensor());
+  math::ScaleAddChannelWise<RELU>(
+      param.Output()->LodTensor(), param.NewScale()->LodTensor(),
+      param.NewBias()->LodTensor(), param.Output()->LodTensor());
 }
 
 template class DWConvBNReluKernelCpu<float>;

@@ -111,8 +111,8 @@ class FillConstantOp : public framework::OperatorBase {
       tensor = outvar->template GetMutable<framework::SelectedRows>()
                    ->mutable_value();
     } else if (outvar->template IsType<framework::MobileTensor>()) {
-      tensor = outvar->template GetMutable<framework::MobileTensor>()
-          ->LodTensor();
+      tensor =
+          outvar->template GetMutable<framework::MobileTensor>()->LodTensor();
     } else {
       PADDLE_MOBILE_THROW_EXCEPTION(
           "fill constant op's output only"

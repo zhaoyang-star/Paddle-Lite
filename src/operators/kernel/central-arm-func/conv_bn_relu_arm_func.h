@@ -122,18 +122,18 @@ void ConvBNReluCompute(const FusionConvBNReluParam &param) {
           param.Output()->LodTensor()->dims()[1] &&
       param.Filter()->LodTensor()->dims()[2] ==
           param.Filter()->LodTensor()->dims()[3] &&
-      param.Filter()->LodTensor()->dims()[2] == 3 &&
-      param.Strides()[0] == 1 && param.paddings_[0] == 1) {
+      param.Filter()->LodTensor()->dims()[2] == 3 && param.Strides()[0] == 1 &&
+      param.paddings_[0] == 1) {
     math::DepthwiseConvAddBNRelu3x3s1p1(
         param.Input()->LodTensor(), param.Filter()->LodTensor(),
         param.Output()->LodTensor(), param.NewScale()->LodTensor(),
         param.NewBias()->LodTensor(), true);
   } else if (param.Groups() == param.Input()->LodTensor()->dims()[1] &&
-      param.Input()->LodTensor()->dims()[1] ==
-          param.Output()->LodTensor()->dims()[1] &&
-      param.Filter()->LodTensor()->dims()[2] ==
-          param.Filter()->LodTensor()->dims()[3] &&
-      param.Filter()->LodTensor()->dims()[2] == 3 &&
+             param.Input()->LodTensor()->dims()[1] ==
+                 param.Output()->LodTensor()->dims()[1] &&
+             param.Filter()->LodTensor()->dims()[2] ==
+                 param.Filter()->LodTensor()->dims()[3] &&
+             param.Filter()->LodTensor()->dims()[2] == 3 &&
              param.Strides()[0] == 2) {
     //    math::DepthwiseConvAddBNRelu3x3s2p1(param.Input()->InnerLoDTensor(),param.Filter()->LodTensor(),
     //                                        param.Output()->LodTensor(),

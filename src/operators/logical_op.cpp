@@ -17,9 +17,9 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-#define DEFINE_LOGICAL_INFERSHAPE(OpName)                                     \
-  template <typename T>                                                       \
-  void OpName##Op<T>::InferShape() const {                                    \
+#define DEFINE_LOGICAL_INFERSHAPE(OpName)                                \
+  template <typename T>                                                  \
+  void OpName##Op<T>::InferShape() const {                               \
     const auto &input_dims = this->param_.InputX()->LodTensor()->dims(); \
     this->param_.Out()->LodTensor()->Resize(input_dims);                 \
   }

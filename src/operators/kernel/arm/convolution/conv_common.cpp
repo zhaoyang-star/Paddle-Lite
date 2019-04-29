@@ -19,15 +19,21 @@ namespace paddle_mobile {
 namespace operators {
 
 void InitBaseConvKernel(ConvParam *param) {
-  bool conv3x3 = param->Filter()->LodTensor()->dims()[2] == param->Filter()->LodTensor()->dims()[3] &&
-      param->Filter()->LodTensor()->dims()[2] == 3;
-  bool conv5x5 = param->Filter()->LodTensor()->dims()[2] == param->Filter()->LodTensor()->dims()[3] &&
-      param->Filter()->LodTensor()->dims()[2] == 5;
-  bool depth3x3 = conv3x3 && param->Groups() == param->Input()->LodTensor()->dims()[1] &&
-      param->Input()->LodTensor()->dims()[1] == param->Output()->LodTensor()->dims()[1];
+  bool conv3x3 = param->Filter()->LodTensor()->dims()[2] ==
+                     param->Filter()->LodTensor()->dims()[3] &&
+                 param->Filter()->LodTensor()->dims()[2] == 3;
+  bool conv5x5 = param->Filter()->LodTensor()->dims()[2] ==
+                     param->Filter()->LodTensor()->dims()[3] &&
+                 param->Filter()->LodTensor()->dims()[2] == 5;
+  bool depth3x3 = conv3x3 &&
+                  param->Groups() == param->Input()->LodTensor()->dims()[1] &&
+                  param->Input()->LodTensor()->dims()[1] ==
+                      param->Output()->LodTensor()->dims()[1];
 
-  bool depth5x5 = conv5x5 && param->Groups() == param->Input()->LodTensor()->dims()[1] &&
-      param->Input()->LodTensor()->dims()[1] == param->Output()->LodTensor()->dims()[1];
+  bool depth5x5 = conv5x5 &&
+                  param->Groups() == param->Input()->LodTensor()->dims()[1] &&
+                  param->Input()->LodTensor()->dims()[1] ==
+                      param->Output()->LodTensor()->dims()[1];
 
   if (param->Filter()->LodTensor()->type() == type_id<int8_t>().hash_code()) {
 #ifndef __aarch64__
@@ -68,7 +74,8 @@ void InitBaseConvKernel(ConvParam *param) {
       param->transformed_filter_ =
           transformed_var->GetMutable<framework::MobileTensor>();
       operators::math::winograd_transform_weight<8, 3>(
-          *param->Filter()->LodTensor(), param->transformed_filter_->LodTensor());
+          *param->Filter()->LodTensor(),
+          param->transformed_filter_->LodTensor());
     } else if (conv3x3 && param->Groups() == 1 &&
                param->Strides()[0] == param->Strides()[1] &&
                param->Dilations()[0] == param->Dilations()[1] &&

@@ -83,8 +83,8 @@ Executor<T>::Executor(const Program<T> &program,
 
     for (auto iter = config.running_expected_map_.begin();
          iter != config.running_expected_map_.end(); iter++) {
-
-      printf("当前的: %s   ------被查找的 %s \n ",op_desc->Type().c_str(),iter->first.c_str());
+      printf("当前的: %s   ------被查找的 %s \n ", op_desc->Type().c_str(),
+             iter->first.c_str());
 
       if (op_desc->Type().find(iter->first.c_str()) != string::npos) {
         printf("命中!\n");
@@ -295,7 +295,7 @@ static void ClearNoPersistableTensorArray(const framework::ProgramDesc *program,
       if (!var_desc->Persistable() &&
           var_desc->Type() == VARTYPE_TYPE_STEP_LOD_TENSOR_ARRAY) {
         auto var = scope->Var(var_desc->Name());
-        auto array = var->template GetMutable<framework::MobileTensorArray >();
+        auto array = var->template GetMutable<framework::MobileTensorArray>();
         array->resize(1);
       }
     }
@@ -530,7 +530,7 @@ PMStatus Executor<T>::Predict() {
 }
 
 template <typename T>
-void Executor< T>::FeedTensorData(const vector<framework::Tensor> &v) {
+void Executor<T>::FeedTensorData(const vector<framework::Tensor> &v) {
   auto input_size = v.size();
   auto *feed_var = program_.scope->Var("feed");
 
@@ -543,9 +543,8 @@ void Executor< T>::FeedTensorData(const vector<framework::Tensor> &v) {
   }
 }
 
-template < typename T>
-void Executor<T>::GetTensorResults(
-    std::vector<framework::Tensor *> *v) {
+template <typename T>
+void Executor<T>::GetTensorResults(std::vector<framework::Tensor *> *v) {
   auto *fetch_var = program_.scope->Var("fetch");
   auto output_size = fetch_indices_.size();
   for (int i = 0; i < output_size; i++) {
@@ -724,9 +723,7 @@ void Executor<Device, T>::InitQuantMemory() {
 #endif
 #endif
 
-
 template class Executor<float>;
-
 
 }  // namespace framework
 }  // namespace paddle_mobile

@@ -19,7 +19,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template < typename T>
+template <typename T>
 void AssignValueOp<T>::InferShape() const {
   const auto &shape = this->param_.shape_;
   this->param_.output_->LodTensor()->Resize(framework::make_ddim(shape));

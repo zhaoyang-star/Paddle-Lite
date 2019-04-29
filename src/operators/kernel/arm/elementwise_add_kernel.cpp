@@ -28,8 +28,7 @@ bool ElementwiseAddKernelCpu<float>::Init(ElementwiseAddParam *param) {
 template <>
 void ElementwiseAddKernelCpu<float>::Compute(const ElementwiseAddParam &param) {
   ElementwiseAddCompute<float>(param);
-  param.Out()->LodTensor()->set_lod(
-      param.InputX()->LodTensor()->lod());
+  param.Out()->LodTensor()->set_lod(param.InputX()->LodTensor()->lod());
 }
 
 }  // namespace operators

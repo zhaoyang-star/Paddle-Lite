@@ -21,8 +21,7 @@ namespace operators {
 
 template <typename T>
 void BoxCoderOp<T>::InferShape() const {
-  auto input_priorbox_dims =
-      this->param_.InputPriorBox()->LodTensor()->dims();
+  auto input_priorbox_dims = this->param_.InputPriorBox()->LodTensor()->dims();
   auto input_priorboxvar_dims =
       this->param_.InputPriorBoxVar()->LodTensor()->dims();
   auto input_targetbox_dims =

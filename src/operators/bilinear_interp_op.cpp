@@ -32,8 +32,7 @@ void BilinearInterpOp<T>::InferShape() const {
 
   if (this->param_.InputOutPutSize() != nullptr &&
       this->param_.InputOutPutSize()->LodTensor() != nullptr) {
-    auto out_size_dim =
-        this->param_.InputOutPutSize()->LodTensor()->dims();
+    auto out_size_dim = this->param_.InputOutPutSize()->LodTensor()->dims();
 
     PADDLE_MOBILE_ENFORCE(out_size_dim.size() == 1,
                           "OutSize's dimension size must be 1");
