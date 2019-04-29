@@ -26,8 +26,8 @@ bool IsEmptyKernelCpu<float>::Init(IsEmptyParam *param) {
 
 template <>
 void IsEmptyKernelCpu<float>::Compute(const IsEmptyParam &param) {
-  const framework::Tensor *input = param.InputX()->InnerLoDTensor();
-  framework::Tensor *out = param.Out()->InnerLoDTensor();
+  const framework::Tensor *input = param.InputX()->LodTensor();
+  framework::Tensor *out = param.Out()->LodTensor();
   out->mutable_data<bool>()[0] = input->numel() == 0;
 }
 

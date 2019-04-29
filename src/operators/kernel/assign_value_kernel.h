@@ -23,7 +23,6 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype>
 class AssignValueParam : public OpParam {
  public:
   AssignValueParam(const VariableNameMap &inputs,
@@ -38,14 +37,14 @@ class AssignValueParam : public OpParam {
   }
 
  public:
-  framework::LoDTensor *output_;
+  framework::MobileTensor *output_;
   std::vector<int> shape_;
   std::vector<float> fp32_values_;
   std::vector<int> int32_values_;
   int dtype_;
 };
 
-DECLARE_KERNEL(AssignValue, AssignValueParam);
+DECLARE_KERNEL_ALL(AssignValue);
 
 }  // namespace operators
 }  // namespace paddle_mobile

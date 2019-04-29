@@ -35,7 +35,7 @@ int PoolOutputSize(int input_size, int filter_size, int padding, int stride,
 }
 template <typename T>
 void PoolOp<T>::InferShape() const {
-  auto in_x_dims = this->param_.Input()->InnerLoDTensor()->dims();
+  auto in_x_dims = this->param_.Input()->LodTensor()->dims();
   std::vector<int> ksize = this->param_.Ksize();
   std::vector<int> paddings = this->param_.Paddings();
   std::vector<int> strides = this->param_.Strides();
@@ -53,7 +53,7 @@ void PoolOp<T>::InferShape() const {
     output_shape.push_back(PoolOutputSize(in_x_dims[i + 2], ksize[i],
                                           paddings[i], strides[i], ceil_mode));
   }
-  this->param_.Output()->InnerLoDTensor()->Resize(
+  this->param_.Output()->LodTensor()->Resize(
       framework::make_ddim(output_shape));
 }
 

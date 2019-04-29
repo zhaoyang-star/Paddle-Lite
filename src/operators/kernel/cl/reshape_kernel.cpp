@@ -28,9 +28,9 @@ template <>
 void ReshapeKernelGpu<float>::Compute(const ReshapeParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size =
-      this->cl_helper_.DefaultWorkSize(*param.Out()->InnerCLImage());
-  const auto *input = param.InputX()->InnerCLImage();
-  auto *output = param.Out()->InnerCLImage();
+      this->cl_helper_.DefaultWorkSize(*param.Out()->ClImage());
+  const auto *input = param.InputX()->ClImage();
+  auto *output = param.Out()->ClImage();
   auto input_image = input->GetCLImage();
   auto output_image = output->GetCLImage();
   const auto &inputDim = input->dims();

@@ -20,9 +20,9 @@ namespace operators {
 
 template <>
 bool TransposeKernelGpu<float>::Init(TransposeParam *param) {
-  if (param->Out()->InnerCLImage()->dims().size() == 4) {
+  if (param->Out()->ClImage()->dims().size() == 4) {
     this->cl_helper_.AddKernel("transpose_4d", "transpose_kernel.cl");
-  } else if (param->Out()->InnerCLImage()->dims().size() < 4) {
+  } else if (param->Out()->ClImage()->dims().size() < 4) {
     this->cl_helper_.AddKernel("transpose", "transpose_kernel.cl");
   }
   return true;
@@ -30,16 +30,16 @@ bool TransposeKernelGpu<float>::Init(TransposeParam *param) {
 
 template <>
 void TransposeKernelGpu<float>::Compute(const TransposeParam &param) {
-  if (param.Out()->InnerCLImage()->dims().size() == 4) {
+  if (param.Out()->ClImage()->dims().size() == 4) {
     auto kernel = this->cl_helper_.KernelAt(0);
     auto default_work_size =
-        this->cl_helper_.DefaultWorkSize(*param.Out()->InnerCLImage());
-    int out_C = param.Out()->InnerCLImage()->dims()[1];
-    int out_H = param.Out()->InnerCLImage()->dims()[2];
-    int out_W = param.Out()->InnerCLImage()->dims()[3];
-    int in_W = param.InputX()->InnerCLImage()->dims()[3];
-    auto output_image = param.Out()->InnerCLImage()->GetCLImage();
-    auto input_image = param.InputX()->InnerCLImage()->GetCLImage();
+        this->cl_helper_.DefaultWorkSize(*param.Out()->ClImage());
+    int out_C = param.Out()->ClImage()->dims()[1];
+    int out_H = param.Out()->ClImage()->dims()[2];
+    int out_W = param.Out()->ClImage()->dims()[3];
+    int in_W = param.InputX()->ClImage()->dims()[3];
+    auto output_image = param.Out()->ClImage()->GetCLImage();
+    auto input_image = param.InputX()->ClImage()->GetCLImage();
     DLOG << "out_C=" << out_C;
     DLOG << "out_H=" << out_H;
     DLOG << "out_W=" << out_W;
@@ -62,16 +62,16 @@ void TransposeKernelGpu<float>::Compute(const TransposeParam &param) {
         this->cl_helper_.CLCommandQueue(), kernel, default_work_size.size(),
         NULL, default_work_size.data(), NULL, 0, NULL, NULL);
     CL_CHECK_ERRORS(status);
-  } else if (param.Out()->InnerCLImage()->dims().size() == 3) {
+  } else if (param.Out()->ClImage()->dims().size() == 3) {
     auto kernel = this->cl_helper_.KernelAt(0);
     auto default_work_size =
-        this->cl_helper_.DefaultWorkSize(*param.Out()->InnerCLImage());
-    int out_C = param.Out()->InnerCLImage()->dims()[0];
-    int out_H = param.Out()->InnerCLImage()->dims()[1];
-    int out_W = param.Out()->InnerCLImage()->dims()[2];
-    int in_W = param.InputX()->InnerCLImage()->dims()[2];
-    auto output_image = param.Out()->InnerCLImage()->GetCLImage();
-    auto input_image = param.InputX()->InnerCLImage()->GetCLImage();
+        this->cl_helper_.DefaultWorkSize(*param.Out()->ClImage());
+    int out_C = param.Out()->ClImage()->dims()[0];
+    int out_H = param.Out()->ClImage()->dims()[1];
+    int out_W = param.Out()->ClImage()->dims()[2];
+    int in_W = param.InputX()->ClImage()->dims()[2];
+    auto output_image = param.Out()->ClImage()->GetCLImage();
+    auto input_image = param.InputX()->ClImage()->GetCLImage();
     DLOG << "out_C=" << out_C;
     DLOG << "out_H=" << out_H;
     DLOG << "out_W=" << out_W;
@@ -95,16 +95,16 @@ void TransposeKernelGpu<float>::Compute(const TransposeParam &param) {
         NULL, default_work_size.data(), NULL, 0, NULL, NULL);
     CL_CHECK_ERRORS(status);
 
-  } else if (param.Out()->InnerCLImage()->dims().size() == 2) {
+  } else if (param.Out()->ClImage()->dims().size() == 2) {
     auto kernel = this->cl_helper_.KernelAt(0);
     auto default_work_size =
-        this->cl_helper_.DefaultWorkSize(*param.Out()->InnerCLImage());
+        this->cl_helper_.DefaultWorkSize(*param.Out()->ClImage());
     int out_C = 1;
-    int out_H = param.Out()->InnerCLImage()->dims()[0];
-    int out_W = param.Out()->InnerCLImage()->dims()[1];
-    int in_W = param.InputX()->InnerCLImage()->dims()[1];
-    auto output_image = param.Out()->InnerCLImage()->GetCLImage();
-    auto input_image = param.InputX()->InnerCLImage()->GetCLImage();
+    int out_H = param.Out()->ClImage()->dims()[0];
+    int out_W = param.Out()->ClImage()->dims()[1];
+    int in_W = param.InputX()->ClImage()->dims()[1];
+    auto output_image = param.Out()->ClImage()->GetCLImage();
+    auto input_image = param.InputX()->ClImage()->GetCLImage();
     DLOG << "out_C=" << out_C;
     DLOG << "out_H=" << out_H;
     DLOG << "out_W=" << out_W;

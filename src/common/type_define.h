@@ -44,9 +44,11 @@ typedef enum {
   _block = 300,
   _tensor,
   _lod_tensor,
+  _mobile_tensor,
   _blocks,
   _tensors,
   _lod_tensors,
+  _mobile_tensors,
   _p_block = 400,
   _p_tensor,
   _p_lod_tensor,
@@ -106,6 +108,7 @@ class Tensor;
 class LoDTensor;
 class SelectedRows;
 class Scope;
+class MobileTensor;
 #ifdef PADDLE_MOBILE_CL
 class CLImage;
 #endif
@@ -146,9 +149,13 @@ REGISTER_TYPE_ID(int const, _const_int)
 REGISTER_TYPE_ID(framework::BlockDesc, _block)
 REGISTER_TYPE_ID(framework::Tensor, _tensor)
 REGISTER_TYPE_ID(framework::LoDTensor, _lod_tensor)
+REGISTER_TYPE_ID(framework::MobileTensor, _mobile_tensor)
 REGISTER_TYPE_ID(std::vector<framework::BlockDesc>, _blocks)
 REGISTER_TYPE_ID(std::vector<framework::Tensor>, _tensors)
 REGISTER_TYPE_ID(std::vector<framework::LoDTensor>, _lod_tensors)
+REGISTER_TYPE_ID(std::vector<framework::MobileTensor>, _mobile_tensors)
+
+
 
 REGISTER_TYPE_ID(framework::BlockDesc *, _p_block)
 REGISTER_TYPE_ID(framework::Tensor *, _p_tensor)
@@ -156,6 +163,7 @@ REGISTER_TYPE_ID(framework::LoDTensor *, _p_lod_tensor)
 REGISTER_TYPE_ID(std::vector<framework::BlockDesc *>, _p_blocks)
 REGISTER_TYPE_ID(std::vector<framework::Tensor *>, _p_tensors)
 REGISTER_TYPE_ID(std::vector<framework::LoDTensor *>, _p_lod_tensors)
+
 
 REGISTER_TYPE_ID(std::vector<framework::Scope *>, _scopes);
 REGISTER_TYPE_ID(framework::SelectedRows, _selected_rows)

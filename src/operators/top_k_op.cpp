@@ -22,15 +22,15 @@ namespace operators {
 template <typename T>
 void TopKOp<T>::InferShape() const {
   const int k = this->param_.k_;
-  auto dims = this->param_.input_->InnerLoDTensor()->dims();
+  auto dims = this->param_.input_->LodTensor()->dims();
   // should check k <= dims[-1] && k >= 1
   dims[dims.size() - 1] = k;
-  this->param_.output_->InnerLoDTensor()->Resize(dims);
-  this->param_.indices_->InnerLoDTensor()->Resize(dims);
-  this->param_.output_->InnerLoDTensor()->set_lod(
-      this->param_.input_->InnerLoDTensor()->lod());
-  this->param_.indices_->InnerLoDTensor()->set_lod(
-      this->param_.input_->InnerLoDTensor()->lod());
+  this->param_.output_->LodTensor()->Resize(dims);
+  this->param_.indices_->LodTensor()->Resize(dims);
+  this->param_.output_->LodTensor()->set_lod(
+      this->param_.input_->LodTensor()->lod());
+  this->param_.indices_->LodTensor()->set_lod(
+      this->param_.input_->LodTensor()->lod());
 }
 
 }  // namespace operators

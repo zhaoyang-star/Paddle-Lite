@@ -22,14 +22,14 @@ namespace operators {
 
 template <>
 bool DWConvBNReluKernelGpu<float>::Init(FusionDWConvBNReluParam *param) {
-  PADDLE_MOBILE_ENFORCE(param->Filter()->InnerCLImage()->dims()[2] ==
-                                param->Filter()->InnerCLImage()->dims()[3] &&
+  PADDLE_MOBILE_ENFORCE(param->Filter()->ClImage()->dims()[2] ==
+      param->Filter()->ClImage()->dims()[3] &&
                             param->Paddings()[0] == param->Paddings()[1],
                         "need equal");
-  const framework::CLImage *mean = param->InputMean()->InnerCLImage();
-  const framework::CLImage *variance = param->InputVariance()->InnerCLImage();
-  const framework::CLImage *scale = param->InputScale()->InnerCLImage();
-  const framework::CLImage *bias = param->InputBias()->InnerCLImage();
+  const framework::CLImage *mean = param->InputMean()->ClImage();
+  const framework::CLImage *variance = param->InputVariance()->ClImage();
+  const framework::CLImage *scale = param->InputScale()->ClImage();
+  const framework::CLImage *bias = param->InputBias()->ClImage();
   const float epsilon = param->Epsilon();
 
   const int C = mean->numel();
@@ -45,10 +45,7 @@ bool DWConvBNReluKernelGpu<float>::Init(FusionDWConvBNReluParam *param) {
         1 / static_cast<float>(pow((variance_ptr[i] + epsilon), 0.5));
   }
 
-  auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
-  auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
-  auto *new_scale = new_scale_w->MuteClImage();
-  auto *new_bias = new_bias_w->MuteClImage();
+
 
   float *new_scale_ptr = new float[C];
   float *new_bias_ptr = new float[C];
@@ -58,17 +55,23 @@ bool DWConvBNReluKernelGpu<float>::Init(FusionDWConvBNReluParam *param) {
     new_bias_ptr[i] = bias_ptr[i] - mean_ptr[i] * inv_std_ptr[i] * scale_ptr[i];
   }
 
-  //  framework::CLImage *new_scale = new framework::CLImage();
+  Variable *scale_var = param->GetScope()->Var();
+  Variable *bias_var = param->GetScope()->Var();
+  framework::MobileTensor *new_scale_w = scale_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_bias_w = bias_var->GetMutable<framework::MobileTensor>();
 
+  auto *new_scale = new_scale_w->MuteClImage();
+  auto *new_bias = new_bias_w->MuteClImage();
+
+  //  framework::CLImage *new_scale = new framework::ClImage();
   new_scale->SetTensorData(new_scale_ptr, variance->dims());
   new_scale->InitCLImage(this->cl_helper_.CLContext(),
-                         cl_helper_.CLCommandQueue());
+                         this->cl_helper_.CLCommandQueue());
 
-  //  framework::CLImage *new_bias = new framework::CLImage();
-
+  //  framework::CLImage *new_bias = new framework::ClImage();
   new_bias->SetTensorData(new_bias_ptr, variance->dims());
   new_bias->InitCLImage(this->cl_helper_.CLContext(),
-                        cl_helper_.CLCommandQueue());
+                        this->cl_helper_.CLCommandQueue());
 
   param->SetNewScale(new_scale_w);
   param->SetNewBias(new_bias_w);
@@ -76,18 +79,18 @@ bool DWConvBNReluKernelGpu<float>::Init(FusionDWConvBNReluParam *param) {
   delete[](new_scale_ptr);
   delete[](new_bias_ptr);
 
-  PADDLE_MOBILE_ENFORCE(param->Filter()->InnerCLImage()->dims()[2] ==
-                                param->Filter()->InnerCLImage()->dims()[3] &&
+  PADDLE_MOBILE_ENFORCE(param->Filter()->ClImage()->dims()[2] ==
+      param->Filter()->ClImage()->dims()[3] &&
                             param->Paddings()[0] == param->Paddings()[1],
                         "need equal");
 
   int offset =
-      static_cast<int>(param->Filter()->InnerCLImage()->dims()[2]) / 2 -
+      static_cast<int>(param->Filter()->ClImage()->dims()[2]) / 2 -
       static_cast<int>(param->Paddings()[1]);
 
   param->SetOffset(offset);
 
-  param->Filter()->InnerCLImage()->InitDWImage(cl_helper_.CLContext(),
+  param->Filter()->ClImage()->InitDWImage(cl_helper_.CLContext(),
                                                cl_helper_.CLCommandQueue());
   this->cl_helper_.AddKernel("depth_conv_3x3", "conv_bn_relu_kernel.cl");
   DLOG << " conv bn relu depth_conv_3x3";
@@ -100,25 +103,25 @@ void DWConvBNReluKernelGpu<float>::Compute(
     const FusionDWConvBNReluParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size =
-      this->cl_helper_.DefaultWorkSize(*param.Output()->InnerCLImage());
+      this->cl_helper_.DefaultWorkSize(*param.Output()->ClImage());
   int c_block = default_work_size[0];
   int w = default_work_size[1];
   int nh = default_work_size[2];
-  auto input = param.Input()->InnerCLImage()->GetCLImage();
-  auto filter = param.Filter()->InnerCLImage()->GetCLImage();
-  auto new_scale = param.NewScale()->InnerCLImage()->GetCLImage();
-  auto new_bias = param.NewBias()->InnerCLImage()->GetCLImage();
-  auto output = param.Output()->InnerCLImage()->GetCLImage();
+  auto input = param.Input()->ClImage()->GetCLImage();
+  auto filter = param.Filter()->ClImage()->GetCLImage();
+  auto new_scale = param.NewScale()->ClImage()->GetCLImage();
+  auto new_bias = param.NewBias()->ClImage()->GetCLImage();
+  auto output = param.Output()->ClImage()->GetCLImage();
   int stride = param.Strides()[0];
   int offset = param.Offset();
   int input_c = reinterpret_cast<framework::CLImageConverterFolder *>(
-                    param.Input()->InnerCLImage()->Converter())
+      param.Input()->ClImage()->Converter())
                     ->GetCBlock();
   int dilation = param.Dilations()[0];
-  int input_width = param.Input()->InnerCLImage()->dims()[3];
-  int input_height = param.Input()->InnerCLImage()->dims()[2];
-  int output_width = param.Output()->InnerCLImage()->dims()[3];
-  int output_height = param.Output()->InnerCLImage()->dims()[2];
+  int input_width = param.Input()->ClImage()->dims()[3];
+  int input_height = param.Input()->ClImage()->dims()[2];
+  int output_width = param.Output()->ClImage()->dims()[3];
+  int output_height = param.Output()->ClImage()->dims()[2];
 
   cl_int status;
 

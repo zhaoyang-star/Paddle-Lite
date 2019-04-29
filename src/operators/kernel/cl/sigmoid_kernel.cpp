@@ -27,8 +27,8 @@ bool SigmoidKernelGpu<float>::Init(SigmoidParam* param) {
 template <>
 void SigmoidKernelGpu<float>::Compute(const SigmoidParam& param) {
   auto kernel = this->cl_helper_.KernelAt(0);
-  const auto* input = param.InputX()->InnerCLImage();
-  auto* output = param.Out()->InnerCLImage();
+  const auto* input = param.InputX()->ClImage();
+  auto* output = param.Out()->ClImage();
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*output);
   auto inputImage = input->GetCLImage();
   auto outputImage = output->GetCLImage();

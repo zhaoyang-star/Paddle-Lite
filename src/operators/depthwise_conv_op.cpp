@@ -26,8 +26,8 @@ namespace operators {
 
 template <typename T>
 void DepthwiseConvOp<T>::InferShape() const {
-  auto in_dims = this->param_.Input()->InnerLoDTensor()->dims();
-  auto filter_dims = this->param_.Filter()->InnerLoDTensor()->dims();
+  auto in_dims = this->param_.Input()->LodTensor()->dims();
+  auto filter_dims = this->param_.Filter()->LodTensor()->dims();
   const std::vector<int> &strides = this->param_.Strides();
   std::vector<int> paddings = this->param_.Paddings();
   int groups = this->param_.Groups();
@@ -46,7 +46,7 @@ void DepthwiseConvOp<T>::InferShape() const {
   }
 
   framework::DDim ddim = framework::make_ddim(output_shape);
-  this->param_.Output()->InnerLoDTensor()->Resize(ddim);
+  this->param_.Output()->LodTensor()->Resize(ddim);
 }
 
 }  // namespace operators

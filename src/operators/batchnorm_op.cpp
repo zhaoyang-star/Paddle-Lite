@@ -23,8 +23,8 @@ namespace operators {
 
 template <typename T>
 void BatchNormOp<T>::InferShape() const {
-  auto x_dims = this->param_.InputX()->InnerLoDTensor()->dims();
-  this->param_.OutputY()->InnerLoDTensor()->Resize(x_dims);
+  auto x_dims = this->param_.InputX()->LodTensor()->dims();
+  this->param_.OutputY()->LodTensor()->Resize(x_dims);
 }
 
 }  // namespace operators

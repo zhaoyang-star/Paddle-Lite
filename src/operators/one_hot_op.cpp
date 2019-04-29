@@ -21,13 +21,13 @@ namespace operators {
 
 template <typename T>
 void OnehotOp<T>::InferShape() const {
-  const auto &x_dims = this->param_.input_->InnerLoDTensor()->dims();
+  const auto &x_dims = this->param_.input_->LodTensor()->dims();
   int depth = this->param_.depth_;
   framework::DDim out_dims(x_dims);
   out_dims[out_dims.size() - 1] = depth;
-  this->param_.output_->InnerLoDTensor()->Resize(out_dims);
-  this->param_.output_->InnerLoDTensor()->set_lod(
-      this->param_.input_->InnerLoDTensor()->lod());
+  this->param_.output_->LodTensor()->Resize(out_dims);
+  this->param_.output_->LodTensor()->set_lod(
+      this->param_.input_->LodTensor()->lod());
 }
 
 }  // namespace operators

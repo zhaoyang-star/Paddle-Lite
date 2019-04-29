@@ -27,8 +27,8 @@ bool Pad2DKernelCpu<float>::Init(Pad2DParam *param) {
 
 template <>
 void Pad2DKernelCpu<float>::Compute(const Pad2DParam &param) {
-  auto *input = param.input_->InnerLoDTensor();
-  auto *output = param.output_->InnerLoDTensor();
+  auto *input = param.input_->LodTensor();
+  auto *output = param.output_->LodTensor();
   const auto &paddings = param.paddings_;
   //  if (param.mode_ == "constant" && param.pad_value_ == 0) {
   math::PadFunctor<float> pad;

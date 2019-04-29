@@ -25,10 +25,10 @@ namespace operators {
 
 template <>
 bool ConvBNReluKernelCpu<float>::Init(FusionConvBNReluParam *param) {
-  const Tensor *mean = param->InputMean()->InnerLoDTensor();
-  const Tensor *variance = param->InputVariance()->InnerLoDTensor();
-  const Tensor *scale = param->InputScale()->InnerLoDTensor();
-  const Tensor *bias = param->InputBias()->InnerLoDTensor();
+  const Tensor *mean = param->InputMean()->LodTensor();
+  const Tensor *variance = param->InputVariance()->LodTensor();
+  const Tensor *scale = param->InputScale()->LodTensor();
+  const Tensor *bias = param->InputBias()->LodTensor();
   const float epsilon = param->Epsilon();
 
   auto mean_ptr = mean->data<float>();
@@ -45,8 +45,8 @@ bool ConvBNReluKernelCpu<float>::Init(FusionConvBNReluParam *param) {
 
   Variable *scale_var = param->GetScope()->Var();
   Variable *bias_var = param->GetScope()->Var();
-  TensorWrapper *new_scale_w = scale_var->GetMutable<TensorWrapper>();
-  TensorWrapper *new_bias_w = bias_var->GetMutable<TensorWrapper>();
+  framework::MobileTensor *new_scale_w = scale_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_bias_w = bias_var->GetMutable<framework::MobileTensor>();
 
   LoDTensor *new_scale = new_scale_w->MuteLodTensor();
   LoDTensor *new_bias = new_bias_w->MuteLodTensor();
@@ -90,8 +90,8 @@ void ConvBNReluKernelCpu<float>::Compute(const FusionConvBNReluParam &param) {
                                     param.ExecMode());
   }
   math::ScaleAddChannelWise<RELU>(
-      param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
-      param.NewBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
+      param.Output()->LodTensor(), param.NewScale()->LodTensor(),
+      param.NewBias()->LodTensor(), param.Output()->LodTensor());
 }
 template class ConvBNReluKernelCpu<float>;
 

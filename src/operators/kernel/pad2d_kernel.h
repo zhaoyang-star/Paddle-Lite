@@ -30,17 +30,17 @@ class Pad2DParam : public OpParam {
              const AttributeMap &attrs, Scope *scope)
       : OpParam(inputs, outputs, attrs, scope) {
     input_ =
-        OpParam::GetVarValue<framework::TensorWrapper>("X", inputs, *scope);
+        OpParam::GetVarValue<framework::MobileTensor>("X", inputs, *scope);
     output_ =
-        OpParam::GetVarValue<framework::TensorWrapper>("Out", outputs, *scope);
+        OpParam::GetVarValue<framework::MobileTensor>("Out", outputs, *scope);
     paddings_ = OpParam::GetAttr<std::vector<int>>("paddings", attrs);
     pad_value_ = OpParam::GetAttr<float>("pad_value", attrs);
     mode_ = OpParam::GetStringAttr("mode", attrs);
   }
 
  public:
-  framework::TensorWrapper *input_;
-  framework::TensorWrapper *output_;
+  framework::MobileTensor *input_;
+  framework::MobileTensor *output_;
   std::vector<int> paddings_;
   float pad_value_;
   std::string mode_;

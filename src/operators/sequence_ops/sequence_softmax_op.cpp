@@ -21,11 +21,11 @@ namespace operators {
 
 template <typename T>
 void SequenceSoftmaxOp<T>::InferShape() const {
-  const auto *input_x = this->param_.InputX()->InnerLoDTensor();
+  const auto *input_x = this->param_.InputX()->LodTensor();
   const auto &x_lod = input_x->lod();
 
-  this->param_.Out()->InnerLoDTensor()->Resize(input_x->dims());
-  this->param_.Out()->InnerLoDTensor()->set_lod(input_x->lod());
+  this->param_.Out()->LodTensor()->Resize(input_x->dims());
+  this->param_.Out()->LodTensor()->set_lod(input_x->lod());
 }
 
 }  // namespace operators

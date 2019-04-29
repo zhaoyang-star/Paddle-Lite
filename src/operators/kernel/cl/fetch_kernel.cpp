@@ -34,14 +34,14 @@ template <>
 void FetchKernelGpu<float>::Compute(const FetchParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size =
-      this->cl_helper_.DefaultWorkSize(*param.InputX()->InnerCLImage());
+      this->cl_helper_.DefaultWorkSize(*param.InputX()->ClImage());
 
   const int col = param.Col();
-  auto input = param.InputX()->InnerCLImage()->GetCLImage();
-  auto *out = param.Out()->at(col).InnerLoDTensor();
-  out->Resize(param.InputX()->InnerCLImage()->dims());
+  auto input = param.InputX()->ClImage()->GetCLImage();
+  auto *out = param.Out()->at(col).LodTensor();
+  out->Resize(param.InputX()->ClImage()->dims());
   out->mutable_data<float>();
-  const auto &dim = param.InputX()->InnerCLImage()->dims();
+  const auto &dim = param.InputX()->ClImage()->dims();
   size_t new_dims[] = {1, 1, 1, 1};
 
   for (int j = 0; j < dim.size(); ++j) {
@@ -53,7 +53,7 @@ void FetchKernelGpu<float>::Compute(const FetchParam &param) {
   C = new_dims[1];
   in_height = new_dims[2];
   //  if (dim.size() <= 2) {
-  //    in_width = param.InputX()->InnerCLImage()->ImageWidth();
+  //    in_width = param.InputX()->ClImage()->ImageWidth();
   //  } else {
   in_width = new_dims[3];
   //  }

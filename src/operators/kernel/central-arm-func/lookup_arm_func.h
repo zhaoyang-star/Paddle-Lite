@@ -26,9 +26,9 @@ namespace operators {
 
 template <typename P>
 void LookupCompute(const LookupParam &param) {
-  auto *ids_t = param.InputIds()->InnerLoDTensor();
-  auto *table_t = param.InputW()->InnerLoDTensor();
-  auto *output_t = param.Out()->InnerLoDTensor();
+  auto *ids_t = param.InputIds()->LodTensor();
+  auto *table_t = param.InputW()->LodTensor();
+  auto *output_t = param.Out()->LodTensor();
   int64_t padding_idx = param.PaddingIdx();
   const framework::DDim &table_dim = table_t->dims();
   int64_t ids_numel;

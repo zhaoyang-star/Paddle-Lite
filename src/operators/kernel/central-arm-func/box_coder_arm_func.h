@@ -120,22 +120,22 @@ void BoxCoderCompute(const BoxCoderParam& param) {
 
   const auto& code_type = param.CodeType();
 
-  auto row = input_targetbox->InnerLoDTensor()->dims()[0];
-  auto col = input_priorbox->InnerLoDTensor()->dims()[0];
-  auto len = input_priorbox->InnerLoDTensor()->dims()[1];
+  auto row = input_targetbox->LodTensor()->dims()[0];
+  auto col = input_priorbox->LodTensor()->dims()[0];
+  auto len = input_priorbox->LodTensor()->dims()[1];
 
-  framework::Tensor* output_box = param.OutputBox()->InnerLoDTensor();
+  framework::Tensor* output_box = param.OutputBox()->LodTensor();
   auto* output_box_dataptr = output_box->mutable_data<float>({row, col, len});
 
   if (code_type == "encode_center_size") {
     EncodeCenterSize<float>(
-        *input_targetbox->InnerLoDTensor(), *input_priorbox->InnerLoDTensor(),
-        *input_priorboxvar->InnerLoDTensor(), output_box_dataptr);
+        *input_targetbox->LodTensor(), *input_priorbox->LodTensor(),
+        *input_priorboxvar->LodTensor(), output_box_dataptr);
   }
   if (code_type == "decode_center_size") {
     DecodeCenterSize<float>(
-        *input_targetbox->InnerLoDTensor(), *input_priorbox->InnerLoDTensor(),
-        *input_priorboxvar->InnerLoDTensor(), output_box_dataptr);
+        *input_targetbox->LodTensor(), *input_priorbox->LodTensor(),
+        *input_priorboxvar->LodTensor(), output_box_dataptr);
   }
 }
 }  // namespace operators

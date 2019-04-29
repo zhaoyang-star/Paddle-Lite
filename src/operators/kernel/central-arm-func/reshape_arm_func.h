@@ -24,13 +24,13 @@ namespace operators {
 
 template <typename P>
 void ReshapeCompute(const ReshapeParam &param) {
-  const auto *input_x = param.InputX()->InnerLoDTensor();
+  const auto *input_x = param.InputX()->LodTensor();
   const auto &input_x_dims = input_x->dims();
-  auto *out = param.Out()->InnerLoDTensor();
+  auto *out = param.Out()->LodTensor();
   framework::DDim out_dims = out->dims();
   auto shape_wrapper = param.InputShape();
   if (shape_wrapper) {
-    auto *input_shape = shape_wrapper->InnerLoDTensor();
+    auto *input_shape = shape_wrapper->LodTensor();
     auto *shape_data = input_shape->data<int>();
     framework::Tensor cpu_shape_tensor;
     auto shape =

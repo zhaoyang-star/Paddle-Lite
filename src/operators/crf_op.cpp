@@ -24,21 +24,21 @@ namespace operators {
 
 template <typename T>
 void CrfOp<T>::InferShape() const {
-  PADDLE_MOBILE_ENFORCE(this->param_.InputEmission()->InnerLoDTensor(),
+  PADDLE_MOBILE_ENFORCE(this->param_.InputEmission()->LodTensor(),
                         "Input(Emission) should be not null.");
   PADDLE_MOBILE_ENFORCE(this->param_.InputTransition(),
                         "Input(Transition) should be not null.");
-  PADDLE_MOBILE_ENFORCE(this->param_.outputVBP()->InnerLoDTensor(),
+  PADDLE_MOBILE_ENFORCE(this->param_.outputVBP()->LodTensor(),
                         "Input(ViterbiPath) should be not null.");
 
-  auto emission_dims = this->param_.InputEmission()->InnerLoDTensor()->dims();
+  auto emission_dims = this->param_.InputEmission()->LodTensor()->dims();
   PADDLE_MOBILE_ENFORCE(emission_dims.size() == 2U,
                         "The Input(Emission) should be a 2-D tensor.");
   PADDLE_MOBILE_ENFORCE(emission_dims[0],
                         "An empty mini-batch is not allowed.");
 
-  this->param_.outputVBP()->InnerLoDTensor()->Resize(
-      {this->param_.InputEmission()->InnerLoDTensor()->dims()[0], 1});
+  this->param_.outputVBP()->LodTensor()->Resize(
+      {this->param_.InputEmission()->LodTensor()->dims()[0], 1});
 }
 
 }  // namespace operators

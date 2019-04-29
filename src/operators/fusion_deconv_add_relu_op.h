@@ -98,7 +98,7 @@ class FusionDeconvAddReluOp
       output_shape.push_back((in_dims[i + 2] - 1) * strides[i] -
                              2 * paddings[i] + filter_extent);
     }
-    this->param_.Output()->InnerLoDTensor()->Resize(framework::make_ddim(output_shape));
+    this->param_.Output()->LodTensor()->Resize(framework::make_ddim(output_shape));
   }
 
  protected:

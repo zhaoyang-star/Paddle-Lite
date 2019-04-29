@@ -170,8 +170,8 @@ bool SequencePoolKernelCpu<float>::Init(SequencePoolParam *param) {
 template <>
 
 void SequencePoolKernelCpu<float>::Compute(const SequencePoolParam &param) {
-  const framework::LoDTensor *input = param.input_->InnerLoDTensor();
-  framework::LoDTensor *output = param.output_->InnerLoDTensor();
+  const framework::LoDTensor *input = param.input_->LodTensor();
+  framework::LoDTensor *output = param.output_->LodTensor();
   output->mutable_data<float>();
   const std::string pooling_type = param.pool_type_;
 

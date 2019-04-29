@@ -28,8 +28,8 @@ bool ElementwiseSubKernelCpu<float>::Init(ElementwiseSubParam *param) {
 template <>
 void ElementwiseSubKernelCpu<float>::Compute(const ElementwiseSubParam &param) {
   ElementwiseSubCompute<float>(param);
-  param.Out()->InnerLoDTensor()->set_lod(
-      param.InputX()->InnerLoDTensor()->lod());
+  param.Out()->LodTensor()->set_lod(
+      param.InputX()->LodTensor()->lod());
 }
 
 }  // namespace operators

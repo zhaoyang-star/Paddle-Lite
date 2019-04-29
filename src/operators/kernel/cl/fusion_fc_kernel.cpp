@@ -22,9 +22,9 @@ namespace operators {
 
 template <>
 bool FusionFcKernelGpu<float>::Init(FusionFcParam *param) {
-  param->InputY()->InnerCLImage()->InitNormalCLImage(
+  param->InputY()->ClImage()->InitNormalCLImage(
       cl_helper_.CLContext(), this->cl_helper_.CLCommandQueue());
-  param->InputZ()->InnerCLImage()->InitNormalCLImage(
+  param->InputZ()->ClImage()->InitNormalCLImage(
       cl_helper_.CLContext(), this->cl_helper_.CLCommandQueue());
   this->cl_helper_.AddKernel("fetch", "fetch_kernel.cl");
   this->cl_helper_.AddKernel("feed", "feed_kernel.cl");
@@ -35,12 +35,12 @@ template <typename P>
 void FusionFcCompute(const FusionFcParam &param, cl_context context,
                      cl_command_queue commandQueue, cl_kernel kernel0,
                      cl_kernel kernel1) {
-  auto *input_x_image = param.InputX()->InnerCLImage();
-  auto *input_y_image = param.InputY()->InnerCLImage();
-  auto *input_z_image = param.InputZ()->InnerCLImage();
+  auto *input_x_image = param.InputX()->ClImage();
+  auto *input_y_image = param.InputY()->ClImage();
+  auto *input_z_image = param.InputZ()->ClImage();
 
   int axis = param.Axis();
-  auto *out_image = param.Out()->InnerCLImage();
+  auto *out_image = param.Out()->ClImage();
 
   Tensor *input_x = new Tensor();
   input_x->Resize(input_x_image->dims());

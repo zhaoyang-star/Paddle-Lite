@@ -23,9 +23,9 @@ template <typename T>
 void ReshapeOp<T>::InferShape() const {
   /// todo: add InputShape() detection.
   auto &shape = this->param_.Shape();
-  auto input_x_dims = this->param_.InputX()->InnerLoDTensor()->dims();
+  auto input_x_dims = this->param_.InputX()->LodTensor()->dims();
   auto out_dims = ValidateShape(shape, input_x_dims);
-  this->param_.Out()->InnerLoDTensor()->Resize(out_dims);
+  this->param_.Out()->LodTensor()->Resize(out_dims);
 }
 
 }  // namespace operators

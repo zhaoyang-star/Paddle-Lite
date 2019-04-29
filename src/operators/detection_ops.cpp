@@ -21,7 +21,7 @@ namespace operators {
 #ifdef ANCHOR_GENERATOR_OP
 template <typename T>
 void AnchorGeneratorOp<T>::InferShape() const {
-  const auto &input_dims = this->param_.input_->InnerLoDTensor()->dims();
+  const auto &input_dims = this->param_.input_->LodTensor()->dims();
   // DLOG << "AnchorGenerator input dim =" << input_dims.size();
   PADDLE_MOBILE_ENFORCE(input_dims.size() == 4, "The layout of input is NCHW.");
   const auto &anchor_sizes = this->param_.anchor_sizes_;
@@ -34,9 +34,9 @@ void AnchorGeneratorOp<T>::InferShape() const {
   dim_vec[2] = num_anchors;
   dim_vec[3] = 4;
 
-  this->param_.output_anchors_->InnerLoDTensor()->Resize(
+  this->param_.output_anchors_->LodTensor()->Resize(
       framework::make_ddim(dim_vec));
-  this->param_.output_variances_->InnerLoDTensor()->Resize(
+  this->param_.output_variances_->LodTensor()->Resize(
       framework::make_ddim(dim_vec));
 }
 #endif
@@ -52,18 +52,18 @@ void ProposalOp<T>::InferShape() const {
 #ifdef PSROI_POOL_OP
 template <typename T>
 void PSRoiPoolOp<T>::InferShape() const {
-  const auto &rois_dims = this->param_.input_rois_->InnerLoDTensor()->dims();
+  const auto &rois_dims = this->param_.input_rois_->LodTensor()->dims();
   const int pooled_height = this->param_.pooled_height_;
   const int pooled_width = this->param_.pooled_width_;
   const int output_channels = this->param_.output_channels_;
 
-  auto out_dims = this->param_.input_x_->InnerLoDTensor()->dims();
+  auto out_dims = this->param_.input_x_->LodTensor()->dims();
   out_dims[0] = rois_dims[0];
   out_dims[1] =
       output_channels;  // input_dims[1] / (pooled_height * pooled_width);
   out_dims[2] = pooled_height;
   out_dims[3] = pooled_width;
-  this->param_.output_->InnerLoDTensor()->Resize(out_dims);
+  this->param_.output_->LodTensor()->Resize(out_dims);
 }
 #endif
 
@@ -87,8 +87,8 @@ void RoiAlignPoolOp<T>::InferShape() const {
 #ifdef ROI_PERSPECTIVE_OP
 template <typename T>
 void RoiPerspectiveOp<T>::InferShape() const {
-  const auto &input_dims = this->param_.input_x_->InnerLoDTensor()->dims();
-  const auto &rois_dims = this->param_.input_rois_->InnerLoDTensor()->dims();
+  const auto &input_dims = this->param_.input_x_->LodTensor()->dims();
+  const auto &rois_dims = this->param_.input_rois_->LodTensor()->dims();
   const int transformed_height = this->param_.transformed_height_;
   const int transformed_width = this->param_.transformed_width_;
   std::vector<int64_t> out_dims_v({rois_dims[0],   // num_rois
@@ -96,7 +96,7 @@ void RoiPerspectiveOp<T>::InferShape() const {
                                    static_cast<int64_t>(transformed_height),
                                    static_cast<int64_t>(transformed_width)});
   auto out_dims = framework::make_ddim(out_dims_v);
-  this->param_.output_->InnerLoDTensor()->Resize(out_dims);
+  this->param_.output_->LodTensor()->Resize(out_dims);
 }
 #endif
 

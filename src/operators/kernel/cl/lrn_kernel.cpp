@@ -29,11 +29,11 @@ template <>
 void LrnKernelGpu<float>::Compute(const LrnParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size =
-      this->cl_helper_.DefaultWorkSize(*param.Out()->InnerCLImage());
+      this->cl_helper_.DefaultWorkSize(*param.Out()->ClImage());
 
-  auto input_image = param.InputX()->InnerCLImage()->GetCLImage();
-  auto x_dims = param.InputX()->InnerCLImage()->dims();
-  auto output_image = param.Out()->InnerCLImage()->GetCLImage();
+  auto input_image = param.InputX()->ClImage()->GetCLImage();
+  auto x_dims = param.InputX()->ClImage()->dims();
+  auto output_image = param.Out()->ClImage()->GetCLImage();
 
   const int N = x_dims[0];
   const int C = x_dims[1];

@@ -19,10 +19,10 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-template <typename Dtype, typename T>
-void AssignValueOp<Dtype, T>::InferShape() const {
+template < typename T>
+void AssignValueOp<T>::InferShape() const {
   const auto &shape = this->param_.shape_;
-  this->param_.output_->Resize(framework::make_ddim(shape));
+  this->param_.output_->LodTensor()->Resize(framework::make_ddim(shape));
 }
 
 }  // namespace operators
@@ -30,8 +30,6 @@ void AssignValueOp<Dtype, T>::InferShape() const {
 
 namespace ops = paddle_mobile::operators;
 
-#ifdef PADDLE_MOBILE_CPU
-REGISTER_OPERATOR_CPU(assign_value, ops::AssignValueOp);
-#endif
+REGISTER_OPERATOR(assign_value, ops::AssignValueOp);
 
 #endif  // ASSIGN_VALUE_OP

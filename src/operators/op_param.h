@@ -55,21 +55,21 @@ using std::string;
 using std::vector;
 
 struct DtypeTensorTrait {
-  //  typedef framework::TensorWrapper wtype;
+  //  typedef framework::MobileTensor wtype;
 
   // This is the type we obtained in variable.
-  typedef framework::TensorWrapper gtype;
+  typedef framework::MobileTensor gtype;
   // This type will be the parent class type
   // or the same type.
-  typedef framework::TensorWrapper rtype;
+  typedef framework::MobileTensor rtype;
 };
 
 /*template <>
 struct DtypeTensorTrait {
-  //  typedef framework::TensorWrapper wtype;
+  //  typedef framework::MobileTensor wtype;
 
   // This is the type we obtained in variable.
-  typedef framework::TensorWrapper gtype;
+  typedef framework::MobileTensor gtype;
   // This type will be the parent class type
   // or the same type.
   typedef framework::LoDTensor rtype;
@@ -79,12 +79,12 @@ struct DtypeTensorTrait {
 template <>
 struct DtypeTensorTrait<GPU_CL> {
   // This is the type we obtained in variable.
-  typedef framework::TensorWrapper gtype;
+  typedef framework::MobileTensor gtype;
   // This type will be the parent class type
   // or the same type.
-  typedef framework::CLImage rtype;
+  typedef framework::ClImage rtype;
 
-  //  typedef framework::TensorWrapper wtype;
+  //  typedef framework::MobileTensor wtype;
 };
 #endif*/
 
@@ -444,10 +444,10 @@ class OpParam {
 };
 
 #define GET_VAR_AS_TENSOR(name, name_dict, scope) \
-  OpParam::GetVarValue<framework::Tensor>(name, name_dict, scope)
+  OpParam::GetVarValue<framework::TensorWrapper>(name, name_dict, scope)
 
 #define GET_VAR_AS_LOD_TENSOR(name, name_dict, scope) \
-  OpParam::GetVarValue<framework::LoDTensor>(name, name_dict, scope)
+  OpParam::GetVarValue<framework::MobileTensor>(name, name_dict, scope)
 
 class ConvParam : public OpParam {
   typedef typename DtypeTensorTrait::gtype GType;
@@ -556,9 +556,9 @@ class ElementwiseAddParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const GType *InputX() const { return input_x_; }
+  GType *InputX() const { return input_x_; }
 
-  const GType *InputY() const { return input_y_; }
+  GType *InputY() const { return input_y_; }
 
   GType *Out() const { return out_; }
 
@@ -601,9 +601,9 @@ class ElementwiseMulParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const GType *InputX() const { return input_x_; }
+  GType *InputX() const { return input_x_; }
 
-  const GType *InputY() const { return input_y_; }
+  GType *InputY() const { return input_y_; }
 
   GType *Out() const { return out_; }
 
@@ -645,9 +645,9 @@ class ElementwiseSubParam : public OpParam {
     axis_ = GetAttr<int>("axis", attrs);
   }
 
-  const GType *InputX() const { return input_x_; }
+  GType *InputX() const { return input_x_; }
 
-  const GType *InputY() const { return input_y_; }
+  GType *InputY() const { return input_y_; }
 
   GType *Out() const { return out_; }
 
@@ -1239,20 +1239,20 @@ class FeedParam : public OpParam {
   FeedParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
             const AttributeMap &attrs, Scope *scope)
       : OpParam(inputs, outputs, attrs, scope) {
-    input_x_ = InputXFrom<framework::TensorWrapperArray>(inputs, *scope);
+    input_x_ = InputXFrom<framework::MobileTensorArray>(inputs, *scope);
     out_ = OutFrom<GType>(outputs, *scope);
     col_ = GetAttr<int>("col", attrs);
     auto var = scope->FindVar("batch_size");
     batch_size = var->GetValue<int>();
   }
 
-  framework::TensorWrapperArray *InputX() const { return input_x_; }
+  framework::MobileTensorArray *InputX() const { return input_x_; }
   RType *Out() const { return out_; }
   const int Col() const { return col_; }
   const int BatchSize() const { return batch_size; }
 
  private:
-  framework::TensorWrapperArray *input_x_;
+  framework::MobileTensorArray *input_x_;
   GType *out_;
   int col_;
   int batch_size;
@@ -1267,17 +1267,17 @@ class FetchParam : public OpParam {
              const AttributeMap &attrs, Scope *scope)
       : OpParam(inputs, outputs, attrs, scope) {
     input_x_ = InputXFrom<GType>(inputs, *scope);
-    out_ = OutFrom<framework::TensorWrapperArray>(outputs, *scope);
+    out_ = OutFrom<framework::MobileTensorArray>(outputs, *scope);
     col_ = GetAttr<int>("col", attrs);
   }
 
   RType *InputX() const { return input_x_; }
-  framework::TensorWrapperArray *Out() const { return out_; }
+  framework::MobileTensorArray *Out() const { return out_; }
   const int Col() const { return col_; }
 
  private:
   GType *input_x_;
-  framework::TensorWrapperArray *out_;
+  framework::MobileTensorArray *out_;
   int col_;
 #ifdef PADDLE_MOBILE_FPGA
 

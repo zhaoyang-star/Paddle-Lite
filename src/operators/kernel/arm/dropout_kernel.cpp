@@ -36,9 +36,9 @@ struct DropoutFunctor {
 
 template <>
 void DropoutKernelCpu<float>::Compute(const DropoutParam &param) {
-  const auto *input_x = param.InputX()->InnerLoDTensor();
+  const auto *input_x = param.InputX()->LodTensor();
   auto *input_x_ptr = input_x->data<float>();
-  auto *out = param.Out()->InnerLoDTensor();
+  auto *out = param.Out()->LodTensor();
   auto *out_ptr = out->mutable_data<float>();
   const float dropoutProb = param.DropoutProb();
   DropoutFunctor<float> func_(dropoutProb);

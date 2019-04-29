@@ -27,8 +27,8 @@ bool LookupKernelCpu<float>::Init(LookupParam *param) {
 template <>
 void LookupKernelCpu<float>::Compute(const LookupParam &param) {
   LookupCompute<float>(param);
-  param.Out()->InnerLoDTensor()->set_lod(
-      param.InputIds()->InnerLoDTensor()->lod());
+  param.Out()->LodTensor()->set_lod(
+      param.InputIds()->LodTensor()->lod());
 }
 
 }  // namespace operators

@@ -31,17 +31,17 @@ template <>
 void BoxCoderKernelGpu<float>::Compute(const BoxCoderParam& param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size =
-      this->cl_helper_.DefaultWorkSize(*param.OutputBox()->InnerCLImage());
-  const auto* input_priorbox = param.InputPriorBox()->InnerCLImage();
-  const auto* input_priorboxvar = param.InputPriorBoxVar()->InnerCLImage();
-  const auto* input_targetbox = param.InputTargetBox()->InnerCLImage();
+      this->cl_helper_.DefaultWorkSize(*param.OutputBox()->ClImage());
+  const auto* input_priorbox = param.InputPriorBox()->ClImage();
+  const auto* input_priorboxvar = param.InputPriorBoxVar()->ClImage();
+  const auto* input_targetbox = param.InputTargetBox()->ClImage();
   const auto& code_type = param.CodeType();
   if (code_type == "decode_center_size") {
     auto prior_box_image = input_priorbox->GetCLImage();
     auto prior_box_var_image = input_priorboxvar->GetCLImage();
     auto target_box_image = input_targetbox->GetCLImage();
-    auto output_image = param.OutputBox()->InnerCLImage()->GetCLImage();
-    auto& outputDim = param.OutputBox()->InnerCLImage()->dims();
+    auto output_image = param.OutputBox()->ClImage()->GetCLImage();
+    auto& outputDim = param.OutputBox()->ClImage()->dims();
     int new_dims[4] = {1, 1, 1, 1};
     for (int i = 0; i < outputDim.size(); i++) {
       new_dims[4 - outputDim.size() + i] = outputDim[i];

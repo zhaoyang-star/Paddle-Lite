@@ -32,24 +32,24 @@ void ConvAddBnRelu(framework::CLHelper &cl_helper,
                    const CLImage *biase, const CLImage *new_scale,
                    const CLImage *new_bias) {
   auto kernel = cl_helper.KernelAt(0);
-  auto default_work_size = cl_helper.DefaultWorkSize(*param.Output()->InnerCLImage());
+  auto default_work_size = cl_helper.DefaultWorkSize(*param.Output()->ClImage());
   int c_block = default_work_size[0];
   int w = default_work_size[1];
   int nh = default_work_size[2];
-  auto input = param.Input()->InnerCLImage()->GetCLImage();
-  auto filter = param.Filter()->InnerCLImage()->GetCLImage();
+  auto input = param.Input()->ClImage()->GetCLImage();
+  auto filter = param.Filter()->ClImage()->GetCLImage();
 
-  auto output = param.Output()->InnerCLImage()->GetCLImage();
+  auto output = param.Output()->ClImage()->GetCLImage();
   int stride = param.Strides()[0];
   int offset = param.Offset();
   int input_c = reinterpret_cast<framework::CLImageConverterFolder *>(
-                    param.Input()->InnerCLImage()->Converter())
+      param.Input()->ClImage()->Converter())
                     ->GetCBlock();
   int dilation = param.Dilations()[0];
-  int input_width = param.Input()->InnerCLImage()->dims()[3];
-  int input_height = param.Input()->InnerCLImage()->dims()[2];
-  int output_width = param.Output()->InnerCLImage()->dims()[3];
-  int output_height = param.Output()->InnerCLImage()->dims()[2];
+  int input_width = param.Input()->ClImage()->dims()[3];
+  int input_height = param.Input()->ClImage()->dims()[2];
+  int output_width = param.Output()->ClImage()->dims()[3];
+  int output_height = param.Output()->ClImage()->dims()[2];
 
   //  DLOG << " c block " << c_block;
   //  DLOG << " w " << w;
@@ -69,7 +69,7 @@ void ConvAddBnRelu(framework::CLHelper &cl_helper,
   cl_int status;
   int index = 0;
 
-  if (param.Filter()->InnerCLImage()->dims()[2] == 1 && param.Filter()->InnerCLImage()->dims()[3] == 1) {
+  if (param.Filter()->ClImage()->dims()[2] == 1 && param.Filter()->ClImage()->dims()[3] == 1) {
     status = clSetKernelArg(kernel, index++, sizeof(int), &c_block);
     CL_CHECK_ERRORS(status);
 

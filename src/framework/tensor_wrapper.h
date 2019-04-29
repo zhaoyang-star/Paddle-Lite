@@ -40,12 +40,12 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-class TensorWrapper {
+class MobileTensor {
  public:
 #ifdef PADDLE_MOBILE_CL
-  TensorWrapper() : holder_cpu_(new LoDTensor()), holder_gpu_(new CLImage()) {}
+  MobileTensor() : holder_cpu_(new LoDTensor()), holder_gpu_(new CLImage()) {}
 #else
-  TensorWrapper() : holder_cpu_(new LoDTensor()) {}
+  MobileTensor() : holder_cpu_(new LoDTensor()) {}
 #endif
   bool IsPersistable() { return is_persistable_; }
   void SetPersistable(bool is_persistable) {
@@ -70,12 +70,12 @@ class TensorWrapper {
 
 #ifdef PADDLE_MOBILE_CL
 
-  framework::CLImage *MuteClImage() { return this->InnerCLImage(); }
+  framework::CLImage *MuteClImage() { return this->ClImage(); }
 #endif
-  framework::LoDTensor *MuteLodTensor() { return this->InnerLoDTensor(); }
+  framework::LoDTensor *MuteLodTensor() { return this->LodTensor(); }
 
 #ifdef PADDLE_MOBILE_CL
-  CLImage *InnerCLImage() {
+  CLImage *ClImage() {
     if (this->GetMemType() == MEM_GPU || (is_persistable_ && is_gpu_got)) {
       mem_type = MEM_GPU;
 
@@ -85,7 +85,7 @@ class TensorWrapper {
       // conver cpu mem to gpu
       // cast gpu to cpu
       const LoDTensor *input = this->GetCpu();
-      CLImage *output = this->GetGpu();
+      CLImage * output = this->GetGpu();
       CLHelper *helper = CLRumtimeHelper::Instance()->GetClHelper();
       DLOG << "input->IsInitialized(): " << input->IsInitialized();
       if (input->IsInitialized()) {
@@ -170,7 +170,7 @@ class TensorWrapper {
     }
   }
 #endif
-  framework::LoDTensor *InnerLoDTensor() {
+  framework::LoDTensor *LodTensor() {
     if (this->GetMemType() == MEM_CPU  || (is_persistable_ && is_cpu_got)) {
       mem_type = MEM_CPU;
       return this->GetCpu();
@@ -178,7 +178,7 @@ class TensorWrapper {
 #ifdef PADDLE_MOBILE_CL
     else {
 
-      CLImage *input_climage = this->GetGpu();
+      CLImage * input_climage = this->GetGpu();
 
       LoDTensor *output_lodtensor = this->GetCpu();
       DLOG << "----------begin-----  gpu ---> cpu----------------------";
@@ -187,7 +187,7 @@ class TensorWrapper {
 
       if (input_climage->isInit()) {
         // cast gpu to cpu
-        //        CLImage *image_p = input_climage;
+        //        ClImage *image_p = input_climage;
         int width = input_climage->ImageDims()[0];
         int height = input_climage->ImageDims()[1];
 
@@ -253,10 +253,10 @@ class TensorWrapper {
 //  CLHelper cl_helper_;
 #endif
 };
-using TensorWrapperArray = std::vector<TensorWrapper>;
+using MobileTensorArray = std::vector<MobileTensor>;
 
 /*template class PlaceholderImpl<LoDTensor>;
-template class PlaceholderImpl<CLImage>;*/
+template class PlaceholderImpl<ClImage>;*/
 
 }  // namespace framework
 }  // namespace paddle_mobile

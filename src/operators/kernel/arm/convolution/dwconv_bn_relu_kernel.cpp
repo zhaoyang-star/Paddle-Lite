@@ -26,10 +26,10 @@ namespace operators {
 
 template <>
 bool DWConvBNReluKernelCpu<float>::Init(FusionDWConvBNReluParam *param) {
-  const Tensor *mean = param->InputMean()->InnerLoDTensor();
-  const Tensor *variance = param->InputVariance()->InnerLoDTensor();
-  const Tensor *scale = param->InputScale()->InnerLoDTensor();
-  const Tensor *bias = param->InputBias()->InnerLoDTensor();
+  const Tensor *mean = param->InputMean()->LodTensor();
+  const Tensor *variance = param->InputVariance()->LodTensor();
+  const Tensor *scale = param->InputScale()->LodTensor();
+  const Tensor *bias = param->InputBias()->LodTensor();
   const float epsilon = param->Epsilon();
 
   auto mean_ptr = mean->data<float>();
@@ -45,10 +45,10 @@ bool DWConvBNReluKernelCpu<float>::Init(FusionDWConvBNReluParam *param) {
   }
   Variable *scale_var = param->GetScope()->Var();
   Variable *bias_var = param->GetScope()->Var();
-  framework::TensorWrapper *new_scale_w = scale_var->GetMutable<framework::TensorWrapper>();
-  framework::TensorWrapper *new_bias_w = bias_var->GetMutable<framework::TensorWrapper>();
-  Tensor *new_scale = new_scale_w->InnerLoDTensor();
-  Tensor *new_bias = new_bias_w->InnerLoDTensor();
+  framework::MobileTensor *new_scale_w = scale_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_bias_w = bias_var->GetMutable<framework::MobileTensor>();
+  Tensor *new_scale = new_scale_w->LodTensor();
+  Tensor *new_bias = new_bias_w->LodTensor();
 
   float *new_scale_ptr = new_scale->mutable_data<float>({C});
   float *new_bias_ptr = new_bias->mutable_data<float>({C});
@@ -84,8 +84,8 @@ void DWConvBNReluKernelCpu< float>::Compute(
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",
                                     param.ExecMode());
   }
-  math::ScaleAddChannelWise<RELU>(param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
-                                  param.NewBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
+  math::ScaleAddChannelWise<RELU>(param.Output()->LodTensor(), param.NewScale()->LodTensor(),
+                                  param.NewBias()->LodTensor(), param.Output()->LodTensor());
 }
 
 template class DWConvBNReluKernelCpu<float>;

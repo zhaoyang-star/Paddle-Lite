@@ -48,9 +48,9 @@ struct SubOpFunctor {
 
 template <typename P>
 void ElementwiseSubCompute(const ElementwiseSubParam& param) {
-  const Tensor* input_x = param.InputX()->InnerLoDTensor();
-  const Tensor* input_y = param.InputY()->InnerLoDTensor();
-  Tensor* out = param.Out()->InnerLoDTensor();
+  const Tensor* input_x = param.InputX()->LodTensor();
+  const Tensor* input_y = param.InputY()->LodTensor();
+  Tensor* out = param.Out()->LodTensor();
 
   int axis = param.Axis();
   framework::VisitDataType(framework::ToDataType(input_x->type()),

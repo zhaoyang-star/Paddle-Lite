@@ -30,12 +30,12 @@ void LookupOp<T>::InferShape() const {
 
   PADDLE_MOBILE_ENFORCE(ids_t != nullptr,
                         "Input(Ids) of LookupTableOp should not be null.");
-  PADDLE_MOBILE_ENFORCE(this->param_.Out()->InnerLoDTensor() != nullptr,
+  PADDLE_MOBILE_ENFORCE(this->param_.Out()->LodTensor() != nullptr,
                         "Output(Out) of LookupTableOp should not be null.");
   //    this->param__.InputW()->
 
-  auto table_dims = this->param_.InputW()->InnerCLImage()->dims();
-  auto ids_dims = ids_t->InnerCLImage()->dims();
+  auto table_dims = this->param_.InputW()->ClImage()->dims();
+  auto ids_dims = ids_t->ClImage()->dims();
 
   int ids_rank = ids_dims.size();
 
@@ -49,7 +49,7 @@ void LookupOp<T>::InferShape() const {
       framework::vectorize(framework::slice_ddim(ids_dims, 0, ids_rank - 1));
   output_dims.push_back(table_dims[1]);
 
-  this->param_.Out()->InnerLoDTensor()->Resize(
+  this->param_.Out()->LodTensor()->Resize(
       framework::make_ddim(output_dims));
 }
 

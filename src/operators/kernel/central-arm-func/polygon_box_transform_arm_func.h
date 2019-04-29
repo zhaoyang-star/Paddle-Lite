@@ -22,10 +22,10 @@ namespace operators {
 
 template <typename P>
 void PolygonBoxTransformCompute(const PolygonBoxTransformParam& param) {
-  const auto* input = param.Input()->InnerLoDTensor();
+  const auto* input = param.Input()->LodTensor();
   const auto& input_dims = input->dims();
   const auto* input_data = input->data<float>();
-  auto* output = param.Output()->InnerLoDTensor();
+  auto* output = param.Output()->LodTensor();
   auto* output_data = output->mutable_data<float>(input_dims);
 
   int64_t batch_size = input_dims[0];

@@ -24,7 +24,7 @@ bool ReluKernelGpu<float>::Init(ReluParam* param) {
   //  this->cl_helper_.AddKernel("relu_p0", "relu.cl");
   //  this->cl_helper_.AddKernel("relu_p1", "relu.cl");
   //  const auto dim =
-  //      const_cast<framework::CLImage*>(param->InputX())->ImageDims();
+  //      const_cast<framework::ClImage*>(param->InputX())->ImageDims();
   //  param->getMidImage().InitEmptyImage(this->cl_helper_.CLContext(),
   //                                      this->cl_helper_.CLCommandQueue(),
   //                                      dim);
@@ -36,8 +36,8 @@ void ReluKernelGpu<float>::Compute(const ReluParam& param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   //  auto kernel_p0 = this->cl_helper_.KernelAt(1);
   //  auto kernel_p1 = this->cl_helper_.KernelAt(2);
-  const auto* input = param.InputX()->InnerCLImage();
-  auto* output = param.Out()->InnerCLImage();
+  const auto* input = param.InputX()->ClImage();
+  auto* output = param.Out()->ClImage();
   auto default_work_size = this->cl_helper_.DefaultWorkSize(*output);
   auto inputImage = input->GetCLImage();
   auto outputImage = output->GetCLImage();
@@ -51,8 +51,8 @@ void ReluKernelGpu<float>::Compute(const ReluParam& param) {
   //  clSetKernelArg(kernel_p1, 1, sizeof(cl_mem), &outputImage);
   const size_t work_size[2] = {input->ImageWidth(), input->ImageHeight()};
 
-  //  cl_event out_event = param.Out()->InnerCLImage()->GetClEvent();
-  //  cl_event wait_event = param.InputX()->InnerCLImage()->GetClEvent();
+  //  cl_event out_event = param.Out()->ClImage()->GetClEvent();
+  //  cl_event wait_event = param.InputX()->ClImage()->GetClEvent();
 
   clEnqueueNDRangeKernel(this->cl_helper_.CLCommandQueue(), kernel, 2, NULL,
                          work_size, NULL, 0, NULL, NULL);

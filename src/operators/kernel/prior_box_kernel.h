@@ -78,10 +78,10 @@ class DensityPriorBoxParam : public OpParam {
     densities_ = GetAttr<vector<int>>("densities", attrs);
   }
 
-  const GType *Input() const {
+  GType *Input() const {
     return input_->template getInner<RType, Dtype>();
   }
-  const GType *InputImage() const { return input_image_; }
+  GType *InputImage() const { return input_image_; }
   GType *OutputBoxes() const { return output_boxes_; }
   GType *OutputVariances() const { return output_variances_; }
   const bool Clip() const { return clip_; }

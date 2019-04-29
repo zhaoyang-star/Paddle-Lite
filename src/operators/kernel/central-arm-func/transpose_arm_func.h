@@ -23,9 +23,9 @@ namespace operators {
 
 template <typename P>
 void TransposeCompute(const TransposeParam& param) {
-  const auto* input_x = param.InputX()->InnerLoDTensor();
+  const auto* input_x = param.InputX()->LodTensor();
   const auto input_x_dims = input_x->dims();
-  auto* out = param.Out()->InnerLoDTensor();
+  auto* out = param.Out()->LodTensor();
   const auto axis = param.Axis();
   const auto* input_x_data = input_x->data<float>();
   auto* out_data = out->mutable_data<float>();

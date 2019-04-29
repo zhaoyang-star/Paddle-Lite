@@ -35,7 +35,7 @@ void Loader<T>::InitMemoryFromProgram(
         if (var_desc->Persistable()) {
           DLOG << "InitMemoryFromProgram vardesc: " << var_desc->Name();
           auto dim = var_desc->Tensor_desc().Dims();
-          auto tensor_w = var->GetMutable<TensorWrapper>();
+          auto tensor_w = var->GetMutable<MobileTensor>();
           tensor_w->SetPersistable(true);
           DLOG << "mutelodtensor  ===>";
           auto tensor = tensor_w->MuteLodTensor();
@@ -49,13 +49,13 @@ void Loader<T>::InitMemoryFromProgram(
           auto dim = var_desc->Tensor_desc().Dims();
           if (dim.size() == 0) {
             framework::DDim dDim = {0};
-            auto tensor_w = var->GetMutable<TensorWrapper>();
+            auto tensor_w = var->GetMutable<MobileTensor>();
             tensor_w->SetPersistable(false);
 
             LoDTensor *const tensor = tensor_w->MuteLodTensor();
             tensor->Resize(dDim);
 #ifdef PADDLE_MOBILE_CL
-            auto image = tensor_w->InnerCLImage();
+            auto image = tensor_w->ClImage();
             image->Resize(dDim);
 #endif
           } else {
@@ -65,11 +65,11 @@ void Loader<T>::InitMemoryFromProgram(
               }
             }
 
-            auto tensor_w = var->GetMutable<TensorWrapper>();
+            auto tensor_w = var->GetMutable<MobileTensor>();
             LoDTensor *tensor = tensor_w->MuteLodTensor();
             tensor->Resize(make_ddim(dim));
 #ifdef PADDLE_MOBILE_CL
-            auto image = tensor_w->InnerCLImage();
+            auto image = tensor_w->ClImage();
             image->Resize(make_ddim(dim));
 #endif
           }

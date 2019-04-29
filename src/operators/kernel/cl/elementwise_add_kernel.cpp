@@ -22,7 +22,7 @@ namespace operators {
 template <>
 bool ElementwiseAddKernelGpu<float>::Init(ElementwiseAddParam *param) {
   DLOG << "-----init add-----";
-  CLImage *bias = (CLImage *)(param->InputY()->InnerCLImage());
+  CLImage *bias = (CLImage *)(param->InputY()->ClImage());
   if (!bias->isInit()) {
     bias->InitCLImage(cl_helper_.CLContext(),
                       this->cl_helper_.CLCommandQueue());
@@ -31,7 +31,7 @@ bool ElementwiseAddKernelGpu<float>::Init(ElementwiseAddParam *param) {
   DLOG << " bias: " << *bias;
   if (bias->dims().size() == 4) {
     this->cl_helper_.AddKernel("elementwise_add", "elementwise_add_kernel.cl");
-  } else if (param->InputY()->InnerCLImage()->dims().size() == 1) {
+  } else if (param->InputY()->ClImage()->dims().size() == 1) {
     this->cl_helper_.AddKernel("channel_add", "channel_add_kernel.cl");
   } else {
     DLOG << "error:bias dims is error";
@@ -42,9 +42,9 @@ bool ElementwiseAddKernelGpu<float>::Init(ElementwiseAddParam *param) {
 
 template <>
 void ElementwiseAddKernelGpu<float>::Compute(const ElementwiseAddParam &param) {
-  auto input = param.InputX()->InnerCLImage();
-  auto bias = param.InputY()->InnerCLImage();
-  auto output = param.Out()->InnerCLImage();
+  auto input = param.InputX()->ClImage();
+  auto bias = param.InputY()->ClImage();
+  auto output = param.Out()->ClImage();
   cl_int status;
   auto kernel = this->cl_helper_.KernelAt(0);
   if (bias->dims().size() == 4) {
@@ -87,8 +87,8 @@ void ElementwiseAddKernelGpu<float>::Compute(const ElementwiseAddParam &param) {
     int width = input->ImageWidth();
     int height = input->ImageHeight();
     size_t global_work_size[2] = {width, height};
-    cl_event out_event = param.Out()->InnerCLImage()->GetClEvent();
-    cl_event wait_event = param.InputX()->InnerCLImage()->GetClEvent();
+    cl_event out_event = param.Out()->ClImage()->GetClEvent();
+    cl_event wait_event = param.InputX()->ClImage()->GetClEvent();
     status =
         clEnqueueNDRangeKernel(this->cl_helper_.CLCommandQueue(), kernel, 2,
                                NULL, global_work_size, NULL, 0, NULL, NULL);

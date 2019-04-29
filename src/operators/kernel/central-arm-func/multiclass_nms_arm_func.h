@@ -235,13 +235,13 @@ void MultiClassOutput(const framework::Tensor& scores,
 
 template <typename P>
 void MultiClassNMSCompute(const MultiClassNMSParam& param) {
-  const auto* input_bboxes = param.InputBBoxes()->InnerLoDTensor();
+  const auto* input_bboxes = param.InputBBoxes()->LodTensor();
   const auto& input_bboxes_dims = input_bboxes->dims();
 
-  const auto* input_scores = param.InputScores()->InnerLoDTensor();
+  const auto* input_scores = param.InputScores()->LodTensor();
   const auto& input_scores_dims = input_scores->dims();
 
-  auto* outs = param.Out()->InnerLoDTensor();
+  auto* outs = param.Out()->LodTensor();
   auto background_label = param.BackGroundLabel();
   auto nms_top_k = param.NMSTopK();
   auto keep_top_k = param.KeepTopK();

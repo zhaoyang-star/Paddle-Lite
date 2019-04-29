@@ -27,10 +27,10 @@ bool PriorBoxKernelGpu<float>::Init(PriorBoxParam *param) {
 
 template <>
 void PriorBoxKernelGpu<float>::Compute(const PriorBoxParam &param) {
-  const auto *input_ = param.Input()->InnerCLImage();
+  const auto *input_ = param.Input()->ClImage();
   const auto &input_dims = input_->dims();
 
-  const auto &input_image_dims = param.InputImage()->InnerCLImage()->dims();
+  const auto &input_image_dims = param.InputImage()->ClImage()->dims();
 
   const auto &min_sizes = param.MinSizes();
   const auto &max_sizes = param.MaxSizes();
@@ -45,10 +45,10 @@ void PriorBoxKernelGpu<float>::Compute(const PriorBoxParam &param) {
   const float &step_w = param.StepW();
   const float &step_h = param.StepH();
   const float &offset = param.Offset();
-  const int C = param.OutputBoxes()->InnerCLImage()->dims()[1];
+  const int C = param.OutputBoxes()->ClImage()->dims()[1];
 
-  auto output_boxes = param.OutputBoxes()->InnerCLImage()->GetCLImage();
-  auto output_variances = param.OutputVariances()->InnerCLImage()->GetCLImage();
+  auto output_boxes = param.OutputBoxes()->ClImage()->GetCLImage();
+  auto output_variances = param.OutputVariances()->ClImage()->GetCLImage();
 
   std::vector<float> aspect_ratios;
   ExpandAspectRatios(input_aspect_ratio, flip, &aspect_ratios);
@@ -119,7 +119,7 @@ void PriorBoxKernelGpu<float>::Compute(const PriorBoxParam &param) {
   cl_int status;
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size =
-      this->cl_helper_.DefaultWorkSize(*param.OutputBoxes()->InnerCLImage());
+      this->cl_helper_.DefaultWorkSize(*param.OutputBoxes()->ClImage());
   int c_block = default_work_size[0];
   int w = default_work_size[1];
   int nh = default_work_size[2];

@@ -72,8 +72,8 @@ bool ReluKernelCpu<float>::Init(ReluParam *param) {
 
 template <>
 void ReluKernelCpu<float>::Compute(const ReluParam &param) {
-  const LoDTensor *input = param.InputX()->InnerLoDTensor();
-  LoDTensor *output = param.Out()->InnerLoDTensor();
+  const LoDTensor *input = param.InputX()->LodTensor();
+  LoDTensor *output = param.Out()->LodTensor();
   ActivationCompute<float, RELU>()(input, output);
   output->set_lod(input->lod());
 }
@@ -84,9 +84,9 @@ bool Relu6KernelCpu<float>::Init(ReluParam *param) {
 }
 template <>
 void Relu6KernelCpu<float>::Compute(const ReluParam &param) {
-  LoDTensor *output = param.Out()->InnerLoDTensor();
-  ActivationCompute<float, RELU6>()(param.InputX()->InnerLoDTensor(), output);
-  output->set_lod(param.InputX()->InnerLoDTensor()->lod());
+  LoDTensor *output = param.Out()->LodTensor();
+  ActivationCompute<float, RELU6>()(param.InputX()->LodTensor(), output);
+  output->set_lod(param.InputX()->LodTensor()->lod());
 }
 #endif
 
@@ -98,8 +98,8 @@ bool SigmoidKernelCpu<float>::Init(SigmoidParam *param) {
 
 template <>
 void SigmoidKernelCpu<float>::Compute(const SigmoidParam &param) {
-  const LoDTensor *input = param.InputX()->InnerLoDTensor();
-  LoDTensor *output = param.Out()->InnerLoDTensor();
+  const LoDTensor *input = param.InputX()->LodTensor();
+  LoDTensor *output = param.Out()->LodTensor();
   ActivationCompute<float, SIGMOID>()(input, output);
   output->set_lod(input->lod());
 }
@@ -113,8 +113,8 @@ bool TanhKernelCpu<float>::Init(TanhParam *param) {
 
 template <>
 void TanhKernelCpu<float>::Compute(const TanhParam &param) {
-  const LoDTensor *input = param.InputX()->InnerLoDTensor();
-  LoDTensor *output = param.Out()->InnerLoDTensor();
+  const LoDTensor *input = param.InputX()->LodTensor();
+  LoDTensor *output = param.Out()->LodTensor();
   ActivationCompute<float, TANH>()(input, output);
   output->set_lod(input->lod());
 }
@@ -128,8 +128,8 @@ bool LogKernelCpu<float>::Init(ReluParam *param) {
 
 template <>
 void LogKernelCpu<float>::Compute(const ReluParam &param) {
-  const LoDTensor *input = param.InputX()->InnerLoDTensor();
-  LoDTensor *output = param.Out()->InnerLoDTensor();
+  const LoDTensor *input = param.InputX()->LodTensor();
+  LoDTensor *output = param.Out()->LodTensor();
   ActivationCompute<float, LOG>()(input, output);
   output->set_lod(input->lod());
 }

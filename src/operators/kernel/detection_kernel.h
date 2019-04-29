@@ -31,10 +31,10 @@ class AnchorGeneratorParam : public OpParam {
                        const AttributeMap &attrs, Scope *scope)
       : OpParam(inputs, outputs, attrs, scope) {
     input_ =
-        OpParam::GetVarValue<framework::TensorWrapper>("Input", inputs, *scope);
-    output_anchors_ = OpParam::GetVarValue<framework::TensorWrapper>(
+        OpParam::GetVarValue<framework::MobileTensor>("Input", inputs, *scope);
+    output_anchors_ = OpParam::GetVarValue<framework::MobileTensor>(
         "Anchors", outputs, *scope);
-    output_variances_ = OpParam::GetVarValue<framework::TensorWrapper>(
+    output_variances_ = OpParam::GetVarValue<framework::MobileTensor>(
         "Variances", outputs, *scope);
 
     anchor_sizes_ = OpParam::GetAttr<std::vector<float>>("anchor_sizes", attrs);
@@ -47,10 +47,10 @@ class AnchorGeneratorParam : public OpParam {
 
  public:
   // input
-  framework::TensorWrapper *input_;
+  framework::MobileTensor *input_;
   // outputs
-  framework::TensorWrapper *output_anchors_;
-  framework::TensorWrapper *output_variances_;
+  framework::MobileTensor *output_anchors_;
+  framework::MobileTensor *output_variances_;
 
   std::vector<float> anchor_sizes_;
   std::vector<float> aspect_ratios_;
@@ -126,11 +126,11 @@ class PSRoiPoolParam : public OpParam {
                  const AttributeMap &attrs, Scope *scope)
       : OpParam(inputs, outputs, attrs, scope) {
     input_x_ =
-        OpParam::GetVarValue<framework::TensorWrapper>("X", inputs, *scope);
+        OpParam::GetVarValue<framework::MobileTensor>("X", inputs, *scope);
     input_rois_ =
-        OpParam::GetVarValue<framework::TensorWrapper>("ROIs", inputs, *scope);
+        OpParam::GetVarValue<framework::MobileTensor>("ROIs", inputs, *scope);
     output_ =
-        OpParam::GetVarValue<framework::TensorWrapper>("Out", outputs, *scope);
+        OpParam::GetVarValue<framework::MobileTensor>("Out", outputs, *scope);
 
     output_channels_ = OpParam::GetAttr<int>("output_channels", attrs);
     pooled_height_ = OpParam::GetAttr<int>("pooled_height", attrs);
@@ -139,9 +139,9 @@ class PSRoiPoolParam : public OpParam {
   }
 
  public:
-  framework::TensorWrapper *input_x_;
-  framework::TensorWrapper *input_rois_;
-  framework::TensorWrapper *output_;
+  framework::MobileTensor *input_x_;
+  framework::MobileTensor *input_rois_;
+  framework::MobileTensor *output_;
   int output_channels_;
   int pooled_height_;
   int pooled_width_;
@@ -202,11 +202,11 @@ class RoiPerspectiveParam : public OpParam {
                       Scope *scope)
       : OpParam(inputs, outputs, attrs, scope) {
     input_x_ =
-        OpParam::GetVarValue<framework::TensorWrapper>("X", inputs, *scope);
+        OpParam::GetVarValue<framework::MobileTensor>("X", inputs, *scope);
     input_rois_ =
-        OpParam::GetVarValue<framework::TensorWrapper>("ROIs", inputs, *scope);
+        OpParam::GetVarValue<framework::MobileTensor>("ROIs", inputs, *scope);
     output_ =
-        OpParam::GetVarValue<framework::TensorWrapper>("Out", outputs, *scope);
+        OpParam::GetVarValue<framework::MobileTensor>("Out", outputs, *scope);
 
     spatial_scale_ = OpParam::GetAttr<float>("spatial_scale", attrs);
     transformed_height_ = OpParam::GetAttr<int>("transformed_height", attrs);
@@ -214,9 +214,9 @@ class RoiPerspectiveParam : public OpParam {
   }
 
  public:
-  framework::TensorWrapper *input_x_;
-  framework::TensorWrapper *input_rois_;
-  framework::TensorWrapper *output_;
+  framework::MobileTensor *input_x_;
+  framework::MobileTensor *input_rois_;
+  framework::MobileTensor *output_;
 
   float spatial_scale_;
   int transformed_height_;

@@ -29,7 +29,7 @@ int Im2SequenceOutputSize(int input_size, int kernel, int padding_1,
 
 template <typename T>
 void Im2SequenceOp<T>::InferShape() const {
-  auto in_x_dims = this->param_.Input()->InnerLoDTensor()->dims();
+  auto in_x_dims = this->param_.Input()->LodTensor()->dims();
   const std::vector<int> &kernels = this->param_.Kernels();
   const std::vector<int> &strides = this->param_.Strides();
   std::vector<int> paddings = this->param_.Paddings();
@@ -41,7 +41,7 @@ void Im2SequenceOp<T>::InferShape() const {
                                                  strides[i]));
   }
   framework::DDim ddim = framework::make_ddim(output_shape);
-  this->param_.Output()->InnerLoDTensor()->Resize(ddim);
+  this->param_.Output()->LodTensor()->Resize(ddim);
 }
 
 }  // namespace operators

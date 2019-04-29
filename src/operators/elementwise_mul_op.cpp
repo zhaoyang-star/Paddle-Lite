@@ -21,8 +21,8 @@ namespace operators {
 
 template <typename T>
 void ElementwiseMulOp<T>::InferShape() const {
-  auto x_dim = this->param_.InputX()->InnerLoDTensor()->dims();
-  this->param_.Out()->InnerLoDTensor()->Resize(x_dim);
+  auto x_dim = this->param_.InputX()->LodTensor()->dims();
+  this->param_.Out()->LodTensor()->Resize(x_dim);
 }
 
 }  // namespace operators

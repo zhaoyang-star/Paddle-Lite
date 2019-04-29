@@ -25,10 +25,10 @@ namespace operators {
 
 template <>
 bool ConvBNAddReluKernelCpu<float>::Init(FusionConvBNAddReluParam *param) {
-  const Tensor *mean = param->InputMean()->InnerLoDTensor();
-  const Tensor *variance = param->InputVariance()->InnerLoDTensor();
-  const Tensor *scale = param->InputScale()->InnerLoDTensor();
-  const Tensor *bias = param->InputBias()->InnerLoDTensor();
+  const Tensor *mean = param->InputMean()->LodTensor();
+  const Tensor *variance = param->InputVariance()->LodTensor();
+  const Tensor *scale = param->InputScale()->LodTensor();
+  const Tensor *bias = param->InputBias()->LodTensor();
   const float epsilon = param->Epsilon();
 
   auto mean_ptr = mean->data<float>();
@@ -63,8 +63,8 @@ void ConvBNAddReluKernelCpu<float>::Compute(
     case ConvParam::EXEC_GEMM_FLOAT:
       GemmConv<float, float>(param);
       break;
-    case ConvParam<CPU>::EXEC_SLIDINGWINDOW3x3S1_FLOAT:
-    case ConvParam<CPU>::EXEC_SLIDINGWINDOW3x3S2_FLOAT:
+    case ConvParam::EXEC_SLIDINGWINDOW3x3S1_FLOAT:
+    case ConvParam::EXEC_SLIDINGWINDOW3x3S2_FLOAT:
       SlidingwindowConv3x3<float, float>(param);
       break;
     default:
@@ -72,15 +72,16 @@ void ConvBNAddReluKernelCpu<float>::Compute(
                                     param.ExecMode());
   }
 
-  if (param.Bias()->dims() == param.Output()->dims()) {
-    math::ScaleAddChannelWise<RELU>(param.Output()->InnerLoDTensor(), param.InputScale()->InnerLoDTensor(),
-                                    param.InputBias()->InnerLoDTensor(), param.Bias()->InnerLoDTensor(),
-                                    param.Output()->InnerLoDTensor());
+  if (param.Bias()->LodTensor()->dims() == param.Output()->LodTensor()->dims()) {
+    math::ScaleAddChannelWise<RELU>(param.Output()->LodTensor(), param.InputScale()->LodTensor(),
+                                    param.InputBias()->LodTensor(), param.Bias()->LodTensor(),
+                                    param.Output()->LodTensor());
   } else {
-    math::ScaleAddChannelWise<IDENTITY>(param.Output()->InnerLoDTensor(), param.InputScale()->InnerLoDTensor(),
-                                        param.InputBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
-    math::AddElememtWise<RELU>(param.Output()->InnerLoDTensor(), param.Bias()->InnerLoDTensor(), param.Axis()->InnerLoDTensor(),
-                               param.Output()->InnerLoDTensor());
+    math::ScaleAddChannelWise<IDENTITY>(param.Output()->LodTensor(), param.InputScale()->LodTensor(),
+                                        param.InputBias()->LodTensor(), param.Output()->LodTensor());
+    math::AddElememtWise<RELU>(param.Output()->LodTensor(),
+                               param.Bias()->LodTensor(), param.Axis(),
+                               param.Output()->LodTensor());
   }
 }
 

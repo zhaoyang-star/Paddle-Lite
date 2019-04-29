@@ -186,17 +186,17 @@ bool QuantizeKernelCpu<float>::Init(QuantizeParam *param) {
 
 template <>
 void QuantizeKernelCpu<float>::Compute(const QuantizeParam &param) {
-  const LoDTensor *input = param.input_->InnerLoDTensor();
-  LoDTensor *output = param.output_->InnerLoDTensor();
-  Tensor *output_scale = param.online_scale_->InnerLoDTensor();
+  const LoDTensor *input = param.input_->LodTensor();
+  LoDTensor *output = param.output_->LodTensor();
+  Tensor *output_scale = param.online_scale_->LodTensor();
   float max_abs = 0.f;
   if (param.offline_) {
-    max_abs = param.offline_scale_->InnerLoDTensor()->data<float>()[0];
+    max_abs = param.offline_scale_->LodTensor()->data<float>()[0];
   } else {
     max_abs = find_abs_max(input);
   }
   max_abs = std::max(max_abs, 1e-6f);
-  param.online_scale_->InnerLoDTensor()->mutable_data<float>()[0] = max_abs;
+  param.online_scale_->LodTensor()->mutable_data<float>()[0] = max_abs;
   switch (param.round_type_) {
     case ROUND_NEAREST_TO_EVEN:
       Quantize<ROUND_NEAREST_TO_EVEN>(input, max_abs, param.offline_, output);

@@ -25,12 +25,12 @@ namespace operators {
 
 template <typename Itype, typename Otype>
 void FusionFcCompute(const FusionFcParam &param) {
-  const Tensor *input_x = param.InputX()->InnerLoDTensor();
-  const Tensor *input_y = param.InputY()->InnerLoDTensor();
-  Tensor *input_z = param.InputZ()->InnerLoDTensor();
+  const Tensor *input_x = param.InputX()->LodTensor();
+  const Tensor *input_y = param.InputY()->LodTensor();
+  Tensor *input_z = param.InputZ()->LodTensor();
   Otype *input_z_data = input_z->data<Otype>();
   int axis = param.Axis();
-  Tensor *out = param.Out()->InnerLoDTensor();
+  Tensor *out = param.Out()->LodTensor();
   auto *out_data = out->mutable_data<Itype>();
 
   const Tensor x_matrix =

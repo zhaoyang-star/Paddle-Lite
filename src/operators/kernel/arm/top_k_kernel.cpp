@@ -29,9 +29,9 @@ bool TopKKernelCpu<float>::Init(TopKParam *param) {
 
 template <>
 void TopKKernelCpu<float>::Compute(const TopKParam &param) {
-  const Tensor *input = param.input_->InnerLoDTensor();
-  Tensor *output = param.output_->InnerLoDTensor();
-  Tensor *indices = param.indices_->InnerLoDTensor();
+  const Tensor *input = param.input_->LodTensor();
+  Tensor *output = param.output_->LodTensor();
+  Tensor *indices = param.indices_->LodTensor();
   const float *input_data = input->data<float>();
   float *output_data = output->mutable_data<float>();
   int64_t *indices_data = indices->mutable_data<int64_t>();

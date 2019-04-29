@@ -23,8 +23,8 @@ namespace operators {
 
 template <typename P>
 void ShapeCompute(const ShapeParam& param) {
-  auto* in_t = param.Input()->InnerLoDTensor();
-  auto* out_t = param.Out()->InnerLoDTensor();
+  auto* in_t = param.Input()->LodTensor();
+  auto* out_t = param.Out()->LodTensor();
   auto out_data = out_t->mutable_data<int32_t>();
   auto in_dims = in_t->dims();
   for (int i = 0; i < in_dims.size(); ++i) {

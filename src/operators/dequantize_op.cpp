@@ -21,8 +21,8 @@ namespace operators {
 
 template <typename T>
 void DequantizeOp<T>::InferShape() const {
-  const auto& input_dims = this->param_.input_->InnerLoDTensor()->dims();
-  this->param_.output_->InnerLoDTensor()->Resize(input_dims);
+  const auto& input_dims = this->param_.input_->LodTensor()->dims();
+  this->param_.output_->LodTensor()->Resize(input_dims);
 }
 
 }  // namespace operators

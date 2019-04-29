@@ -35,8 +35,8 @@ class OnehotParam : public OpParam {
   }
 
  public:
-  framework::TensorWrapper *input_;
-  framework::TensorWrapper *output_;
+  framework::MobileTensor *input_;
+  framework::MobileTensor *output_;
 
   int depth_;
   int dtype_;

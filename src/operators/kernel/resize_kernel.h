@@ -25,11 +25,11 @@ namespace paddle_mobile {
 namespace operators {
 
 inline framework::DDim CalOutputShape(const ResizeParam &param) {
-  const auto *input_x = param.InputX()->InnerLoDTensor();
+  const auto *input_x = param.InputX()->LodTensor();
   const auto &input_x_dims = input_x->dims();
-  auto *out = param.Out()->InnerLoDTensor();
+  auto *out = param.Out()->LodTensor();
   framework::DDim out_dims = out->dims();
-  const auto *input_shape = param.InputShape()->InnerLoDTensor();
+  const auto *input_shape = param.InputShape()->LodTensor();
 
   if (input_shape) {
     input_x->dims()[0];

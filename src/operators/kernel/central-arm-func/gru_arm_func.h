@@ -36,18 +36,18 @@ inline void ReorderInitState(const framework::Tensor& src,
 
 template <typename T>
 void GruCompute(const GruParam& param) {
-  auto* input = param.InputInput()->InnerLoDTensor();
+  auto* input = param.InputInput()->LodTensor();
   auto* h0w = param.InputH0();
-  auto* weight = param.InputWeight()->InnerLoDTensor();
+  auto* weight = param.InputWeight()->LodTensor();
   const auto* weight_data = weight->data<float>();
-  auto* bias = param.InputBias()->InnerLoDTensor();
-  auto* batch_gate = param.OutBatchGate()->InnerLoDTensor();
+  auto* bias = param.InputBias()->LodTensor();
+  auto* batch_gate = param.OutBatchGate()->LodTensor();
   batch_gate->mutable_data<float>();
   auto* batch_reset_hidden_prev = param.OutBatchResetHiddenPrev();
-  batch_reset_hidden_prev->InnerLoDTensor()->mutable_data<float>();
-  auto* batch_hidden = param.OutBatchHidden()->InnerLoDTensor();
+  batch_reset_hidden_prev->LodTensor()->mutable_data<float>();
+  auto* batch_hidden = param.OutBatchHidden()->LodTensor();
   batch_hidden->mutable_data<float>();
-  auto* hidden = param.OutHidden()->InnerLoDTensor();
+  auto* hidden = param.OutHidden()->LodTensor();
   hidden->mutable_data<float>();
 
   auto hidden_dims = hidden->dims();
@@ -67,7 +67,7 @@ void GruCompute(const GruParam& param) {
   framework::Tensor ordered_h0;
   std::vector<size_t> order(batch_gate->lod()[2]);
   if (h0w) {
-    auto h0 = h0w->InnerLoDTensor();
+    auto h0 = h0w->LodTensor();
     // Since the batch computing for GRU reorders the input sequences
     // according to their length. The initialized cell state also needs
     // to reorder.
@@ -86,7 +86,7 @@ void GruCompute(const GruParam& param) {
     int cur_batch_size = bend - bstart;
     framework::Tensor gate_t = batch_gate->Slice(bstart, bend);
     framework::Tensor reset_hidden_prev_t =
-        batch_reset_hidden_prev->InnerLoDTensor()->Slice(bstart, bend);
+        batch_reset_hidden_prev->LodTensor()->Slice(bstart, bend);
     framework::Tensor hidden_t = batch_hidden->Slice(bstart, bend);
     gru_value.output_value = hidden_t.data<float>();
     gru_value.gate_value = gate_t.data<float>();

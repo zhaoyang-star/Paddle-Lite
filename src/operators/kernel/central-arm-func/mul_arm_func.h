@@ -21,9 +21,9 @@ namespace operators {
 
 template <typename P>
 void MulCompute(const MulParam &param) {
-  const Tensor *input_x = param.InputX()->InnerLoDTensor();
-  const Tensor *input_y = param.InputY()->InnerLoDTensor();
-  Tensor *out = param.Out()->InnerLoDTensor();
+  const Tensor *input_x = param.InputX()->LodTensor();
+  const Tensor *input_y = param.InputY()->LodTensor();
+  Tensor *out = param.Out()->LodTensor();
 
   const Tensor x_matrix =
       input_x->dims().size() > 2
@@ -37,7 +37,7 @@ void MulCompute(const MulParam &param) {
   if (out_dim.size() != 2) {
     out->Resize({x_matrix.dims()[0], y_matrix.dims()[1]});
   }
-  if (param.InputX()->InnerLoDTensor()->type() == type_id<int8_t>().hash_code()) {
+  if (param.InputX()->LodTensor()->type() == type_id<int8_t>().hash_code()) {
     out->mutable_data<int32_t>();
     math::MatMul<int8_t, int32_t>(x_matrix, false, y_matrix, false,
                                   static_cast<float>(1), out,

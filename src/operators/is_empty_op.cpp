@@ -23,7 +23,7 @@ namespace operators {
 
 template <typename T>
 void IsEmptyOp<T>::InferShape() const {
-  auto out = this->param_.Out()->InnerLoDTensor();
+  auto out = this->param_.Out()->LodTensor();
   out->Resize({1});
 }
 

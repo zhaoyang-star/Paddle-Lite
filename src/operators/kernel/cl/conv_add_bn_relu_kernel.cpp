@@ -24,16 +24,16 @@ namespace paddle_mobile {
 namespace operators {
 template <>
 bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
-  PADDLE_MOBILE_ENFORCE(param->Filter()->InnerCLImage()->dims()[2] ==
-                                param->Filter()->InnerCLImage()->dims()[3] &&
+  PADDLE_MOBILE_ENFORCE(param->Filter()->ClImage()->dims()[2] ==
+      param->Filter()->ClImage()->dims()[3] &&
                             param->Paddings()[0] == param->Paddings()[1],
                         "need equal");
-  param->Bias()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
+  param->Bias()->ClImage()->InitCLImage(cl_helper_.CLContext(),
                                              cl_helper_.CLCommandQueue());
-  const framework::CLImage *mean = param->InputMean()->InnerCLImage();
-  const framework::CLImage *variance = param->InputVariance()->InnerCLImage();
-  const framework::CLImage *scale = param->InputScale()->InnerCLImage();
-  const framework::CLImage *bias = param->InputBias()->InnerCLImage();
+  const framework::CLImage *mean = param->InputMean()->ClImage();
+  const framework::CLImage *variance = param->InputVariance()->ClImage();
+  const framework::CLImage *scale = param->InputScale()->ClImage();
+  const framework::CLImage *bias = param->InputBias()->ClImage();
   const float epsilon = param->Epsilon();
   const int C = mean->numel();
   auto mean_ptr = mean->data<float>();
@@ -53,11 +53,13 @@ bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
     new_scale_ptr[i] = inv_std_ptr[i] * scale_ptr[i];
     new_bias_ptr[i] = bias_ptr[i] - mean_ptr[i] * inv_std_ptr[i] * scale_ptr[i];
   }
+  Variable *scale_var = param->GetScope()->Var();
+  Variable *bias_var = param->GetScope()->Var();
+  framework::MobileTensor *new_scale_w = scale_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_bias_w = bias_var->GetMutable<framework::MobileTensor>();
 
-  auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
-  auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
-  auto *new_scale = new_scale_w->MuteClImage();
-  auto *new_bias = new_bias_w->MuteClImage();
+  CLImage *new_scale = new_scale_w->MuteClImage();
+  CLImage *new_bias = new_bias_w->MuteClImage();
 
   new_scale->SetTensorData(new_scale_ptr, variance->dims());
   new_scale->InitCLImage(this->cl_helper_.CLContext(),
@@ -73,13 +75,13 @@ bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
   delete[](new_scale_ptr);
   delete[](new_bias_ptr);
 
-  PADDLE_MOBILE_ENFORCE(param->Filter()->InnerCLImage()->dims()[2] ==
-                                param->Filter()->InnerCLImage()->dims()[3] &&
+  PADDLE_MOBILE_ENFORCE(param->Filter()->ClImage()->dims()[2] ==
+      param->Filter()->ClImage()->dims()[3] &&
                             param->Paddings()[0] == param->Paddings()[1],
                         "need equal");
 
   int offset =
-      static_cast<int>(param->Filter()->InnerCLImage()->dims()[2]) / 2 -
+      static_cast<int>(param->Filter()->ClImage()->dims()[2]) / 2 -
       static_cast<int>(param->Paddings()[1]);
 
   param->SetOffset(offset);
@@ -94,24 +96,24 @@ bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
     DLOG << " conv add bn relu conv 1x1 4";
   }
   */
-  if (param->Filter()->dims()[2] == 1 && param->Filter()->dims()[3] == 1) {
-    param->Filter()->InitNImage(cl_helper_.CLContext(),
+  if (param->Filter()->ClImage()->dims()[2] == 1 && param->Filter()->ClImage()->dims()[3] == 1) {
+    param->Filter()->ClImage()->InitNImage(cl_helper_.CLContext(),
                                 cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("conv_1x1_spl", "conv_add_bn_relu_kernel.cl");
 
     DLOG << " conv add bn relu conv 1x1";
-  } else if (param->Filter()->InnerCLImage()->dims()[1] == 1 &&
-             param->Input()->InnerCLImage()->dims()[1] ==
-                 param->Output()->InnerCLImage()->dims()[1] &&
-             param->Filter()->InnerCLImage()->dims()[2] == 3) {
-    param->Filter()->InnerCLImage()->InitDWImage(cl_helper_.CLContext(),
+  } else if (param->Filter()->ClImage()->dims()[1] == 1 &&
+      param->Input()->ClImage()->dims()[1] ==
+          param->Output()->ClImage()->dims()[1] &&
+      param->Filter()->ClImage()->dims()[2] == 3) {
+    param->Filter()->ClImage()->InitDWImage(cl_helper_.CLContext(),
                                                  cl_helper_.CLCommandQueue());
     this->cl_helper_.AddKernel("depth_conv_3x3", "conv_add_bn_relu_kernel.cl");
     DLOG << " conv add bn relu depth_conv_3x3";
 
-  } else if (param->Filter()->InnerCLImage()->dims()[2] == 3 &&
-             param->Filter()->InnerCLImage()->dims()[3] == 3) {
-    param->Filter()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
+  } else if (param->Filter()->ClImage()->dims()[2] == 3 &&
+      param->Filter()->ClImage()->dims()[3] == 3) {
+    param->Filter()->ClImage()->InitCLImage(cl_helper_.CLContext(),
                                                  cl_helper_.CLCommandQueue());
 
     this->cl_helper_.AddKernel("conv_3x3", "conv_add_bn_relu_kernel.cl");
@@ -126,8 +128,8 @@ bool ConvAddBNReluKernelGpu<float>::Init(FusionConvAddBNReluParam *param) {
 template <>
 void ConvAddBNReluKernelGpu< float>::Compute(
     const FusionConvAddBNReluParam &param) {
-  ConvAddBnRelu(this->cl_helper_, param, true, param.Bias()->InnerCLImage(), param.NewScale()->InnerCLImage(),
-                param.NewBias()->InnerCLImage());
+  ConvAddBnRelu(this->cl_helper_, param, true, param.Bias()->ClImage(), param.NewScale()->ClImage(),
+                param.NewBias()->ClImage());
 }
 
 template class ConvAddBNReluKernelGpu< float>;

@@ -145,6 +145,14 @@ class LoDTensor : public Tensor {
     return (lod_)[level].size() - 1;
   }
 
+  /**
+   * 兼容TensorWrapper for fpga
+   * @return
+   */
+  framework::LoDTensor *LodTensor(){
+    return this;
+  }
+
  private:
   LoD lod_;
 };

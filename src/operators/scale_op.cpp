@@ -21,8 +21,8 @@ namespace operators {
 
 template <typename T>
 void ScaleOp<T>::InferShape() const {
-  auto input_dims = this->param_.InputX()->InnerLoDTensor()->dims();
-  this->param_.Out()->InnerLoDTensor()->Resize(input_dims);
+  auto input_dims = this->param_.InputX()->LodTensor()->dims();
+  this->param_.Out()->LodTensor()->Resize(input_dims);
 }
 
 }  // namespace operators

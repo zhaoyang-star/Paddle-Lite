@@ -70,9 +70,9 @@ class FillConstantOp : public framework::OperatorBase {
     } else if (outvar->template IsType<framework::SelectedRows>()) {
       tensor = outvar->template GetMutable<framework::SelectedRows>()
                    ->mutable_value();
-    } else if (outvar->template IsType<framework::TensorWrapper>()) {
-      tensor = outvar->template GetMutable<framework::TensorWrapper>()
-                   ->InnerLoDTensor();
+    } else if (outvar->template IsType<framework::MobileTensor>()) {
+      tensor = outvar->template GetMutable<framework::MobileTensor>()
+                   ->LodTensor();
     } else {
       PADDLE_MOBILE_THROW_EXCEPTION(
           "fill constant op's output only"
@@ -110,9 +110,9 @@ class FillConstantOp : public framework::OperatorBase {
     } else if (outvar->template IsType<framework::SelectedRows>()) {
       tensor = outvar->template GetMutable<framework::SelectedRows>()
                    ->mutable_value();
-    } else if (outvar->template IsType<framework::TensorWrapper>()) {
-      tensor = outvar->template GetMutable<framework::TensorWrapper>()
-                   ->InnerLoDTensor();
+    } else if (outvar->template IsType<framework::MobileTensor>()) {
+      tensor = outvar->template GetMutable<framework::MobileTensor>()
+          ->LodTensor();
     } else {
       PADDLE_MOBILE_THROW_EXCEPTION(
           "fill constant op's output only"
@@ -128,10 +128,10 @@ class FillConstantOp : public framework::OperatorBase {
 
   void InferShape() const {
     PADDLE_MOBILE_ENFORCE(
-        param_.Out()->InnerLoDTensor() != nullptr,
+        param_.Out()->LodTensor() != nullptr,
         "Output (Out) of fill_constant op should not be null.");
     framework::DDim ddim = framework::make_ddim(param_.Shape());
-    param_.Out()->InnerLoDTensor()->Resize(ddim);
+    param_.Out()->LodTensor()->Resize(ddim);
   }
   FillConstantParam param_;
 };

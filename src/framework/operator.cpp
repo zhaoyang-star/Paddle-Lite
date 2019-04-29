@@ -65,10 +65,10 @@ void OperatorBase::Run() {
     for (int i = 0; i < var_vec_in.size(); ++i) {
       auto var = this->scope_->FindVar(var_vec_in[i]);
       if (var->IsInitialized() &&
-          var->template IsType<framework::TensorWrapper>()) {
-        TensorWrapper *tensor_w =
-            const_cast<TensorWrapper *>(var->template Get<TensorWrapper>());
-        auto *tensor = tensor_w->InnerLoDTensor();
+          var->template IsType<framework::MobileTensor>()) {
+        MobileTensor *tensor_w =
+            const_cast<MobileTensor *>(var->template Get<MobileTensor>());
+        auto *tensor = tensor_w->LodTensor();
         if (tensor) DLOG << type_ << " input- " << key << "=" << *tensor;
 #ifdef PADDLE_MOBILE_FPGA
         DLOG << var_vec_in[i];
@@ -81,10 +81,10 @@ void OperatorBase::Run() {
     for (int i = 0; i < var_vec_out.size(); ++i) {
       auto var = scope_->FindVar(var_vec_out[i]);
       if (var->IsInitialized() &&
-          var->template IsType<framework::TensorWrapper>()) {
-        TensorWrapper *tensor_w =
-            const_cast<TensorWrapper *>(var->template Get<TensorWrapper>());
-        auto *tensor = tensor_w->InnerLoDTensor();
+          var->template IsType<framework::MobileTensor>()) {
+        MobileTensor *tensor_w =
+            const_cast<MobileTensor *>(var->template Get<MobileTensor>());
+        auto *tensor = tensor_w->LodTensor();
         if (tensor) DLOG << type_ << " output- " << key << "=" << *tensor;
 #ifdef PADDLE_MOBILE_FPGA
         DLOG << var_vec_out[i];
@@ -132,7 +132,7 @@ void OperatorBase::Run() {
               DLOG << type_ << " output- " << key << "=" << *tensor;
             }
           } else {
-            const CLImage *cl_image = vari->template Get<framework::CLImage>();
+            const CLImage *cl_image = vari->template Get<framework::ClImage>();
             if (cl_image) {
               DLOG << type_ << " output- " << key << "=" << *cl_image;
             }

@@ -21,8 +21,8 @@ namespace operators {
 
 template <typename T>
 void SequenceExpandOp<T>::InferShape() const {
-  const auto *input_x = this->param_.input_x_->InnerLoDTensor();
-  const auto *input_y = this->param_.input_y_->InnerLoDTensor();
+  const auto *input_x = this->param_.input_x_->LodTensor();
+  const auto *input_y = this->param_.input_y_->LodTensor();
   const auto &x_lod = input_x->lod();
   const auto &y_lod = input_y->lod();
   int ref_level = this->param_.ref_level_;
@@ -42,7 +42,7 @@ void SequenceExpandOp<T>::InferShape() const {
     }
     out_dims[0] = out_first_dim;
   }
-  this->param_.output_->InnerLoDTensor()->Resize(out_dims);
+  this->param_.output_->LodTensor()->Resize(out_dims);
 }
 
 }  // namespace operators

@@ -23,13 +23,13 @@
 // bool DequantizeKernelGpu< float>::Init(DequantizeParam *param) {
 //  DLOG << " depthwise conv kernel init begin ";
 //  PADDLE_MOBILE_ENFORCE(
-//      param->Filter()->InnerCLImage()->dims()[2] ==
-//      param->Filter()->InnerCLImage()->dims()[3] &&
+//      param->Filter()->ClImage()->dims()[2] ==
+//      param->Filter()->ClImage()->dims()[3] &&
 //          param->Paddings()[0] == param->Paddings()[1],
 //      "need equal");
-//  param->Filter()->InnerCLImage()->InitCLImage(cl_helper_.CLContext(),
+//  param->Filter()->ClImage()->InitCLImage(cl_helper_.CLContext(),
 //                               this->cl_helper_.CLCommandQueue());
-//  int offset = static_cast<int>(param->Filter()->InnerCLImage()->dims()[2]) /
+//  int offset = static_cast<int>(param->Filter()->ClImage()->dims()[2]) /
 //  2 -
 //               static_cast<int>(param->Paddings()[1]);
 //  param->SetOffset(offset);
@@ -43,22 +43,22 @@
 //    const DequantizeParam &param) {
 //  auto kernel = this->cl_helper_.KernelAt(0);
 //  auto default_work_size =
-//  this->cl_helper_.DefaultWorkSize(*param.Output()->InnerCLImage()); int
+//  this->cl_helper_.DefaultWorkSize(*param.Output()->ClImage()); int
 //  c_block = default_work_size[0]; int w = default_work_size[1]; int nh =
 //  default_work_size[2]; auto input =
-//  param.Input()->InnerCLImage()->GetCLImage(); auto filter =
-//  param.Filter()->InnerCLImage()->GetCLImage(); auto output =
-//  param.Output()->InnerCLImage()->GetCLImage(); int stride =
+//  param.Input()->ClImage()->GetCLImage(); auto filter =
+//  param.Filter()->ClImage()->GetCLImage(); auto output =
+//  param.Output()->ClImage()->GetCLImage(); int stride =
 //  param.Strides()[0]; int offset = param.Offset(); int input_c =
 //  reinterpret_cast<framework::CLImageConverterFolder *>(
-//                    param.Input()->InnerCLImage()->Converter())
+//                    param.Input()->ClImage()->Converter())
 //                    ->GetCBlock();
 //  int dilation = param.Dilations()[0];
 //
-//  int input_width = param.Input()->InnerCLImage()->dims()[3];
-//  int input_height = param.Input()->InnerCLImage()->dims()[2];
-//  int output_width = param.Output()->InnerCLImage()->dims()[3];
-//  int output_height = param.Output()->InnerCLImage()->dims()[2];
+//  int input_width = param.Input()->ClImage()->dims()[3];
+//  int input_height = param.Input()->ClImage()->dims()[2];
+//  int output_width = param.Output()->ClImage()->dims()[3];
+//  int output_height = param.Output()->ClImage()->dims()[2];
 //
 //  cl_int status;
 //
@@ -79,8 +79,8 @@
 //
 //  CL_CHECK_ERRORS(status);
 //
-//  //  cl_event out_event = param.Output()->InnerCLImage()->GetClEvent();
-//  //  cl_event wait_event = param.Input()->InnerCLImage()->GetClEvent();
+//  //  cl_event out_event = param.Output()->ClImage()->GetClEvent();
+//  //  cl_event wait_event = param.Input()->ClImage()->GetClEvent();
 //
 //  status = clEnqueueNDRangeKernel(
 //      this->cl_helper_.CLCommandQueue(), kernel, default_work_size.size(),

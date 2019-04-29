@@ -32,11 +32,11 @@ Print &operator<<(Print &printer, const ConvParam &conv_param) {
           << ") "
           << "\n";
   printer << "  groups: " << conv_param.Groups() << "\n";
-  printer << "  input  dims: " << conv_param.Input()->InnerLoDTensor()->dims()
+  printer << "  input  dims: " << conv_param.Input()->LodTensor()->dims()
           << "\n";
-  printer << "  filter dims: " << conv_param.Filter()->InnerLoDTensor()->dims()
+  printer << "  filter dims: " << conv_param.Filter()->LodTensor()->dims()
           << "\n";
-  printer << "  output dims: " << conv_param.Output()->InnerLoDTensor()->dims();
+  printer << "  output dims: " << conv_param.Output()->LodTensor()->dims();
   return printer;
 }
 
@@ -79,13 +79,13 @@ Print &operator<<(Print &printer, const FusionConvAddParam &conv_param) {
           << ") "
           << "\n";
   printer << "  groups: " << conv_param.Groups() << "\n";
-  printer << "  input  dims: " << conv_param.Input()->InnerLoDTensor()->dims()
+  printer << "  input  dims: " << conv_param.Input()->LodTensor()->dims()
           << "\n";
-  printer << "  filter dims: " << conv_param.Filter()->InnerLoDTensor()->dims()
+  printer << "  filter dims: " << conv_param.Filter()->LodTensor()->dims()
           << "\n";
-  printer << "  bias dims: " << conv_param.Bias()->InnerLoDTensor()->dims()
+  printer << "  bias dims: " << conv_param.Bias()->LodTensor()->dims()
           << "\n";
-  printer << "  output dims: " << conv_param.Output()->InnerLoDTensor()->dims();
+  printer << "  output dims: " << conv_param.Output()->LodTensor()->dims();
   return printer;
 }
 

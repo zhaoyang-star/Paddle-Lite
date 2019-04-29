@@ -29,7 +29,7 @@ void SumOp<T>::InferShape() const {
   std::vector<framework::DDim> inputs_dims;
   inputs_dims.reserve(n);
   for (int i = 0; i < n; i++) {
-    inputs_dims.push_back(inputs[i]->InnerLoDTensor()->dims());
+    inputs_dims.push_back(inputs[i]->LodTensor()->dims());
   }
 
   if (n == 1) {
@@ -51,7 +51,7 @@ void SumOp<T>::InferShape() const {
     }
   }
 
-  this->param_.Out()->InnerLoDTensor()->Resize(in_dim);
+  this->param_.Out()->LodTensor()->Resize(in_dim);
 }
 
 }  // namespace operators

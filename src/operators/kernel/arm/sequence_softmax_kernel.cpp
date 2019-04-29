@@ -28,9 +28,9 @@ bool SequenceSoftmaxKernelCpu<float>::Init(SoftmaxParam *param) {
 
 template <>
 void SequenceSoftmaxKernelCpu<float>::Compute(const SoftmaxParam &param) {
-  param.Out()->InnerLoDTensor()->mutable_data<float>();
-  const framework::LoDTensor *input = param.InputX()->InnerLoDTensor();
-  framework::LoDTensor *output = param.Out()->InnerLoDTensor();
+  param.Out()->LodTensor()->mutable_data<float>();
+  const framework::LoDTensor *input = param.InputX()->LodTensor();
+  framework::LoDTensor *output = param.Out()->LodTensor();
   math::SequenceSoftmaxFuntor<float> sequence_softmax;
   sequence_softmax(input, output);
 }

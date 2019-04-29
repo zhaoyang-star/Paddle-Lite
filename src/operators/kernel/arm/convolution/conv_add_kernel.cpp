@@ -45,17 +45,17 @@ void ConvAddKernelCpu<float>::Compute(const FusionConvAddParam &param) {
     case ConvParam::EXEC_GEMM_FLOAT:
       GemmConv<float, float>(param);
       break;
-    case ConvParam<CPU>::EXEC_SLIDINGWINDOW3x3S1_FLOAT:
-    case ConvParam<CPU>::EXEC_SLIDINGWINDOW3x3S2_FLOAT:
+    case ConvParam::EXEC_SLIDINGWINDOW3x3S1_FLOAT:
+    case ConvParam::EXEC_SLIDINGWINDOW3x3S2_FLOAT:
       SlidingwindowConv3x3<float, float>(param);
       break;
     default:
       PADDLE_MOBILE_THROW_EXCEPTION("Invalid convolution execute mode %d",
                                     param.ExecMode());
   }
-  math::AddChannelWise<IDENTITY>(param.Output()->InnerLoDTensor(),
-                                 param.Bias()->InnerLoDTensor(),
-                                 param.Output()->InnerLoDTensor());
+  math::AddChannelWise<IDENTITY>(param.Output()->LodTensor(),
+                                 param.Bias()->LodTensor(),
+                                 param.Output()->LodTensor());
 }
 
 template class ConvAddKernelCpu<float>;

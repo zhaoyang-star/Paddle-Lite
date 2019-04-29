@@ -22,10 +22,10 @@ namespace operators {
 
 template <typename T>
 void QuantizeOp<T>::InferShape() const {
-  const auto &input_dims = this->param_.input_->InnerLoDTensor()->dims();
-  this->param_.output_->InnerLoDTensor()->Resize(input_dims);
+  const auto &input_dims = this->param_.input_->LodTensor()->dims();
+  this->param_.output_->LodTensor()->Resize(input_dims);
   auto scale_dims = framework::make_ddim(std::vector<int>{1});
-  this->param_.online_scale_->InnerLoDTensor()->Resize(scale_dims);
+  this->param_.online_scale_->LodTensor()->Resize(scale_dims);
 }
 
 }  // namespace operators

@@ -23,10 +23,10 @@ namespace operators {
 template <>
 bool BatchNormKernelGpu<float>::Init(BatchNormParam *param) {
   this->cl_helper_.AddKernel("batchnorm", "batchnorm_kernel.cl");
-  framework::CLImage *mean = param->InputMean()->InnerCLImage();
-  const framework::CLImage *variance = param->InputVariance()->InnerCLImage();
-  const framework::CLImage *scale = param->InputScale()->InnerCLImage();
-  const framework::CLImage *bias = param->InputBias()->InnerCLImage();
+  framework::CLImage *mean = param->InputMean()->ClImage();
+  const framework::CLImage *variance = param->InputVariance()->ClImage();
+  const framework::CLImage *scale = param->InputScale()->ClImage();
+  const framework::CLImage *bias = param->InputBias()->ClImage();
   const float epsilon = param->Epsilon();
 
   auto mean_ptr = mean->data<float>();
@@ -47,17 +47,22 @@ bool BatchNormKernelGpu<float>::Init(BatchNormParam *param) {
     new_scale_ptr[i] = inv_std_ptr[i] * scale_ptr[i];
     new_bias_ptr[i] = bias_ptr[i] - mean_ptr[i] * inv_std_ptr[i] * scale_ptr[i];
   }
-  auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
-  auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
+
+
+  Variable *scale_var = param->GetScope()->Var();
+  Variable *bias_var = param->GetScope()->Var();
+  framework::MobileTensor *new_scale_w = scale_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_bias_w = bias_var->GetMutable<framework::MobileTensor>();
+
   auto *new_scale = new_scale_w->MuteClImage();
   auto *new_bias = new_bias_w->MuteClImage();
 
-  //  framework::CLImage *new_scale = new framework::CLImage();
+  //  framework::CLImage *new_scale = new framework::ClImage();
   new_scale->SetTensorData(new_scale_ptr, variance->dims());
   new_scale->InitCLImage(this->cl_helper_.CLContext(),
                          this->cl_helper_.CLCommandQueue());
 
-  //  framework::CLImage *new_bias = new framework::CLImage();
+  //  framework::CLImage *new_bias = new framework::ClImage();
   new_bias->SetTensorData(new_bias_ptr, variance->dims());
   new_bias->InitCLImage(this->cl_helper_.CLContext(),
                         this->cl_helper_.CLCommandQueue());
@@ -75,21 +80,21 @@ template <>
 void BatchNormKernelGpu<float>::Compute(const BatchNormParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
   auto default_work_size =
-      this->cl_helper_.DefaultWorkSize(*param.OutputY()->InnerCLImage());
+      this->cl_helper_.DefaultWorkSize(*param.OutputY()->ClImage());
 
-  auto input = param.InputX()->InnerCLImage();
+  auto input = param.InputX()->ClImage();
   auto out = param.OutputY();
-  auto new_scale = param.NewScale()->InnerCLImage();
-  auto new_bias = param.NewBias()->InnerCLImage();
+  auto new_scale = param.NewScale()->ClImage();
+  auto new_bias = param.NewBias()->ClImage();
   const int out_width = default_work_size[1];
-  DLOG << *param.InputX()->InnerCLImage();
-  DLOG << *param.NewBias()->InnerCLImage();
-  DLOG << *param.NewScale()->InnerCLImage();
+  DLOG << *param.InputX()->ClImage();
+  DLOG << *param.NewBias()->ClImage();
+  DLOG << *param.NewScale()->ClImage();
   DLOG << default_work_size[0];
   DLOG << default_work_size[1];
   DLOG << default_work_size[2];
   DLOG << out_width;
-  DLOG << *param.OutputY()->InnerCLImage();
+  DLOG << *param.OutputY()->ClImage();
   cl_int status;
   clSetKernelArg(kernel, 0, sizeof(cl_int), &out_width);
   CL_CHECK_ERRORS(status);

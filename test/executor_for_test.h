@@ -19,7 +19,6 @@ limitations under the License. */
 #include <vector>
 
 #include "common/log.h"
-#include "framework/executor_common_impl.h"
 #include "framework/op_registry.h"
 #include "operators/activation_op.h"
 #include "operators/conv_op.h"

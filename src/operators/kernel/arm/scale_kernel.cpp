@@ -24,8 +24,8 @@ namespace operators {
 
 template <>
 void ScaleKernelCpu<float>::Compute(const ScaleParam &param) {
-  const auto input = param.InputX()->InnerLoDTensor();
-  auto output = param.Out()->InnerLoDTensor();
+  const auto input = param.InputX()->LodTensor();
+  auto output = param.Out()->LodTensor();
   const float scale = param.Scale();
   const float bias = param.Bias();
   const float *input_data = input->data<float>();

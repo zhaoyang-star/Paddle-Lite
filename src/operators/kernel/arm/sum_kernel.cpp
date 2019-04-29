@@ -28,8 +28,8 @@ bool SumKernelCpu<float>::Init(SumParam *param) {
 template <>
 void SumKernelCpu<float>::Compute(const SumParam &param) {
   SumCompute<float>(param);
-  param.Out()->InnerLoDTensor()->set_lod(
-      param.Inputs()[0]->InnerLoDTensor()->lod());
+  param.Out()->LodTensor()->set_lod(
+      param.Inputs()[0]->LodTensor()->lod());
 }
 
 }  // namespace operators

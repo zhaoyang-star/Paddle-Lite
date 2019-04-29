@@ -22,11 +22,11 @@ namespace operators {
 template <typename T>
 void BoxCoderOp<T>::InferShape() const {
   auto input_priorbox_dims =
-      this->param_.InputPriorBox()->InnerLoDTensor()->dims();
+      this->param_.InputPriorBox()->LodTensor()->dims();
   auto input_priorboxvar_dims =
-      this->param_.InputPriorBoxVar()->InnerLoDTensor()->dims();
+      this->param_.InputPriorBoxVar()->LodTensor()->dims();
   auto input_targetbox_dims =
-      this->param_.InputTargetBox()->InnerLoDTensor()->dims();
+      this->param_.InputTargetBox()->LodTensor()->dims();
 
   auto code_type = this->param_.CodeType();
 
@@ -47,7 +47,7 @@ void BoxCoderOp<T>::InferShape() const {
       LOG(kLOG_ERROR) << " dimension not match";
     }
   }
-  this->param_.OutputBox()->InnerLoDTensor()->Resize(framework::make_ddim(
+  this->param_.OutputBox()->LodTensor()->Resize(framework::make_ddim(
       {input_targetbox_dims[0], input_priorbox_dims[0], 4}));
 }
 

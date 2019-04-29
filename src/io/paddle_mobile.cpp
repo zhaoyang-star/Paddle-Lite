@@ -20,7 +20,6 @@ limitations under the License. */
 #endif  // _OPENMP
 #ifdef PADDLE_MOBILE_CL
 #include <CL/cl.h>
-#include <framework/executor_cl_impl.h>
 #include <mutex>
 #include "framework/cl/cl_engine.h"
 #include "framework/cl/cl_tensor.h"

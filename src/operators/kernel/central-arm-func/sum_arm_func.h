@@ -21,7 +21,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-using TensorWrapperArray = framework::TensorWrapperArray;
+using TensorWrapperArray = framework::MobileTensorArray;
 
 template <typename P>
 void SumCompute(const SumParam &param) {
@@ -122,17 +122,17 @@ void SumCompute(const SumParam &param) {
       auto *in_array = inputsvars[i]->Get<TensorWrapperArray>();
 
       for (size_t i = 0; i < in_array->size(); ++i) {
-        const framework::TensorWrapper &tensor_wrapper = (*in_array)[i];
-        auto tensor = *static_cast<framework::TensorWrapper>(tensor_wrapper)
-                           .InnerLoDTensor();
+        const framework::MobileTensor &tensor_wrapper = (*in_array)[i];
+        auto tensor = *static_cast<framework::MobileTensor>(tensor_wrapper)
+            .LodTensor();
         if (tensor.numel() != 0) {
           if (i >= out_array.size()) {
             out_array.resize(i + 1);
           }
-          const framework::TensorWrapper &tensor_out_wrapper = out_array[i];
+          const framework::MobileTensor &tensor_out_wrapper = out_array[i];
           auto tensor_out =
-              *static_cast<framework::TensorWrapper>(tensor_out_wrapper)
-                   .InnerLoDTensor();
+              *static_cast<framework::MobileTensor>(tensor_out_wrapper)
+                  .LodTensor();
 
           if (tensor_out.numel() == 0) {
             framework::TensorCopy(tensor, &tensor_out);

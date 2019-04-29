@@ -31,10 +31,10 @@ struct ClipFunctor {
 
 template <typename P>
 void PriorBoxCompute(const PriorBoxParam &param) {
-  const auto *input_ = param.Input()->InnerLoDTensor();
+  const auto *input_ = param.Input()->LodTensor();
   const auto &input_dims = input_->dims();
 
-  const auto *input_image = param.InputImage()->InnerLoDTensor();
+  const auto *input_image = param.InputImage()->LodTensor();
   const auto &input_image_dims = input_image->dims();
 
   const auto &min_sizes = param.MinSizes();
@@ -47,9 +47,9 @@ void PriorBoxCompute(const PriorBoxParam &param) {
   const float &step_h = param.StepH();
   const float &offset = param.Offset();
 
-  Tensor *output_boxes = param.OutputBoxes()->InnerLoDTensor();
+  Tensor *output_boxes = param.OutputBoxes()->LodTensor();
   auto output_boxes_dataptr = output_boxes->mutable_data<float>();
-  Tensor *output_variances = param.OutputVariances()->InnerLoDTensor();
+  Tensor *output_variances = param.OutputVariances()->LodTensor();
   auto output_variances_dataptr = output_variances->mutable_data<float>();
 
   std::vector<float> aspect_ratios;

@@ -63,14 +63,14 @@ inline void StridedNumelCopyWithAxis(int64_t axis, T* dst,
 
 template <typename P>
 void SplitCompute(const SplitParam& param) {
-  auto* in = param.InputX()->InnerLoDTensor();
+  auto* in = param.InputX()->LodTensor();
   auto outs = param.Outs();
   auto in_stride = framework::stride_numel(in->dims());
   int64_t axis = param.Axis();
 
   size_t input_offset = 0;
   for (auto& out : outs) {
-    LoDTensor* outtensor = out->InnerLoDTensor();
+    LoDTensor* outtensor = out->LodTensor();
     outtensor->mutable_data<float>();
     auto out_stride = framework::stride_numel(outtensor->dims());
 

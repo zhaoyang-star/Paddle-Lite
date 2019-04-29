@@ -20,8 +20,8 @@ namespace operators {
 
 template <typename T>
 void MultiClassNMSOp<T>::InferShape() const {
-  auto input_bboxes_dims = this->param_.InputBBoxes()->InnerLoDTensor()->dims();
-  auto input_scores_dims = this->param_.InputScores()->InnerLoDTensor()->dims();
+  auto input_bboxes_dims = this->param_.InputBBoxes()->LodTensor()->dims();
+  auto input_scores_dims = this->param_.InputScores()->LodTensor()->dims();
   if (input_scores_dims.size() != 3) {
     LOG(kLOG_ERROR) << "Input Scores size must be 3";
   }
@@ -32,7 +32,7 @@ void MultiClassNMSOp<T>::InferShape() const {
     LOG(kLOG_ERROR) << "Predict bboxes must be equal";
   }
   // pre size, will change in Compute.
-  this->param_.Out()->InnerLoDTensor()->Resize(
+  this->param_.Out()->LodTensor()->Resize(
       framework::make_ddim({input_bboxes_dims[1], input_bboxes_dims[2] + 2}));
 }
 

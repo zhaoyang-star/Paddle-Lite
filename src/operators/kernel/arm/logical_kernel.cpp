@@ -62,9 +62,9 @@ bool LogicalAndKernelCpu<float>::Init(LogicalBinaryParam* param) {
 
 template <>
 void LogicalAndKernelCpu<float>::Compute(const LogicalBinaryParam& param) {
-  auto* inputX = param.InputX()->InnerLoDTensor();
-  auto* inputY = param.InputY()->InnerLoDTensor();
-  auto* out = param.Out()->InnerLoDTensor();
+  auto* inputX = param.InputX()->LodTensor();
+  auto* inputY = param.InputY()->LodTensor();
+  auto* out = param.Out()->LodTensor();
   out->mutable_data<bool>();
   BinaryLogicalCompute<bool, LogicalAndFunctor<bool>>(inputX, inputY, out);
 }
@@ -78,9 +78,9 @@ bool LogicalOrKernelCpu<float>::Init(LogicalBinaryParam* param) {
 
 template <>
 void LogicalOrKernelCpu<float>::Compute(const LogicalBinaryParam& param) {
-  auto* inputX = param.InputX()->InnerLoDTensor();
-  auto* inputY = param.InputY()->InnerLoDTensor();
-  auto* out = param.Out()->InnerLoDTensor();
+  auto* inputX = param.InputX()->LodTensor();
+  auto* inputY = param.InputY()->LodTensor();
+  auto* out = param.Out()->LodTensor();
   out->mutable_data<bool>();
   BinaryLogicalCompute<bool, LogicalOrFunctor<bool>>(inputX, inputY, out);
 }
@@ -94,8 +94,8 @@ bool LogicalNotKernelCpu<float>::Init(LogicalUnaryParam* param) {
 
 template <>
 void LogicalNotKernelCpu<float>::Compute(const LogicalUnaryParam& param) {
-  auto* inputX = param.InputX()->InnerLoDTensor();
-  auto* out = param.Out()->InnerLoDTensor();
+  auto* inputX = param.InputX()->LodTensor();
+  auto* out = param.Out()->LodTensor();
   out->mutable_data<bool>();
   UnaryLogicalCompute<bool, LogicalNotFunctor<bool>>(inputX, out);
 }
@@ -109,9 +109,9 @@ bool LogicalXorKernelCpu<float>::Init(LogicalBinaryParam* param) {
 
 template <>
 void LogicalXorKernelCpu<float>::Compute(const LogicalBinaryParam& param) {
-  auto* inputX = param.InputX()->InnerLoDTensor();
-  auto* inputY = param.InputY()->InnerLoDTensor();
-  auto* out = param.Out()->InnerLoDTensor();
+  auto* inputX = param.InputX()->LodTensor();
+  auto* inputY = param.InputY()->LodTensor();
+  auto* out = param.Out()->LodTensor();
   out->mutable_data<bool>();
   BinaryLogicalCompute<bool, LogicalXorFunctor<bool>>(inputX, inputY, out);
 }

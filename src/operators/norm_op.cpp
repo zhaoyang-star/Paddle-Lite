@@ -23,15 +23,15 @@ namespace operators {
 
 template <typename T>
 void NormOp<T>::InferShape() const {
-  auto x_dims = this->param_.InputX()->InnerLoDTensor()->dims();
-  this->param_.Out()->InnerLoDTensor()->Resize(x_dims);
+  auto x_dims = this->param_.InputX()->LodTensor()->dims();
+  this->param_.Out()->LodTensor()->Resize(x_dims);
 
   int axis = this->param_.Axis();
   if (axis < 0) {
     axis += x_dims.size();
   }
   x_dims[axis] = 1;
-  this->param_.OutputNorm()->InnerLoDTensor()->Resize(x_dims);
+  this->param_.OutputNorm()->LodTensor()->Resize(x_dims);
 }
 
 }  // namespace operators

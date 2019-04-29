@@ -30,10 +30,10 @@ namespace operators {
 
 template <typename P>
 void FlattenCompute(const FlattenParam &param) {
-  const auto *input_x = param.InputX()->InnerLoDTensor();
+  const auto *input_x = param.InputX()->LodTensor();
   const auto axis = param.Axis();
   const auto &input_x_dims = input_x->dims();
-  auto *out = param.Out()->InnerLoDTensor();
+  auto *out = param.Out()->LodTensor();
 
   const auto &out_shape_v = GetOutputShape(axis, input_x_dims);
   const framework::DDim &out_dim = ValidateShape(out_shape_v, input_x_dims);

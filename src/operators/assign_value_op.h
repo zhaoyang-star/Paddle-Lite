@@ -25,7 +25,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 
-DECLARE_OPERATOR(AssignValue, AssignValueParam, AssignValueKernel);
+DECLARE_OPERATOR(AssignValue)
 
 }  // namespace operators
 }  // namespace paddle_mobile

@@ -28,8 +28,8 @@ bool FusionFcKernelCpu<float>::Init(FusionFcParam *param) {
 template <>
 void FusionFcKernelCpu<float>::Compute(const FusionFcParam &param) {
   FusionFcCompute<float, float>(param);
-  param.Out()->InnerLoDTensor()->set_lod(
-      param.InputX()->InnerLoDTensor()->lod());
+  param.Out()->LodTensor()->set_lod(
+      param.InputX()->LodTensor()->lod());
 }
 
 template class FusionFcKernelCpu<float>;

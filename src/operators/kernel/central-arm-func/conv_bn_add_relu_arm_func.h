@@ -26,12 +26,12 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace operators {
 void ConvBNAddReluBasic(const FusionConvBNAddReluParam &param) {
-  const Tensor *input = param.Input()->InnerLoDTensor();
-  Tensor filter = *param.Filter()->InnerLoDTensor();
-  Tensor new_bias = *param.NewBias()->InnerLoDTensor();
-  Tensor new_scale = *param.NewScale()->InnerLoDTensor();
-  Tensor *bias1 = param.Bias()->InnerLoDTensor();
-  Tensor *output = param.Output()->InnerLoDTensor();
+  const Tensor *input = param.Input()->LodTensor();
+  Tensor filter = *param.Filter()->LodTensor();
+  Tensor new_bias = *param.NewBias()->LodTensor();
+  Tensor new_scale = *param.NewScale()->LodTensor();
+  Tensor *bias1 = param.Bias()->LodTensor();
+  Tensor *output = param.Output()->LodTensor();
   output->mutable_data<float>();
 
   int groups = param.Groups();
@@ -119,33 +119,33 @@ template <typename P>
 void ConvBNAddReluCompute(const FusionConvBNAddReluParam &param) {
   Tensor Bias;
   Bias.mutable_data<float>({param.Groups()});
-  if (param.Groups() == param.Input()->InnerLoDTensor()->dims()[1] &&
-      param.Input()->InnerLoDTensor()->dims()[1] ==
-          param.Output()->InnerLoDTensor()->dims()[1] &&
-      param.Filter()->InnerLoDTensor()->dims()[2] ==
-          param.Filter()->InnerLoDTensor()->dims()[3] &&
-      param.Filter()->InnerLoDTensor()->dims()[2] == 3 &&
+  if (param.Groups() == param.Input()->LodTensor()->dims()[1] &&
+      param.Input()->LodTensor()->dims()[1] ==
+          param.Output()->LodTensor()->dims()[1] &&
+      param.Filter()->LodTensor()->dims()[2] ==
+          param.Filter()->LodTensor()->dims()[3] &&
+      param.Filter()->LodTensor()->dims()[2] == 3 &&
       param.Strides()[0] == 1 && param.paddings_[0] == 1) {
     math::DepthwiseConvAddBNRelu3x3s1p1(
-        param.Input()->InnerLoDTensor(), param.Filter()->InnerLoDTensor(),
-        param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
-        param.NewBias()->InnerLoDTensor(), true);
-  } else if (param.Groups() == param.Input()->InnerLoDTensor()->dims()[1] &&
-             param.Input()->InnerLoDTensor()->dims()[1] ==
-                 param.Output()->InnerLoDTensor()->dims()[1] &&
-             param.Filter()->InnerLoDTensor()->dims()[2] ==
-                 param.Filter()->InnerLoDTensor()->dims()[3] &&
-             param.Filter()->InnerLoDTensor()->dims()[2] == 3 &&
+        param.Input()->LodTensor(), param.Filter()->LodTensor(),
+        param.Output()->LodTensor(), param.NewScale()->LodTensor(),
+        param.NewBias()->LodTensor(), true);
+  } else if (param.Groups() == param.Input()->LodTensor()->dims()[1] &&
+      param.Input()->LodTensor()->dims()[1] ==
+          param.Output()->LodTensor()->dims()[1] &&
+      param.Filter()->LodTensor()->dims()[2] ==
+          param.Filter()->LodTensor()->dims()[3] &&
+      param.Filter()->LodTensor()->dims()[2] == 3 &&
              param.Strides()[0] == 2) {
-    //    math::DepthwiseConvAddBNRelu3x3s2p1(param.Input()->InnerLoDTensor(),param.Filter()->InnerLoDTensor(),
-    //                                        param.Output()->InnerLoDTensor(),
-    //                                        param.NewScale()->InnerLoDTensor(),
-    //                                        param.NewBias()->InnerLoDTensor(),
+    //    math::DepthwiseConvAddBNRelu3x3s2p1(param.Input()->InnerLoDTensor(),param.Filter()->LodTensor(),
+    //                                        param.Output()->LodTensor(),
+    //                                        param.NewScale()->LodTensor(),
+    //                                        param.NewBias()->LodTensor(),
     //                                        1);
     math::DepthwiseConvAddBNRelu3x3s2p1v2(
-        param.Input()->InnerLoDTensor(), param.Filter()->InnerLoDTensor(),
-        param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
-        param.NewBias()->InnerLoDTensor(), true);
+        param.Input()->LodTensor(), param.Filter()->LodTensor(),
+        param.Output()->LodTensor(), param.NewScale()->LodTensor(),
+        param.NewBias()->LodTensor(), true);
   } else {
     ConvBNAddReluBasic(param);
   }

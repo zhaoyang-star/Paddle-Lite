@@ -23,14 +23,14 @@ namespace operators {
 template <typename T>
 void Reshape2Op<T>::InferShape() const {
   auto &shape = this->param_.Shape();
-  auto input_x_dims = this->param_.InputX()->InnerLoDTensor()->dims();
+  auto input_x_dims = this->param_.InputX()->LodTensor()->dims();
   auto out_dims = ValidateShape(shape, input_x_dims);
-  this->param_.Out()->InnerLoDTensor()->Resize(out_dims);
+  this->param_.Out()->LodTensor()->Resize(out_dims);
   std::vector<int64_t> xshape_dims(input_x_dims.size() + 1, 0);
   for (int i = 0; i < input_x_dims.size(); ++i) {
     xshape_dims[i + 1] = input_x_dims[i];
   }
-  this->param_.OutputXShape()->InnerLoDTensor()->Resize(
+  this->param_.OutputXShape()->LodTensor()->Resize(
       framework::make_ddim(xshape_dims));
 }
 

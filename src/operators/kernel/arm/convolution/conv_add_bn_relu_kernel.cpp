@@ -26,11 +26,11 @@ namespace operators {
 template <>
 bool ConvAddBNReluKernelCpu<float>::Init(
     FusionConvAddBNReluParam *param) {
-  const Tensor *mean = param->InputMean()->InnerLoDTensor();
-  const Tensor *variance = param->InputVariance()->InnerLoDTensor();
-  const Tensor *scale = param->InputScale()->InnerLoDTensor();
-  const Tensor *bias = param->InputBias()->InnerLoDTensor();
-  const Tensor *bias1 = param->Bias()->InnerLoDTensor();
+  const Tensor *mean = param->InputMean()->LodTensor();
+  const Tensor *variance = param->InputVariance()->LodTensor();
+  const Tensor *scale = param->InputScale()->LodTensor();
+  const Tensor *bias = param->InputBias()->LodTensor();
+  const Tensor *bias1 = param->Bias()->LodTensor();
   const float epsilon = param->Epsilon();
 
   auto mean_ptr = mean->data<float>();
@@ -47,17 +47,20 @@ bool ConvAddBNReluKernelCpu<float>::Init(
   }
 
 
-  auto *new_scale_w = param->CreateNewScale<framework::TensorWrapper>();
-  auto *new_bias_w = param->CreateNewBiase<framework::TensorWrapper>();
+  Variable *scale_var = param->GetScope()->Var();
+  Variable *bias_var = param->GetScope()->Var();
+  framework::MobileTensor *new_scale_w = scale_var->GetMutable<framework::MobileTensor>();
+  framework::MobileTensor *new_bias_w = bias_var->GetMutable<framework::MobileTensor>();
+
   LoDTensor *new_scale = new_scale_w->MuteLodTensor();
   LoDTensor *new_bias = new_bias_w->MuteLodTensor();
 
-  auto new_scale_ptr = new_scale->mutable_data<float>({C});
-  auto new_bias_ptr = new_bias->mutable_data<float>({C});
+
+  float *new_scale_ptr = new_scale->mutable_data<float>({C});
+  float *new_bias_ptr = new_bias->mutable_data<float>({C});
   for (int i = 0; i < C; i++) {
     new_scale_ptr[i] = inv_std_ptr[i] * scale_ptr[i];
-    new_bias_ptr[i] = bias_ptr[i] + (bias1_ptr[i] - mean_ptr[i]) *
-                                        inv_std_ptr[i] * scale_ptr[i];
+    new_bias_ptr[i] = bias_ptr[i] - mean_ptr[i] * inv_std_ptr[i] * scale_ptr[i];
   }
   param->SetNewScale(new_scale_w);
   param->SetNewBias(new_bias_w);
@@ -83,8 +86,8 @@ void ConvAddBNReluKernelCpu<float>::Compute(
     case ConvParam::EXEC_GEMM_FLOAT:
       GemmConv<float, float>(param);
       break;
-    case ConvParam<CPU>::EXEC_SLIDINGWINDOW3x3S1_FLOAT:
-    case ConvParam<CPU>::EXEC_SLIDINGWINDOW3x3S2_FLOAT:
+    case ConvParam::EXEC_SLIDINGWINDOW3x3S1_FLOAT:
+    case ConvParam::EXEC_SLIDINGWINDOW3x3S2_FLOAT:
       SlidingwindowConv3x3<float, float>(param);
       break;
     default:
@@ -92,8 +95,8 @@ void ConvAddBNReluKernelCpu<float>::Compute(
                                     param.ExecMode());
   }
   math::ScaleAddChannelWise<RELU>(
-      param.Output()->InnerLoDTensor(), param.NewScale()->InnerLoDTensor(),
-      param.NewBias()->InnerLoDTensor(), param.Output()->InnerLoDTensor());
+      param.Output()->LodTensor(), param.NewScale()->LodTensor(),
+      param.NewBias()->LodTensor(), param.Output()->LodTensor());
 }
 
 template class ConvAddBNReluKernelCpu<float>;

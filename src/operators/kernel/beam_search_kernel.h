@@ -38,7 +38,7 @@ class BeamSearchParam : public OpParam {
     if (outputs.count("parent_idx")) {
       parent_idx_ = GET_VAR_AS_LOD_TENSOR("parent_idx", outputs, *scope);
     } else {
-      parent_idx_ = new framework::TensorWrapper();
+      parent_idx_ = new framework::MobileTensor();
     }
 
     level_ = OpParam::GetAttr<int>("level", attrs);
@@ -50,14 +50,14 @@ class BeamSearchParam : public OpParam {
   }
 
  public:
-  framework::TensorWrapper *pre_ids_;
-  framework::TensorWrapper *pre_scores_;
-  framework::TensorWrapper *ids_;
-  framework::TensorWrapper *scores_;
+  framework::MobileTensor *pre_ids_;
+  framework::MobileTensor *pre_scores_;
+  framework::MobileTensor *ids_;
+  framework::MobileTensor *scores_;
 
-  framework::TensorWrapper *selected_ids_;
-  framework::TensorWrapper *selected_scores_;
-  framework::TensorWrapper *parent_idx_;
+  framework::MobileTensor *selected_ids_;
+  framework::MobileTensor *selected_scores_;
+  framework::MobileTensor *parent_idx_;
 
   int level_;
   int beam_size_;

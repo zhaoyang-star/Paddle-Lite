@@ -52,8 +52,8 @@ template <>
 void OnehotKernelCpu<float>::Compute(const OnehotParam& param) {
   framework::VisitDataType(
       framework::ToDataType(param.dtype_),
-      OnehotOpFunctor<int64_t>(param.input_->InnerLoDTensor(),
-                               param.output_->InnerLoDTensor(), param.depth_));
+      OnehotOpFunctor<int64_t>(param.input_->LodTensor(),
+                               param.output_->LodTensor(), param.depth_));
 }
 
 }  // namespace operators
