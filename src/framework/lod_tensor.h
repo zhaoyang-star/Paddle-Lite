@@ -146,7 +146,7 @@ class LoDTensor : public Tensor {
   }
 
   /**
-   * 兼容TensorWrapper for fpga
+   * 兼容MobileTensor for fpga
    * @return
    */
   framework::LoDTensor *LodTensor() { return this; }

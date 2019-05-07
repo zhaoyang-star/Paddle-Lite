@@ -33,14 +33,15 @@ void ConvAddBnRelu(framework::CLHelper &cl_helper, const ConvParam &param,
   auto kernel = cl_helper.KernelAt(0);
   CLImage *output_climage = param.Output()->ClImage();
   // if climage is not init
-  if (!output_climage->isInit()){
-    output_climage->InitEmptyImage(cl_helper.CLContext(),cl_helper.CLCommandQueue(),output_climage->dims());
+  if (!output_climage->isInit()) {
+    output_climage->InitEmptyImage(cl_helper.CLContext(),
+                                   cl_helper.CLCommandQueue(),
+                                   output_climage->dims());
   }
 
   auto output = output_climage->GetCLImage();
 
-  auto default_work_size =
-      cl_helper.DefaultWorkSize(*output_climage);
+  auto default_work_size = cl_helper.DefaultWorkSize(*output_climage);
   int c_block = default_work_size[0];
   int w = default_work_size[1];
   int nh = default_work_size[2];

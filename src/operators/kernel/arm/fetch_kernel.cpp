@@ -22,8 +22,8 @@ bool FetchKernelCpu<float>::Init(FetchParam *param) {
 template <>
 void FetchKernelCpu<float>::Compute(const FetchParam &param) {
   int col = param.Col();
-  param.Out()->at(col).LodTensor()->ShareDataWith(
-      *(param.InputX()->LodTensor()));
+  const LoDTensor &input_lod_tensor = *(param.InputX()->LodTensor());
+  param.Out()->at(col).LodTensor()->ShareDataWith(input_lod_tensor);
 }
 
 template class FetchKernelCpu<float>;

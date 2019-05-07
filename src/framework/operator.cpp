@@ -68,8 +68,11 @@ void OperatorBase::Run() {
           var->template IsType<framework::MobileTensor>()) {
         MobileTensor *tensor_w =
             const_cast<MobileTensor *>(var->template Get<MobileTensor>());
-        auto *tensor = tensor_w->LodTensor();
-        if (tensor) DLOG << type_ << " input- " << key << "=" << *tensor;
+        if (tensor_w) {
+          auto *tensor = tensor_w->LodTensor();
+          if (tensor) DLOG << type_ << " input- " << key << "=" << *tensor;
+        }
+
 #ifdef PADDLE_MOBILE_FPGA
         DLOG << var_vec_in[i];
 #endif
@@ -84,8 +87,10 @@ void OperatorBase::Run() {
           var->template IsType<framework::MobileTensor>()) {
         MobileTensor *tensor_w =
             const_cast<MobileTensor *>(var->template Get<MobileTensor>());
-        auto *tensor = tensor_w->LodTensor();
-        if (tensor) DLOG << type_ << " output- " << key << "=" << *tensor;
+        if (tensor_w) {
+          auto *tensor = tensor_w->LodTensor();
+          if (tensor) DLOG << type_ << " output- " << key << "=" << *tensor;
+        }
 #ifdef PADDLE_MOBILE_FPGA
         DLOG << var_vec_out[i];
 #endif
@@ -94,56 +99,6 @@ void OperatorBase::Run() {
   }
 #endif
 }
-
-  // todo cl run
-  /*
-  #ifdef PADDLE_MOBILE_CL
-  template <>
-  void OperatorBase<GPU_CL>::Run() {
-    RunImpl();
-  #ifdef PADDLE_MOBILE_DEBUG
-    DLOG << "-------------" << type_ << "----------------------------";
-    vector<string> input_keys = GetInputKeys();
-    for (const auto key : input_keys) {
-      auto var_vec_in = inputs_.at(key);
-      for (int i = 0; i < var_vec_in.size(); ++i) {
-        auto vari = scope_->FindVar(var_vec_in[i]);
-        if (vari->IsInitialized()) {
-          if (type_ == "feed") {
-            const Tensor *tensor = vari->template Get<framework::LoDTensor>();
-            if (tensor) DLOG << type_ << " input- " << key << "=" << *tensor;
-          } else {
-            const CLImage *cl_image = vari->template Get<framework::CLImage>();
-            if (cl_image) {
-              DLOG << type_ << " input- " << key << "=" << *cl_image;
-            }
-          }
-        }
-      }
-    }
-    for (const auto key : GetOutKeys()) {
-      auto var_vec_out = outputs_.at(key);
-      for (int i = 0; i < var_vec_out.size(); ++i) {
-        auto vari = scope_->FindVar(var_vec_out[i]);
-        if (vari->IsInitialized()) {
-          if (type_ == "fetch") {
-            const Tensor *tensor = vari->template Get<framework::LoDTensor>();
-            if (tensor) {
-              DLOG << type_ << " output- " << key << "=" << *tensor;
-            }
-          } else {
-            const CLImage *cl_image = vari->template Get<framework::ClImage>();
-            if (cl_image) {
-              DLOG << type_ << " output- " << key << "=" << *cl_image;
-            }
-          }
-        }
-      }
-    }
-  #endif
-  }
-  #endif
-  */
 
 #ifdef PADDLE_MOBILE_FPGA
 template <typename Dtype>

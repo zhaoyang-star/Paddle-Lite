@@ -499,8 +499,8 @@ PMStatus Executor<T>::Predict() {
         ops_of_block0_[i]->Type() == "depthwise_conv2d") {
       auto inputs = ops_of_block0_[i]->Inputs();
       auto *filter =
-          GetVarValue<LoDTensor>("Filter", inputs, *(program_.scope));
-      int kernel_size = filter->dims()[2];
+          GetVarValue<MobileTensor>("Filter", inputs, *(program_.scope));
+      int kernel_size = filter->LodTensor()->dims()[2];
       _tp[ops_of_block0_[i]->Type() + "_" + std::to_string(kernel_size)] +=
           timeCost;
     } else {

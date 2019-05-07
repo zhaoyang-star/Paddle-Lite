@@ -21,6 +21,12 @@ namespace operators {
 template <>
 bool SigmoidKernelGpu<float>::Init(SigmoidParam* param) {
   this->cl_helper_.AddKernel("sigmoid", "sigmoid.cl");
+  framework::CLImage* const output_climage = param->Out()->ClImage();
+  if (!output_climage->isInit()) {
+    output_climage->InitEmptyImage(this->cl_helper_.CLContext(),
+                                   this->cl_helper_.CLCommandQueue(),
+                                   output_climage->dims());
+  }
   return true;
 }
 

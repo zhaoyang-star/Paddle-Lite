@@ -81,13 +81,14 @@ class MobileTensor {
 
       return this->GetGpu();
     } else {
-      DLOG << "----------begin-----  cpu ---> gpu----------------------";
+      //      DLOG << "----------begin-----  cpu --->
+      //      gpu----------------------";
       // conver cpu mem to gpu
       // cast gpu to cpu
       const LoDTensor *input = this->GetCpu();
       CLImage *output = this->GetGpu();
       CLHelper *helper = CLRumtimeHelper::Instance()->GetClHelper();
-      DLOG << "input->IsInitialized(): " << input->IsInitialized();
+      //      DLOG << "input->IsInitialized(): " << input->IsInitialized();
       if (input->IsInitialized()) {
         const float *input_data = input->data<float>();
         cl_context context = CLEngine::Instance()->getContext();
@@ -95,8 +96,8 @@ class MobileTensor {
             CLEngine::Instance()->getClCommandQueue();
 
         const DDim &dims = output->dims();
-        DLOG << "output->isInit():  " << output->isInit();
-        DLOG << "IsPersistable()=======>  " << IsPersistable();
+        //        DLOG << "output->isInit():  " << output->isInit();
+        //        DLOG << "IsPersistable()=======>  " << IsPersistable();
         if (!output->isInit() && IsPersistable()) {
           // do nothing until init ?
           output->SetTensorData(const_cast<float *>(input_data), input->dims());
@@ -164,7 +165,8 @@ class MobileTensor {
         mem_type = MEM_GPU;
         //        output->InitEmptyImage(helper->CLContext(),helper->CLCommandQueue(),input->dims());
       }
-      DLOG << "----------success---  cpu ---> gpu----------------------";
+      //      DLOG << "----------success---  cpu --->
+      //      gpu----------------------";
 
       return output;
     }
@@ -181,9 +183,10 @@ class MobileTensor {
       CLImage *input_climage = this->GetGpu();
 
       LoDTensor *output_lodtensor = this->GetCpu();
-      DLOG << "----------begin-----  gpu ---> cpu----------------------";
+      //      DLOG << "----------begin-----  gpu --->
+      //      cpu----------------------";
 
-      DLOG << "input_climage->isInit():  " << input_climage->isInit();
+      //      DLOG << "input_climage->isInit():  " << input_climage->isInit();
 
       if (input_climage->isInit()) {
         // cast gpu to cpu
@@ -217,7 +220,8 @@ class MobileTensor {
       }
       is_cpu_got = true;
       mem_type = MEM_CPU;
-      DLOG << "----------success---  gpu ---> cpu----------------------";
+      //      DLOG << "----------success---  gpu --->
+      //      cpu----------------------";
 
       return output_lodtensor;
     }

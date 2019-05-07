@@ -111,7 +111,6 @@ void TensorToCLImage(Tensor *tensor, CLImage *cl_image, cl_context context,
 Print &operator<<(Print &printer, const CLImage &cl_image) {
   int width = cl_image.ImageDims()[0];
   int height = cl_image.ImageDims()[1];
-
   half_t *image_data = new half_t[height * width * 4];
   cl_int err;
   cl_mem image = cl_image.GetCLImage();

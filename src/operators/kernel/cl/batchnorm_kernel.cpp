@@ -80,22 +80,19 @@ bool BatchNormKernelGpu<float>::Init(BatchNormParam *param) {
 template <>
 void BatchNormKernelGpu<float>::Compute(const BatchNormParam &param) {
   auto kernel = this->cl_helper_.KernelAt(0);
-  auto default_work_size =
-      this->cl_helper_.DefaultWorkSize(*param.OutputY()->ClImage());
+  framework::CLImage *const outputY = param.OutputY()->ClImage();
+  if (!outputY->isInit()) {
+    outputY->InitEmptyImage(this->cl_helper_.CLContext(),
+                            this->cl_helper_.CLCommandQueue(), outputY->dims());
+  }
+  auto default_work_size = this->cl_helper_.DefaultWorkSize(*outputY);
 
-  auto input = param.InputX()->ClImage();
-  auto out = param.OutputY();
-  auto new_scale = param.NewScale()->ClImage();
-  auto new_bias = param.NewBias()->ClImage();
+  auto input = param.InputX()->ClImage()->GetCLImage();
+
+  auto out = outputY->GetCLImage();
+  auto new_scale = param.NewScale()->ClImage()->GetCLImage();
+  auto new_bias = param.NewBias()->ClImage()->GetCLImage();
   const int out_width = default_work_size[1];
-  DLOG << *param.InputX()->ClImage();
-  DLOG << *param.NewBias()->ClImage();
-  DLOG << *param.NewScale()->ClImage();
-  DLOG << default_work_size[0];
-  DLOG << default_work_size[1];
-  DLOG << default_work_size[2];
-  DLOG << out_width;
-  DLOG << *param.OutputY()->ClImage();
   cl_int status;
   clSetKernelArg(kernel, 0, sizeof(cl_int), &out_width);
   CL_CHECK_ERRORS(status);

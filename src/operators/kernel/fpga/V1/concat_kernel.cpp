@@ -39,8 +39,7 @@ bool ConcatKernel<FPGA, float>::Init(ConcatParam<FPGA> *param) {
         input->dims()[2] == height && input->dims()[3] == width,
         "Image height & width should be unified");
     images_in[i] = input->data<half>();
-    channel_num[i] =
-        (uint32_t)inputs[i]->InnerLoDTensor()->dims()[1];  // NOLINT
+    channel_num[i] = (uint32_t)inputs[i]->dims()[1];  // NOLINT
     scales_in[i] = input->scale;
   }
   fpga::format_concat_output(out, height, width, image_num, channel_num);
