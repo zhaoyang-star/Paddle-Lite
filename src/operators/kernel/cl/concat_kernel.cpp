@@ -21,14 +21,12 @@ namespace operators {
 
 template <>
 bool ConcatKernelGpu<float>::Init(ConcatParam *param) {
-
-
-
   CLImage *const out_cl_image = param->Out()->ClImage();
 
   if (!out_cl_image->isInit()) {
     out_cl_image->InitEmptyImage(this->cl_helper_.CLContext(),
-                            this->cl_helper_.CLCommandQueue(), out_cl_image->dims());
+                                 this->cl_helper_.CLCommandQueue(),
+                                 out_cl_image->dims());
   }
   if (out_cl_image->dims().size() < 4) {
     this->cl_helper_.AddKernel("concatByH", "concat_kernel.cl");

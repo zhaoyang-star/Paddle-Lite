@@ -28,6 +28,9 @@ int main() {
       std::make_pair("sigmoid", TYPE_GPU));
 
   configInternalGpu.running_expected_map_.insert(
+      std::make_pair("elementwise_sub", TYPE_GPU));
+
+  configInternalGpu.running_expected_map_.insert(
       std::make_pair("relu", TYPE_GPU));
 
   configInternalGpu.running_expected_map_.insert(

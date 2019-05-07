@@ -76,13 +76,14 @@ class MobileTensor {
 
 #ifdef PADDLE_MOBILE_CL
   CLImage *ClImage() {
-    if (this->GetMemType() == MEM_GPU || (is_persistable_ && is_gpu_got)) {
+    if (this->GetMemType() == MEM_GPU ||
+
+        /* efficient and only use for default converter */
+        (is_persistable_ && is_gpu_got)) {
       mem_type = MEM_GPU;
 
       return this->GetGpu();
     } else {
-      //      DLOG << "----------begin-----  cpu --->
-      //      gpu----------------------";
       // conver cpu mem to gpu
       // cast gpu to cpu
       const LoDTensor *input = this->GetCpu();
@@ -173,7 +174,9 @@ class MobileTensor {
   }
 #endif
   framework::LoDTensor *LodTensor() {
-    if (this->GetMemType() == MEM_CPU || (is_persistable_ && is_cpu_got)) {
+    if (this->GetMemType() == MEM_CPU ||
+        /* efficient and only use for default converter */
+        (is_persistable_ && is_cpu_got)) {
       mem_type = MEM_CPU;
       return this->GetCpu();
     }
@@ -189,40 +192,88 @@ class MobileTensor {
       //      DLOG << "input_climage->isInit():  " << input_climage->isInit();
 
       if (input_climage->isInit()) {
-        // cast gpu to cpu
-        //        ClImage *image_p = input_climage;
-        int width = input_climage->ImageDims()[0];
-        int height = input_climage->ImageDims()[1];
+        if (0) {
+          // cast gpu to cpu
+          //        ClImage *image_p = input_climage;
+          int width = input_climage->ImageDims()[0];
+          int height = input_climage->ImageDims()[1];
 
-        half_t *image_data = new half_t[height * width * 4];
-        cl_int err;
-        cl_mem image = input_climage->GetCLImage();
-        size_t origin[3] = {0, 0, 0};
-        size_t region[3] = {static_cast<size_t>(width),
-                            static_cast<size_t>(height), 1};
-        err =
-            clEnqueueReadImage(input_climage->CommandQueue(), image, CL_TRUE,
-                               origin, region, 0, 0, image_data, 0, NULL, NULL);
-        CL_CHECK_ERRORS(err);
+          half_t *image_data = new half_t[height * width * 4];
+          cl_int err;
+          cl_mem image = input_climage->GetCLImage();
+          size_t origin[3] = {0, 0, 0};
+          size_t region[3] = {static_cast<size_t>(width),
+                              static_cast<size_t>(height), 1};
+          err = clEnqueueReadImage(input_climage->CommandQueue(), image,
+                                   CL_TRUE, origin, region, 0, 0, image_data, 0,
+                                   NULL, NULL);
+          CL_CHECK_ERRORS(err);
 
-        output_lodtensor->Resize(input_climage->dims());
-        auto converter = input_climage->Converter();
-        if (!output_lodtensor->IsInitialized()) {
-          output_lodtensor->mutable_data<float>();
+          output_lodtensor->Resize(input_climage->dims());
+          auto converter = input_climage->Converter();
+          if (!output_lodtensor->IsInitialized()) {
+            output_lodtensor->mutable_data<float>();
+          }
+          converter->ImageToNCHW(image_data, output_lodtensor->data<float>(),
+                                 input_climage->ImageDims(),
+                                 input_climage->dims());
+
+          delete[](image_data);
+        } else {
+          // use gpu to convert
+          CLHelper *cl_helper_ = CLRumtimeHelper::Instance()->GetClHelper();
+          auto kernel = cl_helper_->KernelAt(1);
+          auto default_work_size = cl_helper_->DefaultWorkSize(*input_climage);
+
+          auto input = input_climage->GetCLImage();
+          auto *out = output_lodtensor;
+          out->Resize(input_climage->dims());
+          out->mutable_data<float>();
+          const auto &dim = input_climage->dims();
+          size_t new_dims[] = {1, 1, 1, 1};
+
+          for (int j = 0; j < dim.size(); ++j) {
+            new_dims[4 - dim.size() + j] = dim[j];
+          }
+
+          size_t C, in_height, in_width;
+          C = new_dims[1];
+          in_height = new_dims[2];
+          in_width = new_dims[3];
+
+          framework::CLTensor out_cl_tensor(cl_helper_->CLContext(),
+                                            cl_helper_->CLCommandQueue());
+
+          out_cl_tensor.Resize(out->dims());
+          cl_mem outBuffer = out_cl_tensor.mutable_data<float>();
+
+          clSetKernelArg(kernel, 0, sizeof(int), &in_height);
+          clSetKernelArg(kernel, 1, sizeof(int), &in_width);
+          clSetKernelArg(kernel, 2, sizeof(cl_mem), &input);
+
+          clSetKernelArg(kernel, 3, sizeof(cl_mem), &outBuffer);
+          int size_ch = in_height * in_width;
+          int size_block = size_ch * 4;
+          int size_batch = size_ch * C;
+          int out_c = new_dims[1];
+          clSetKernelArg(kernel, 4, sizeof(int), &size_ch);
+          clSetKernelArg(kernel, 5, sizeof(int), &size_block);
+          clSetKernelArg(kernel, 6, sizeof(int), &size_batch);
+          clSetKernelArg(kernel, 7, sizeof(int), &out_c);
+
+          clEnqueueNDRangeKernel(cl_helper_->CLCommandQueue(), kernel, 3, NULL,
+                                 default_work_size.data(), NULL, 0, NULL, NULL);
+
+          clFinish(cl_helper_->CLCommandQueue());
+          memcpy(out->data<float>(), out_cl_tensor.Data<float>(),
+                 out->memory_size());
         }
-        converter->ImageToNCHW(image_data, output_lodtensor->data<float>(),
-                               input_climage->ImageDims(),
-                               input_climage->dims());
-        delete[](image_data);
       } else {
         const DDim &dims = input_climage->dims();
         output_lodtensor->ResizeSafe(dims);
       }
       is_cpu_got = true;
       mem_type = MEM_CPU;
-      //      DLOG << "----------success---  gpu --->
-      //      cpu----------------------";
-
       return output_lodtensor;
     }
 #else

@@ -26,7 +26,7 @@ limitations under the License. */
 namespace paddle_mobile {
 namespace framework {
 
-class CLTensor : TensorBase {
+class CLTensor : public TensorBase {
  public:
   CLTensor(cl_context context, cl_command_queue command_queue)
       : context_(context), command_queue_(command_queue) {}
@@ -181,6 +181,10 @@ class CLTensor : TensorBase {
     cl_command_queue command_queue_;
   };
 };
+#ifdef PADDLE_MOBILE_DEBUG
+Print &operator<<(Print &printer, const CLTensor &tensor);
+
+#endif  // PADDLE_MOBILE_DEBUG
 
 }  // namespace framework
 }  // namespace paddle_mobile
