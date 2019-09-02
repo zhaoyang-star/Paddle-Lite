@@ -377,7 +377,7 @@ void MulticlassNmsCompute::Run() {
   }
 
   LoD lod;
-  lod.emplace_back(batch_starts);
+  lod.push_back(batch_starts);
 
   outs->set_lod(lod);
 }
