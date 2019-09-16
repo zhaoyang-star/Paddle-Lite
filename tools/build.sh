@@ -41,7 +41,7 @@ build_for_android() {
 
     if [ -z "$PLATFORM" ]; then
         PLATFORM="arm-v7a"  # Users could choose "arm-v8a" platform.
-#        PLATFORM="arm-v8a"
+        PLATFORM="arm-v8a"
     fi
 
     if [ "${PLATFORM}" = "arm-v7a" ]; then
@@ -51,7 +51,7 @@ build_for_android() {
     elif [ "${PLATFORM}" = "arm-v8a" ]; then
         ABI="arm64-v8a"
         ARM_PLATFORM="V8"
-        CXX_FLAGS="-march=armv8-a  -pie -fPIE -w -Wno-error=format-security -llog"
+        CXX_FLAGS="-march=armv8-a  -pie -fPIE -w -Wno-error=format-security -llog -fuse-ld=gold"
     else
         echo "unknown platform!"
         exit -1
