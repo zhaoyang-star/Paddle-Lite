@@ -67,7 +67,8 @@ void test(int argc, char *argv[]) {
   arg_index++;
 
   auto time1 = time();
-  if (paddle_mobile.Load("./checked_model/model", "./checked_model/params", fuse, false, 1, true)) {
+  if (paddle_mobile.Load("./checked_model/model", "./checked_model/params",
+                         fuse, false, 1, true)) {
     auto time2 = time();
     std::cout << "auto-test"
               << " load-time-cost :" << time_diff(time1, time2) << "ms"
@@ -88,7 +89,8 @@ void test(int argc, char *argv[]) {
       float num = input_data_array[i];
       input_data.push_back(num);
     }
-    paddle_mobile::framework::Tensor input_tensor(input_data, paddle_mobile::framework::make_ddim(dims));
+    paddle_mobile::framework::Tensor input_tensor(
+        input_data, paddle_mobile::framework::make_ddim(dims));
     auto time4 = time();
     std::cout << "auto-test"
               << " preprocess-time-cost :" << time_diff(time3, time4) << "ms"
