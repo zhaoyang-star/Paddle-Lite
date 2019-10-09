@@ -199,6 +199,7 @@ extern const char *G_OP_TYPE_ANCHOR_GENERATOR;
 extern const char *G_OP_TYPE_GENERATE_PROPOSALS;
 extern const char *G_OP_TYPE_PSROI_POOL;
 extern const char *G_OP_TYPE_ROI_PERSPECTIVE;
+extern const char *G_OP_TYPE_FLATTEN2;
 
 extern std::unordered_map<
     std::string, std::pair<std::vector<std::string>, std::vector<std::string>>>

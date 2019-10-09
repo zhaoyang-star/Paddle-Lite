@@ -12,28 +12,30 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-#pragma once
-#include <vector>
-#include "memory/t_malloc.h"
-#include "tensor.h"
+#ifdef ASSIGN_VALUE_OP
+
+#include "operators/assign_value_op.h"
 
 namespace paddle_mobile {
-namespace framework {
+namespace operators {
 
-void TensorCopy(const Tensor &src, Tensor *dst);
-
-template <typename T>
-void TensorFromVector(const std::vector<T>& src, Tensor* dst);
-
-template <typename T>
-void TensorFromVector(const std::vector<T>& src, Tensor* dst) {
-  auto src_ptr = static_cast<const void*>(src.data());
-  dst->Resize({static_cast<int64_t>(src.size())});
-  auto dst_ptr = static_cast<void*>(dst->mutable_data<T>());
-  auto size = src.size() * sizeof(T);
-
-  memory::Copy(dst_ptr, src_ptr, size);
+template <typename Dtype, typename T>
+void AssignValueOp<Dtype, T>::InferShape() const {
+  const auto &shape = this->param_.shape_;
+  this->param_.output_->Resize(framework::make_ddim(shape));
 }
 
-}  // namespace framework
+}  // namespace operators
 }  // namespace paddle_mobile
+
+namespace ops = paddle_mobile::operators;
+
+#ifdef PADDLE_MOBILE_CPU
+REGISTER_OPERATOR_CPU(assign_value, ops::AssignValueOp);
+#endif
+
+#ifdef PADDLE_MOBILE_CL
+REGISTER_OPERATOR_CL(assign_value, ops::AssignValueOp);
+#endif
+
+#endif  // ASSIGN_VALUE_OP

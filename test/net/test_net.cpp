@@ -98,6 +98,9 @@ void test(int argc, char *argv[]) {
 
     paddle_mobile.Predict(input_tensor);
     for (auto var_name : var_names) {
+      if (var_name.find("assign") != string::npos) {
+          continue;
+      }
       auto out = paddle_mobile.Fetch(var_name);
       auto len = out->numel();
       if (len == 0) {

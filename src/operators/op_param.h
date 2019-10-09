@@ -407,6 +407,12 @@ class OpParam {
   }
 };
 
+#define GET_VAR_AS_TENSOR(name, name_dict, scope) \
+  OpParam::GetVarValue<framework::Tensor>(name, name_dict, scope)
+
+#define GET_VAR_AS_LOD_TENSOR(name, name_dict, scope) \
+  OpParam::GetVarValue<framework::LoDTensor>(name, name_dict, scope)
+
 template <typename Dtype>
 class ConvParam : public OpParam {
   typedef typename DtypeTensorTrait<Dtype>::gtype GType;
@@ -1479,38 +1485,26 @@ class ScaleParam : public OpParam {
 
  public:
   ScaleParam(const VariableNameMap &inputs, const VariableNameMap &outputs,
-             const AttributeMap &attrs, const Scope &scope) {
+             const AttributeMap &attrs, Scope &scope) {
     input_x_ = InputXFrom<GType>(inputs, scope);
-    input_bias_ = InputBiasFrom<GType>(inputs, scope);
     out_ = OutFrom<GType>(outputs, scope);
-    inplace_ = GetAttr<bool>("inplace", attrs);
-    has_bias_ = GetAttr<bool>("has_bias", attrs);
-    scales_ = GetAttr<vector<float>>("scales", attrs);
-    biases_ = GetAttr<vector<float>>("biases", attrs);
+    scale_ = GetAttr<float>("scale", attrs);
+    bias_ = GetAttr<float>("bias", attrs);
   }
 
-  const RType *InputX() const { return input_x_; }
+  const GType *InputX() const { return input_x_; }
 
-  const RType *InputBias() const { return input_bias_; }
+  GType *Out() const { return out_; }
 
-  RType *Out() const { return out_; }
+  const float Scale() const { return scale_; }
 
-  const bool &Inplace() const { return inplace_; }
-
-  const bool &HasBias() const { return has_bias_; }
-
-  const vector<float> &Scales() const { return scales_; }
-
-  const vector<float> &Biases() const { return biases_; }
+  const float Bias() const { return bias_; }
 
  private:
-  RType *input_x_;
-  RType *input_bias_;
-  RType *out_;
-  bool inplace_;
-  bool has_bias_;
-  vector<float> scales_;
-  vector<float> biases_;
+  GType *input_x_;
+  GType *out_;
+  float scale_;
+  float bias_;
 };
 #endif
 

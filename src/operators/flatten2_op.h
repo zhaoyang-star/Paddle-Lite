@@ -12,28 +12,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
+#ifdef FLATTEN2_OP
+
 #pragma once
+
+#include <string>
 #include <vector>
-#include "memory/t_malloc.h"
-#include "tensor.h"
+
+#include "framework/operator.h"
+#include "operators/kernel/flatten2_kernel.h"
+#include "operators/op_param.h"
 
 namespace paddle_mobile {
-namespace framework {
+namespace operators {
 
-void TensorCopy(const Tensor &src, Tensor *dst);
+DECLARE_OPERATOR(Flatten2, FlattenParam, Flatten2Kernel);
 
-template <typename T>
-void TensorFromVector(const std::vector<T>& src, Tensor* dst);
-
-template <typename T>
-void TensorFromVector(const std::vector<T>& src, Tensor* dst) {
-  auto src_ptr = static_cast<const void*>(src.data());
-  dst->Resize({static_cast<int64_t>(src.size())});
-  auto dst_ptr = static_cast<void*>(dst->mutable_data<T>());
-  auto size = src.size() * sizeof(T);
-
-  memory::Copy(dst_ptr, src_ptr, size);
-}
-
-}  // namespace framework
+}  // namespace operators
 }  // namespace paddle_mobile
+
+#endif

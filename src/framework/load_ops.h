@@ -324,3 +324,9 @@ LOAD_OP1(psroi_pool, CPU);
 #ifdef ROI_PERSPECTIVE_OP
 LOAD_OP1(roi_perspective_transform, CPU);
 #endif
+#ifdef ASSIGN_VALUE_OP
+LOAD_OP1(assign_value, CPU);
+#endif
+#ifdef FLATTEN2_OP
+LOAD_OP1(flatten2, CPU);
+#endif
