@@ -14,13 +14,13 @@ limitations under the License. */
 
 #pragma once
 #include <vector>
+#include "framework/tensor.h"
 #include "memory/t_malloc.h"
-#include "tensor.h"
 
 namespace paddle_mobile {
 namespace framework {
 
-void TensorCopy(const Tensor &src, Tensor *dst);
+void TensorCopy(const Tensor& src, Tensor* dst);
 
 template <typename T>
 void TensorFromVector(const std::vector<T>& src, Tensor* dst);

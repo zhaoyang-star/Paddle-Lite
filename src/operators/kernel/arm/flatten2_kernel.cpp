@@ -27,9 +27,7 @@ bool Flatten2Kernel<CPU, float>::Init(
 
 template <>
 void Flatten2Kernel<CPU, float>::Compute(
-    const paddle_mobile::operators::FlattenParam<paddle_mobile::CPU>
-        &param) {
-}
+    const paddle_mobile::operators::FlattenParam<paddle_mobile::CPU> &param) {}
 
 }  // namespace operators
 }  // namespace paddle_mobile

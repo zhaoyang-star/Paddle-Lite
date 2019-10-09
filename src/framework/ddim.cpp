@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-#include "ddim.h"
+#include "framework/ddim.h"
 #include <algorithm>
 
 namespace paddle_mobile {
@@ -27,7 +27,7 @@ Dim<i> make_dim(const int64_t *d) {
 
 template <>
 Dim<0> make_dim<0>(const int64_t *d) {
-  return Dim<0>(*d);
+  return Dim<0>(0);
 }
 
 void make_ddim(DDim &ddim, const int64_t *dims, int n) {
