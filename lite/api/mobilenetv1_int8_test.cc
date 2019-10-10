@@ -22,6 +22,11 @@
 #include "lite/api/test_helper.h"
 #include "lite/core/op_registry.h"
 
+#define MV6S
+#ifdef MV6S
+#include <unistd.h>
+#endif
+
 namespace paddle {
 namespace lite {
 
@@ -34,7 +39,11 @@ void TestModel(const std::vector<Place>& valid_places,
   predictor.Build(FLAGS_model_dir, "", "", preferred_place, valid_places);
 
   auto* input_tensor = predictor.GetInput(0);
+#ifdef MV6S
+  input_tensor->Resize(DDim(std::vector<DDim::value_type>({1, 3, 64, 64})));
+#else
   input_tensor->Resize(DDim(std::vector<DDim::value_type>({1, 3, 224, 224})));
+#endif
   auto* data = input_tensor->mutable_data<float>();
   auto item_size = input_tensor->dims().production();
   for (int i = 0; i < item_size; i++) {
@@ -50,29 +59,56 @@ void TestModel(const std::vector<Place>& valid_places,
     predictor.Run();
   }
 
-  LOG(INFO) << "================== Speed Report ===================";
-  LOG(INFO) << "Model: " << FLAGS_model_dir << ", threads num " << FLAGS_threads
-            << ", warmup: " << FLAGS_warmup << ", repeats: " << FLAGS_repeats
-            << ", spend " << (GetCurrentUS() - start) / FLAGS_repeats / 1000.0
-            << " ms in average.";
 
-  std::vector<std::vector<float>> results;
-  // i = 1
-  // ground truth result from fluid
-  results.emplace_back(std::vector<float>(
-      {0.0002451055, 0.0002585023, 0.0002659616, 0.0002823}));
-  auto* out = predictor.GetOutput(0);
-  ASSERT_EQ(out->dims().size(), 2);
-  ASSERT_EQ(out->dims()[0], 1);
-  ASSERT_EQ(out->dims()[1], 1000);
 
-  int step = 50;
-  for (int i = 0; i < results.size(); ++i) {
-    for (int j = 0; j < results[i].size(); ++j) {
-      EXPECT_NEAR(out->data<float>()[j * step + (out->dims()[1] * i)],
-                  results[i][j],
-                  1e-6);
+
+
+//#define SLEEP_ENABLE
+#ifdef SLEEP_ENABLE
+  for (auto sleep_time : {0,
+                          100,
+                          200,
+                          500,
+                          1000,
+                          1500,
+                          2000,
+                          5000,
+                          6000,
+                          8000,
+                          10000,
+                          12000,
+                          15000,
+                          20000,
+                          25000,
+                          30000}) {
+#else
+  for (auto sleep_time : {0}) {
+#endif
+    size_t sum = 0;
+    for (int i = 0; i < FLAGS_repeats; ++i) {
+      auto start = GetCurrentUS();
+      predictor.Run();
+      auto end = GetCurrentUS();
+      sum += end - start;
+      usleep(sleep_time);
     }
+
+    LOG(INFO) << "================== Speed Report ===================";
+    LOG(INFO) << "Model: " << FLAGS_model_dir << ", threads num "
+              << FLAGS_threads << ", warmup: " << FLAGS_warmup
+              << ", repeats: " << FLAGS_repeats
+              << ", sleep_time: " << sleep_time << ", spend "
+              << (/*end - start*/ sum) / FLAGS_repeats / 1000.0
+              << " ms in average.";
+
+    std::cout << "================== Speed Report ==================="
+              << std::endl;
+    std::cout << "Model: " << FLAGS_model_dir << ", threads num "
+              << FLAGS_threads << ", warmup: " << FLAGS_warmup
+              << ", repeats: " << FLAGS_repeats
+              << ", sleep_time: " << sleep_time << ", spend "
+              << (/*end - start*/ sum) / FLAGS_repeats / 1000.0
+              << " ms in average." << std::endl;
   }
 }
 

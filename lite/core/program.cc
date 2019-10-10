@@ -187,6 +187,8 @@ void Instruction::Run() {
   if (first_epoch_) {
     first_epoch_ = false;
     CHECK(op_->CheckShape());
+    op_->InferShape();
+
   }
 
   if (op_->run_once() && has_run_) {
@@ -194,7 +196,8 @@ void Instruction::Run() {
   }
 
   VLOG(4) << "kernel launch";
-  op_->InferShape();
+  //op_->InferShape();
+
   VLOG(4) << ">> Running kernel: " << op_->op_info()->Repr() << " on Target "
           << TargetToStr(kernel_->target());
   kernel_->Launch();

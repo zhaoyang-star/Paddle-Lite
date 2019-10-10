@@ -95,28 +95,28 @@ if(WITH_TESTING)
        EXCLUDE_COMPILE_DEPS "ON"
        ARGS --model_dir=${LITE_MODEL_DIR}/lite_naive_model
             --optimized_model=${LITE_MODEL_DIR}/lite_naive_model_opt SERIAL)
-    add_dependencies(test_cxx_api extern_lite_download_lite_naive_model_tar_gz)
+    #add_dependencies(test_cxx_api extern_lite_download_lite_naive_model_tar_gz)
     if(NOT LITE_WITH_LIGHT_WEIGHT_FRAMEWORK)
         lite_cc_test(test_googlenet SRCS test_googlenet_lite.cc
            DEPS cxx_api mir_passes lite_api_test_helper
            ${ops} ${host_kernels} ${x86_kernels}
            ARGS --model_dir=${LITE_MODEL_DIR}/googlenet)
-        add_dependencies(test_googlenet extern_lite_download_GoogleNet_inference_tar_gz)
+        #add_dependencies(test_googlenet extern_lite_download_GoogleNet_inference_tar_gz)
         lite_cc_test(test_mobilenetv1_lite_x86 SRCS test_mobilenetv1_lite_x86.cc
            DEPS cxx_api mir_passes lite_api_test_helper
            ${ops} ${host_kernels} ${x86_kernels}
            ARGS --model_dir=${LITE_MODEL_DIR}/mobilenet_v1)
-        add_dependencies(test_mobilenetv1_lite_x86 extern_lite_download_mobilenet_v1_tar_gz)
+        #add_dependencies(test_mobilenetv1_lite_x86 extern_lite_download_mobilenet_v1_tar_gz)
         lite_cc_test(test_mobilenetv2_lite_x86 SRCS test_mobilenetv2_lite_x86.cc
            DEPS cxx_api mir_passes lite_api_test_helper
            ${ops} ${host_kernels} ${x86_kernels}
            ARGS --model_dir=${LITE_MODEL_DIR}/mobilenet_v2_relu)
-        add_dependencies(test_mobilenetv2_lite_x86 extern_lite_download_mobilenet_v2_relu_tar_gz)
+        #add_dependencies(test_mobilenetv2_lite_x86 extern_lite_download_mobilenet_v2_relu_tar_gz)
         lite_cc_test(test_inceptionv4_lite_x86 SRCS test_inceptionv4_lite_x86.cc
            DEPS cxx_api mir_passes lite_api_test_helper
            ${ops} ${host_kernels} ${x86_kernels}
            ARGS --model_dir=${LITE_MODEL_DIR}/inception_v4_simple)
-        add_dependencies(test_inceptionv4_lite_x86 extern_lite_download_inception_v4_simple_tar_gz)
+        #add_dependencies(test_inceptionv4_lite_x86 extern_lite_download_inception_v4_simple_tar_gz)
     endif()
 endif()
 
@@ -128,7 +128,7 @@ if(LITE_WITH_LIGHT_WEIGHT_FRAMEWORK AND WITH_TESTING)
        CL_DEPS ${opencl_kernels}
        ARGS --cl_path=${CMAKE_SOURCE_DIR}/lite/backends/opencl
         --model_dir=${LITE_MODEL_DIR}/MobilenetV1_quant SERIAL)
-    add_dependencies(test_mobilenetv1_int8 extern_lite_download_MobileNetV1_quant_tar_gz)
+    #add_dependencies(test_mobilenetv1_int8) # extern_lite_download_MobileNetV1_quant_tar_gz)
 
     lite_cc_test(test_mobilenetv1 SRCS mobilenetv1_test.cc
        DEPS ${lite_model_test_DEPS}
@@ -136,7 +136,7 @@ if(LITE_WITH_LIGHT_WEIGHT_FRAMEWORK AND WITH_TESTING)
        NPU_DEPS ${npu_kernels} ${npu_bridges}
        ARGS --cl_path=${CMAKE_SOURCE_DIR}/lite/backends/opencl
             --model_dir=${LITE_MODEL_DIR}/mobilenet_v1 SERIAL)
-    add_dependencies(test_mobilenetv1 extern_lite_download_mobilenet_v1_tar_gz)
+    #add_dependencies(test_mobilenetv1 extern_lite_download_mobilenet_v1_tar_gz)
     set(LINK_FLAGS "-Wl,--version-script ${PADDLE_SOURCE_DIR}/lite/core/lite.map")
     set_target_properties(test_mobilenetv1 PROPERTIES LINK_FLAGS "${LINK_FLAGS}")
 
@@ -145,7 +145,7 @@ if(LITE_WITH_LIGHT_WEIGHT_FRAMEWORK AND WITH_TESTING)
        CL_DEPS ${opencl_kernels}
        ARGS --cl_path=${CMAKE_SOURCE_DIR}/lite/backends/opencl
             --model_dir=${LITE_MODEL_DIR}/mobilenet_v2_relu SERIAL)
-    add_dependencies(test_mobilenetv2 extern_lite_download_mobilenet_v2_relu_tar_gz)
+    #add_dependencies(test_mobilenetv2 extern_lite_download_mobilenet_v2_relu_tar_gz)
     set_target_properties(test_mobilenetv2 PROPERTIES LINK_FLAGS "${LINK_FLAGS}")
 
     lite_cc_test(test_resnet50 SRCS resnet50_test.cc
@@ -154,7 +154,7 @@ if(LITE_WITH_LIGHT_WEIGHT_FRAMEWORK AND WITH_TESTING)
        FPGA_DEPS ${fpga_kernels}
        ARGS --cl_path=${CMAKE_SOURCE_DIR}/lite/backends/opencl
             --model_dir=${LITE_MODEL_DIR}/resnet50 SERIAL)
-    add_dependencies(test_resnet50 extern_lite_download_resnet50_tar_gz)
+    #add_dependencies(test_resnet50 extern_lite_download_resnet50_tar_gz)
 
     lite_cc_test(test_resnet50_fpga SRCS resnet50_test_fpga.cc
        DEPS ${lite_model_test_DEPS}
@@ -166,7 +166,7 @@ if(LITE_WITH_LIGHT_WEIGHT_FRAMEWORK AND WITH_TESTING)
        CL_DEPS ${opencl_kernels}
        ARGS --cl_path=${CMAKE_SOURCE_DIR}/lite/backends/opencl
             --model_dir=${LITE_MODEL_DIR}/inception_v4 SERIAL)
-    add_dependencies(test_inceptionv4 extern_lite_download_inception_v4_simple_tar_gz)
+    #add_dependencies(test_inceptionv4 extern_lite_download_inception_v4_simple_tar_gz)
    # lite_cc_test(test_ocr_attention SRCS ocr_attention_test.cc
    #    DEPS ${lite_model_test_DEPS})
 
@@ -240,7 +240,7 @@ lite_cc_test(test_paddle_api SRCS paddle_api_test.cc DEPS paddle_api_full paddle
   FPGA_DEPS ${fpga_kernels}
   ARGS --model_dir=${LITE_MODEL_DIR}/lite_naive_model SERIAL)
 if (WITH_TESTING)
-    add_dependencies(test_paddle_api extern_lite_download_lite_naive_model_tar_gz)
+    #add_dependencies(test_paddle_api extern_lite_download_lite_naive_model_tar_gz)
 endif()
 
 # Some bins

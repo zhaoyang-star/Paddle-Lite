@@ -69,7 +69,7 @@ class KernelBase {
     }
     /// re-init the kernel if needed (input shape should be checked in conv
     /// kernel)
-    ReInitWhenNeeded();
+   // ReInitWhenNeeded();
 
     // Reset the workspace to make every kernel in the same thread to share the
     // temporary memory.

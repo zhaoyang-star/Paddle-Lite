@@ -9,7 +9,7 @@ readonly CMAKE_COMMON_OPTIONS="-DWITH_GPU=OFF \
                                -DLITE_WITH_ARM=ON \
                                -DLITE_WITH_LIGHT_WEIGHT_FRAMEWORK=ON"
 
-readonly NUM_PROC=${LITE_BUILD_THREADS:-4}
+readonly NUM_PROC=29 #${LITE_BUILD_THREADS:-4}
 
 
 # global variables
@@ -155,6 +155,8 @@ function make_all_tests {
       ${CMAKE_COMMON_OPTIONS} \
       -DWITH_TESTING=ON \
       -DLITE_BUILD_EXTRA=$BUILD_EXTRA \
+      -DLITE_SHUTDOWN_LOG=ON \
+      -DLITE_WITH_PROFILE=OFF \
       -DARM_TARGET_OS=${os} -DARM_TARGET_ARCH_ABI=${abi} -DARM_TARGET_LANG=${lang}
 
   make lite_compile_deps -j$NUM_PROC
