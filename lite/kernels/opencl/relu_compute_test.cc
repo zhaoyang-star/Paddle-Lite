@@ -29,8 +29,8 @@ void relu_compute_ref(const dtype *x_data, const DDim &x_dim, dtype *out_data) {
   }
 }
 
-#if 0   // relu_buffer
-TEST(opencl_relu_buffer, compute) {
+#if 0   // relu_buffer fp32
+TEST(opencl_relu_buffer_fp32, compute) {
   // prepare data
   const DDim x_dim = DDim(std::vector<DDim::value_type>{3, 6, 10, 10});
   lite::Tensor x, out;
@@ -85,6 +85,80 @@ TEST(opencl_relu_buffer, compute) {
       TargetWrapperCL::Map(out_data, 0, sizeof(float) * x_dim.production()));
   for (int i = 0; i < x_dim.production(); i++) {
     EXPECT_NEAR(mapped_out[i], out_ref[i], 1e-6);
+  }
+  TargetWrapperCL::Unmap(out_data, mapped_out);
+  TargetWrapperCL::Unmap(x_data, mapped_x);
+}
+#endif  // relu_buffer fp32
+
+// TODO(ysh329): check compute result of buffer fp16
+#if 0   // relu_buffer fp16
+TEST(opencl_relu_buffer_fp16, compute) {
+  cl_half a = 1.123456789;
+  cl_float b = 2.123456789;
+  LOG(INFO) << "a:" << a << " b:" << b;
+  // prepare data
+  LOG(INFO) << "sizeof(float):" << sizeof(float);
+  LOG(INFO) << "sizeof(cl_half):"  << sizeof(cl_half);
+  LOG(INFO) << "sizeof(int16_t):" << sizeof(int16_t);
+  LOG(INFO) << "sizeof(int32_t):" << sizeof(int32_t);
+  const DDim x_dim = DDim(std::vector<DDim::value_type>{4, 3, 2, 1});
+  lite::Tensor x, out;
+  x.Resize(x_dim);
+  out.Resize(x_dim);
+
+  auto *x_data = x.mutable_data<int16_t, cl::Buffer>(TARGET(kOpenCL));
+  std::default_random_engine engine;
+  std::uniform_real_distribution<int16_t> dist(-10, 10);
+  auto *mapped_x = static_cast<float *>(
+      TargetWrapperCL::Map(x_data, 0, sizeof(int16_t) * x_dim.production()));
+  LOG(INFO) << "x_dim.production():" << x_dim.production();
+  for (int i = 0; i < x_dim.production(); i++) {
+    mapped_x[i] = i * 1.11;  // dist(engine);
+  }
+
+  // set param and kernel, then run
+  operators::ActivationParam param;
+  param.X = &x;
+  param.Out = &out;
+
+  std::unique_ptr<KernelContext> context(new KernelContext);
+  context->As<OpenCLContext>().InitOnce();
+  auto kernels = KernelRegistry::Global().Create(
+      "relu", TARGET(kOpenCL), PRECISION(kFP16), DATALAYOUT(kNCHW));
+  ASSERT_FALSE(kernels.empty());
+  auto kernel = std::move(kernels.front());
+  kernel->SetParam(param);
+  std::unique_ptr<KernelContext> relu_context(new KernelContext);
+  context->As<OpenCLContext>().CopySharedTo(
+      &(relu_context->As<OpenCLContext>()));
+  kernel->SetContext(std::move(relu_context));
+
+  kernel->Launch();
+
+  auto *wait_list = context->As<OpenCLContext>().cl_wait_list();
+  auto *out_ptr = param.Out->data<int16_t, cl::Buffer>();
+  auto it = wait_list->find(out_ptr);
+  if (it != wait_list->end()) {
+    VLOG(4) << "--- Find the sync event for the target cl tensor. ---";
+    auto &event = *(it->second);
+    event.wait();
+  } else {
+    LOG(FATAL) << "Could not find the sync event for the target cl tensor.";
+  }
+
+  // run compute ref and check
+  std::unique_ptr<float[]> out_ref(new float[x_dim.production()]);
+  relu_compute_ref<float>(mapped_x, x_dim, out_ref.get());
+
+  auto *out_data = out.mutable_data<int16_t, cl::Buffer>();
+  auto *mapped_out = static_cast<float *>(
+      TargetWrapperCL::Map(out_data, 0, sizeof(int16_t) * x_dim.production()));
+  for (int i = 0; i < x_dim.production(); i++) {
+    // EXPECT_NEAR(mapped_out[i], out_ref[i], 1e-4);
+    LOG(INFO) << "idx:" << i << "\tx[" << i << "]:"
+              << mapped_x[i] << "\tmapped_out[" << i << "]:"
+              << mapped_out[i] << "\tV.S.\tout_ref[" << i << "]:" << out_ref[i];
   }
   TargetWrapperCL::Unmap(out_data, mapped_out);
   TargetWrapperCL::Unmap(x_data, mapped_x);
@@ -404,8 +478,11 @@ TEST(relu_image2d_fp16, compute) {
 }  // namespace lite
 }  // namespace paddle
 
-// relu buffer
-// USE_LITE_KERNEL(relu, kOpenCL, kFloat, kNCHW, def);
+// relu buffer fp32
+USE_LITE_KERNEL(relu, kOpenCL, kFloat, kNCHW, def);
+
+// relu buffer fp16
+// USE_LITE_KERNEL(relu, kOpenCL, kFP16, kNCHW, def);
 
 // relu image2d fp32
 USE_LITE_KERNEL(layout, kOpenCL, kAny, kImageDefault, NCHW_to_ImageDefault);

@@ -119,15 +119,15 @@ class DepthwiseConv2dCompute
   std::shared_ptr<cl::Event> event_{new cl::Event};
 };
 
-class DepthwiseConv2dComputeFP16Image
+class DepthwiseConv2dComputeImage
     : public KernelLite<TARGET(kOpenCL),
-                        PRECISION(kFP16),
+                        PRECISION(kFloat),
                         DATALAYOUT(kImageDefault)> {
  public:
   using param_t = operators::ConvParam;
 
   std::string doc() const override {
-    return "DepthwiseConv2d using cl::Image2D/kImageDefault, kFP16";
+    return "DepthwiseConv2d using cl::Image2D/kImageDefault, kFloat";
   }
 
   void PrepareForRun() override {
@@ -153,16 +153,16 @@ class DepthwiseConv2dComputeFP16Image
 
     auto& context = ctx_->As<OpenCLContext>();
     CHECK(context.cl_context() != nullptr);
-    auto* input_img = param.x->data<int16_t, cl::Image2D>();
-    auto* filter_img = param.filter->data<int16_t, cl::Image2D>();
+    auto* input_img = param.x->data<float, cl::Image2D>();
+    auto* filter_img = param.filter->data<float, cl::Image2D>();
 
     auto* bias_img = param.bias == nullptr
                          ? static_cast<cl::Image2D*>(nullptr)
-                         : param.bias->data<int16_t, cl::Image2D>();
+                         : param.bias->data<float, cl::Image2D>();
 
     auto image_shape = InitImageDimInfoWith(output_dims);
 
-    auto* output_img = param.output->mutable_data<int16_t, cl::Image2D>(
+    auto* output_img = param.output->mutable_data<float, cl::Image2D>(
         image_shape["width"], image_shape["height"]);
 
     STL::stringstream kernel_key;
@@ -232,19 +232,19 @@ class DepthwiseConv2dComputeFP16Image
 
  private:
   std::string kernel_func_name_{"depth_conv2d_3x3"};
-  std::string build_options_{"-DCL_DTYPE_half"};
+  std::string build_options_{"-DCL_DTYPE_float"};
   std::shared_ptr<cl::Event> event_{new cl::Event};
 };
 
-class DepthwiseConv2d3x3s1ComputeFP16Image
+class DepthwiseConv2d3x3s1Compute
     : public KernelLite<TARGET(kOpenCL),
-                        PRECISION(kFP16),
+                        PRECISION(kFloat),
                         DATALAYOUT(kImageDefault)> {
  public:
   using param_t = operators::ConvParam;
 
   std::string doc() const override {
-    return "DepthwiseConv2d3x3s1 using cl::Image2D/kImageDefault, kFP16";
+    return "DepthwiseConv2d3x3s1 using cl::Image2D/kImageDefault, kFloat";
   }
 
   void PrepareForRun() override {
@@ -268,16 +268,16 @@ class DepthwiseConv2d3x3s1ComputeFP16Image
 
     auto& context = ctx_->As<OpenCLContext>();
     CHECK(context.cl_context() != nullptr);
-    auto* input_img = param.x->data<int16_t, cl::Image2D>();
-    auto* filter_img = param.filter->data<int16_t, cl::Image2D>();
+    auto* input_img = param.x->data<float, cl::Image2D>();
+    auto* filter_img = param.filter->data<float, cl::Image2D>();
 
     auto* bias_img = param.bias == nullptr
                          ? static_cast<cl::Image2D*>(nullptr)
-                         : param.bias->data<int16_t, cl::Image2D>();
+                         : param.bias->data<float, cl::Image2D>();
 
     auto image_shape = InitImageDimInfoWith(output_dims);
 
-    auto* output_img = param.output->mutable_data<int16_t, cl::Image2D>(
+    auto* output_img = param.output->mutable_data<float, cl::Image2D>(
         image_shape["width"], image_shape["height"]);
 
     STL::stringstream kernel_key;
@@ -337,7 +337,7 @@ class DepthwiseConv2d3x3s1ComputeFP16Image
 
  private:
   std::string kernel_func_name_{"depth_conv2d_3x3s1"};
-  std::string build_options_{"-DCL_DTYPE_half"};
+  std::string build_options_{"-DCL_DTYPE_float"};
   std::shared_ptr<cl::Event> event_{new cl::Event};
 };
 
@@ -358,27 +358,26 @@ REGISTER_LITE_KERNEL(depthwise_conv2d,
     .BindOutput("Output", {LiteType::GetTensorTy(TARGET(kOpenCL))})
     .Finalize();
 
-REGISTER_LITE_KERNEL(
-    depthwise_conv2d,
-    kOpenCL,
-    kFP16,
-    kImageDefault,
-    paddle::lite::kernels::opencl::DepthwiseConv2dComputeFP16Image,
-    image2d)
+REGISTER_LITE_KERNEL(depthwise_conv2d,
+                     kOpenCL,
+                     kFloat,
+                     kImageDefault,
+                     paddle::lite::kernels::opencl::DepthwiseConv2dComputeImage,
+                     image2d)
     .BindInput("Input",
                {LiteType::GetTensorTy(TARGET(kOpenCL),
-                                      PRECISION(kFP16),
+                                      PRECISION(kFloat),
                                       DATALAYOUT(kImageDefault))})
     .BindInput("Bias",
                {LiteType::GetTensorTy(TARGET(kOpenCL),
-                                      PRECISION(kFP16),
+                                      PRECISION(kFloat),
                                       DATALAYOUT(kImageDefault))})
     .BindInput("Filter",
                {LiteType::GetTensorTy(TARGET(kOpenCL),
-                                      PRECISION(kFP16),
+                                      PRECISION(kFloat),
                                       DATALAYOUT(kImageNW))})
     .BindOutput("Output",
                 {LiteType::GetTensorTy(TARGET(kOpenCL),
-                                       PRECISION(kFP16),
+                                       PRECISION(kFloat),
                                        DATALAYOUT(kImageDefault))})
     .Finalize();

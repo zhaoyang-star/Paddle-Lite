@@ -77,6 +77,63 @@ class ReluCompute
   std::shared_ptr<cl::Event> event_{new cl::Event};
 };
 
+// TODO(ysh329): check compute result of buffer fp16
+#if 0
+class ReluFP16Compute
+    : public KernelLite<TARGET(kOpenCL), PRECISION(kFP16), DATALAYOUT(kNCHW)> {
+ public:
+  using param_t = operators::ActivationParam;
+
+  std::string doc() const override { return "Relu using cl::Buffer, kFP16"; }
+  void PrepareForRun() override {
+    auto& context = ctx_->As<OpenCLContext>();
+    context.cl_context()->AddKernel(
+        kernel_func_name_, "buffer/relu_kernel.cl", build_options_);
+  }
+
+  void Run() override {
+    auto& param = *param_.get_mutable<param_t>();
+    const auto& x_dims = param.X->dims();
+    size_t count = x_dims.production();
+
+    auto& context = ctx_->As<OpenCLContext>();
+    CHECK(context.cl_context() != nullptr);
+    auto* x_buf = param.X->data<int16_t, cl::Buffer>();
+    auto* out_buf =
+         param.Out->mutable_data<int16_t, cl::Buffer>(TARGET(kOpenCL));
+    STL::stringstream kernel_key;
+    kernel_key << kernel_func_name_ << build_options_;
+    auto kernel = context.cl_context()->GetKernel(kernel_key.str());
+    VLOG(4) << TargetToStr(param.X->target());
+    VLOG(4) << TargetToStr(param.Out->target());
+
+    int arg_idx = 0;
+    cl_int status = kernel.setArg(arg_idx, *x_buf);
+    CL_CHECK_FATAL(status);
+    status = kernel.setArg(++arg_idx, (const int)count);
+    CL_CHECK_FATAL(status);
+    status = kernel.setArg(++arg_idx, *out_buf);
+    CL_CHECK_FATAL(status);
+
+    auto global_work_size = cl::NDRange{count};
+    status = context.cl_context()->GetCommandQueue().enqueueNDRangeKernel(
+        kernel,
+        cl::NullRange,
+        global_work_size,
+        cl::NullRange,
+        nullptr,
+        event_.get());
+    CL_CHECK_FATAL(status);
+    context.cl_wait_list()->emplace(out_buf, event_);
+  }
+
+ private:
+  std::string kernel_func_name_{"relu"};
+  std::string build_options_{"-DCL_DTYPE_half -DRELU"};
+  std::shared_ptr<cl::Event> event_{new cl::Event};
+};
+#endif
+
 class ReluComputeFloatImageDefault
     : public KernelLite<TARGET(kOpenCL),
                         PRECISION(kFloat),
@@ -225,11 +282,21 @@ class ReluComputeFP16ImageDefault
 }  // namespace lite
 }  // namespace paddle
 
+REGISTER_LITE_KERNEL(relu,
+                     kOpenCL,
+                     kFloat,
+                     kNCHW,
+                     paddle::lite::kernels::opencl::ReluCompute,
+                     def)
+    .BindInput("X", {LiteType::GetTensorTy(TARGET(kOpenCL))})
+    .BindOutput("Out", {LiteType::GetTensorTy(TARGET(kOpenCL))})
+    .Finalize();
+
 // REGISTER_LITE_KERNEL(relu,
 //                     kOpenCL,
-//                     kFloat,
+//                     kFP16,
 //                     kNCHW,
-//                     paddle::lite::kernels::opencl::ReluCompute,
+//                     paddle::lite::kernels::opencl::ReluFP16Compute,
 //                     def)
 //    .BindInput("X", {LiteType::GetTensorTy(TARGET(kOpenCL))})
 //    .BindOutput("Out", {LiteType::GetTensorTy(TARGET(kOpenCL))})
