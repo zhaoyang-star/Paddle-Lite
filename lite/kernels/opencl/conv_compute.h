@@ -33,6 +33,8 @@ class ConvCompute
   using param_t = operators::ConvParam;
   using kernel_t = void (ConvCompute::*)();
 
+  std::string doc() const override { return "Conv using cl::Buffer, kFloat"; }
+
   void PrepareForRun() override;
 
   void Run() override;
@@ -54,6 +56,34 @@ class ConvCompute
   std::vector<std::string> kernel_func_names_{};
   std::vector<std::string> kernel_func_paths_{};
   std::vector<std::string> build_options_{};
+  std::shared_ptr<cl::Event> event_{new cl::Event};
+};
+
+class ConvComputeImage : public KernelLite<TARGET(kOpenCL),
+                                           PRECISION(kFloat),
+                                           DATALAYOUT(kImageDefault)> {
+ public:
+  using param_t = operators::ConvParam;
+  using kernel_t = void (ConvComputeImage::*)();
+
+  std::string doc() const override { return "Conv using cl::Image2D, kFloat"; }
+
+  void PrepareForRun() override;
+
+  void Run() override;
+
+ private:
+  // Conv3x3
+  void Conv3x3Prepare();
+  void Conv3x3Run();
+
+  kernel_t impl_;
+  std::unique_ptr<lite::Tensor> col_buffer_{nullptr};
+  std::vector<std::string> kernel_func_names_{};
+  std::vector<std::string> kernel_func_paths_{};
+  std::vector<std::string> build_options_{};
+  lite::Tensor* filter_img_gpu_;  // assigned in Prepare, used in Run
+  lite::Tensor* bias_img_gpu_;    // assigned in Prepare, used in Run
   std::shared_ptr<cl::Event> event_{new cl::Event};
 };
 

@@ -123,10 +123,8 @@ TEST(MobileNetV1, test_arm) {
 #ifdef LITE_WITH_OPENCL
 TEST(MobileNetV1, test_opencl) {
   std::vector<Place> valid_places({
-      Place{TARGET(kOpenCL), PRECISION(kFP16), DATALAYOUT(kNCHW)},
-      Place{TARGET(kOpenCL), PRECISION(kFP16), DATALAYOUT(kNHWC)},
+      Place{TARGET(kOpenCL), PRECISION(kFloat), DATALAYOUT(kImageDefault)},
       Place{TARGET(kOpenCL), PRECISION(kFloat), DATALAYOUT(kNCHW)},
-      Place{TARGET(kOpenCL), PRECISION(kFloat), DATALAYOUT(kNHWC)},
       TARGET(kARM),  // enable kARM CPU kernel when no opencl kernel
   });
 

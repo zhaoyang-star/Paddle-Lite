@@ -409,3 +409,20 @@ REGISTER_LITE_KERNEL(
                                        PRECISION(kFloat),
                                        DATALAYOUT(kImageNW))})
     .Finalize();
+
+REGISTER_LITE_KERNEL(
+    layout,
+    kOpenCL,
+    kFloat,
+    kImageNW,
+    paddle::lite::kernels::opencl::LayoutComputeBufferChwToImage2DNw,
+    NCHW_to_ImageNW)
+    .BindInput("Input",
+               {LiteType::GetTensorTy(TARGET(kOpenCL),
+                                      PRECISION(kFloat),
+                                      DATALAYOUT(kNCHW))})
+    .BindOutput("Out",
+                {LiteType::GetTensorTy(TARGET(kOpenCL),
+                                       PRECISION(kFloat),
+                                       DATALAYOUT(kImageNW))})
+    .Finalize();

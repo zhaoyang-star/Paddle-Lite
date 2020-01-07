@@ -66,9 +66,12 @@ void CLContext::AddKernel(const std::string &kernel_name,
   CL_CHECK_FATAL(status);
   VLOG(3) << " --- end create kernel --- ";
   kernels_.emplace_back(std::move(kernel));
+  VLOG(3) << " --- end emplace kernel --- ";
   STL::stringstream kernel_key;
   kernel_key << kernel_name << options;
+  VLOG(3) << " --- end kernel_key --- ";
   kernel_offset_[kernel_key.str()] = kernels_.size() - 1;
+  VLOG(3) << " --- end kernel_offset_ set --- ";
 }
 
 cl::Kernel &CLContext::GetKernel(const int index) {
