@@ -35,6 +35,7 @@ if ((NOT LITE_ON_TINY_PUBLISH) AND (LITE_WITH_CUDA OR LITE_WITH_X86 OR ARM_TARGE
         NPU_DEPS ${npu_kernels})
 
     target_link_libraries(paddle_light_api_shared ${light_lib_DEPS} ${arm_kernels} ${npu_kernels})
+
     if (LITE_WITH_NPU)
         # Strips the symbols of our protobuf functions to fix the conflicts during
         # loading HIAI builder libs (libhiai_ir.so and libhiai_ir_build.so)
@@ -45,8 +46,8 @@ else()
     if ((ARM_TARGET_OS STREQUAL "android") OR (ARM_TARGET_OS STREQUAL "armlinux"))
         add_library(paddle_light_api_shared SHARED "")
         target_sources(paddle_light_api_shared PUBLIC ${__lite_cc_files} paddle_api.cc light_api.cc light_api_impl.cc)
-       set_target_properties(paddle_light_api_shared PROPERTIES COMPILE_FLAGS "-flto -fdata-sections")
-       add_dependencies(paddle_light_api_shared op_list_h kernel_list_h)
+        set_target_properties(paddle_light_api_shared PROPERTIES COMPILE_FLAGS "-flto -fdata-sections")
+        add_dependencies(paddle_light_api_shared op_list_h kernel_list_h)
         if (LITE_WITH_NPU)
             # Need to add HIAI runtime libs (libhiai.so) dependency
             target_link_libraries(paddle_light_api_shared ${npu_builder_libs} ${npu_runtime_libs})
@@ -60,11 +61,17 @@ if (WITH_TESTING)
            ${ops} ${host_kernels}
       CUDA_DEPS ${cuda_kernels}
       X86_DEPS ${x86_kernels}
-      XPU_DEPS ${xpu_kernels})
+      XPU_DEPS ${xpu_kernels}
+      BM_DEPS ${bm_kernels})
 endif()
 if(LITE_WITH_FPGA)
     set(light_api_deps ${light_api_deps} ${fpga_deps})
     set(cxx_api_deps ${cxx_api_deps} ${fpga_deps})
+endif()
+
+if(LITE_WITH_BM)
+    set(light_api_deps ${light_api_deps} ${bm_deps})
+    set(cxx_api_deps ${cxx_api_deps} ${bm_deps})
 endif()
 
 message(STATUS "get ops ${ops}")
@@ -75,6 +82,7 @@ message(STATUS "get ARM kernels ${arm_kernels}")
 message(STATUS "get NPU kernels ${npu_kernels}")
 message(STATUS "get XPU kernels ${xpu_kernels}")
 message(STATUS "get FPGA kernels ${fpga_kernels}")
+message(STATUS "get BM kernels ${bm_kernels}")
 
 # for full api
 if (NOT LITE_ON_TINY_PUBLISH)
@@ -84,10 +92,12 @@ if (NOT LITE_ON_TINY_PUBLISH)
                         SRCS cxx_api.cc
                         DEPS ${cxx_api_deps} ${ops} ${host_kernels} program
                         X86_DEPS ${x86_kernels}
+                        CUDA_DEPS ${cuda_kernels}
                         ARM_DEPS ${arm_kernels}
                         CV_DEPS paddle_cv_arm
                         NPU_DEPS ${npu_kernels}
                         XPU_DEPS ${xpu_kernels}
+                        BM_DEPS ${bm_kernels}
                         CL_DEPS ${opencl_kernels}
                         FPGA_DEPS ${fpga_kernels})
 endif()
@@ -109,7 +119,8 @@ lite_cc_library(light_api SRCS light_api.cc
         NPU_DEPS ${npu_kernels}
         XPU_DEPS ${xpu_kernels}
         CL_DEPS ${opencl_kernels}
-        FPGA_DEPS ${fpga_kernels})
+        FPGA_DEPS ${fpga_kernels}
+        BM_DEPS ${bm_kernels})
 
 include(ExternalProject)
 set(LITE_DEMO_INSTALL_DIR "${THIRD_PARTY_PATH}/inference_demo" CACHE STRING
@@ -120,11 +131,14 @@ if(WITH_TESTING)
        DEPS cxx_api mir_passes lite_api_test_helper
        ${ops} ${host_kernels}
        X86_DEPS ${x86_kernels}
+       CUDA_DEPS ${cuda_kernels}
        ARM_DEPS ${arm_kernels}
+       CV_DEPS paddle_cv_arm
        NPU_DEPS ${npu_kernels}
        XPU_DEPS ${xpu_kernels}
        CL_DEPS ${opencl_kernels}
        FPGA_DEPS ${fpga_kernels}
+       BM_DEPS ${bm_kernels}
        EXCLUDE_COMPILE_DEPS "ON"
        ARGS --model_dir=${LITE_MODEL_DIR}/lite_naive_model
             --optimized_model=${LITE_MODEL_DIR}/lite_naive_model_opt SERIAL)
@@ -160,6 +174,12 @@ if(WITH_TESTING)
            ${ops} ${host_kernels} ${x86_kernels}
            ARGS --model_dir=${LITE_MODEL_DIR}/step_rnn)
         add_dependencies(test_step_rnn_lite_x86 extern_lite_download_step_rnn_tar_gz)
+        if(LITE_WITH_BM)
+           lite_cc_test(test_resnet50_lite_bm SRCS test_resnet50_lite_bm.cc
+              DEPS mir_passes lite_api_test_helper paddle_api_full paddle_api_light gflags utils
+              ${ops} ${host_kernels} ${bm_kernels} ${bm_bridges}
+              ARGS --model_dir=${LITE_MODEL_DIR}/resnet50)
+        endif()
     endif()
 endif()
 
@@ -250,6 +270,7 @@ lite_cc_test(test_light_api SRCS light_api_test.cc
         DEPS light_api program mir_passes paddle_api_light
         CL_DEPS ${opencl_kernels}
         FPGA_DEPS ${fpga_kernels}
+        BM_DEPS ${bm_kernels}
         ARGS --optimized_model=${LITE_MODEL_DIR}/lite_naive_model_opt SERIAL)
 
 lite_cc_test(test_apis SRCS apis_test.cc
@@ -258,6 +279,7 @@ lite_cc_test(test_apis SRCS apis_test.cc
         X86_DEPS ${x86_kernels}
         XPU_DEPS ${xpu_kernels}
         FPGA_DEPS ${fpga_kernels}
+        BM_DEPS ${bm_kernels}
         ARGS --model_dir=${LITE_MODEL_DIR}/lite_naive_model
         --optimized_model=${LITE_MODEL_DIR}/lite_naive_model_opt SERIAL)
 
@@ -277,17 +299,19 @@ if (LITE_ON_MODEL_OPTIMIZE_TOOL)
     message(STATUS "Compiling model_optimize_tool")
     lite_cc_binary(model_optimize_tool SRCS model_optimize_tool.cc cxx_api_impl.cc paddle_api.cc cxx_api.cc
         DEPS gflags kernel op optimizer mir_passes utils)
-    add_dependencies(model_optimize_tool op_list_h kernel_list_h all_kernel_faked_cc)
+    add_dependencies(model_optimize_tool op_list_h kernel_list_h all_kernel_faked_cc supported_kernel_op_info_h)
 endif(LITE_ON_MODEL_OPTIMIZE_TOOL)
 
 lite_cc_test(test_paddle_api SRCS paddle_api_test.cc DEPS paddle_api_full paddle_api_light
   ${ops}
   ARM_DEPS ${arm_kernels}
+  CV_DEPS paddle_cv_arm
   NPU_DEPS ${npu_kernels}
   XPU_DEPS ${xpu_kernels}
   CL_DEPS ${opencl_kernels}
   X86_DEPS ${x86_kernels}
   FPGA_DEPS ${fpga_kernels}
+  BM_DEPS ${bm_kernels}
   ARGS --model_dir=${LITE_MODEL_DIR}/lite_naive_model SERIAL)
 if (WITH_TESTING)
     add_dependencies(test_paddle_api extern_lite_download_lite_naive_model_tar_gz)
@@ -302,6 +326,7 @@ if(NOT IOS)
         NPU_DEPS ${npu_kernels}
         XPU_DEPS ${xpu_kernels}
         CL_DEPS ${opencl_kernels}
+        BM_DEPS ${bm_kernels}
         FPGA_DEPS ${fpga_kernels}
         X86_DEPS ${x86_kernels}
         CUDA_DEPS ${cuda_kernels})
@@ -309,6 +334,7 @@ if(NOT IOS)
     lite_cc_binary(benchmark_bin SRCS benchmark.cc DEPS paddle_api_full paddle_api_light gflags utils
         ${ops} ${host_kernels}
         ARM_DEPS ${arm_kernels}
+        CV_DEPS paddle_cv_arm
         NPU_DEPS ${npu_kernels}
         XPU_DEPS ${xpu_kernels}
         CL_DEPS ${opencl_kernels}
@@ -322,6 +348,7 @@ if(NOT IOS)
         NPU_DEPS ${npu_kernels}
         XPU_DEPS ${xpu_kernels}
         CL_DEPS ${opencl_kernels}
+	BM_DEPS ${bm_kernels}
         FPGA_DEPS ${fpga_kernels}
         X86_DEPS ${x86_kernels}
         CUDA_DEPS ${cuda_kernels})

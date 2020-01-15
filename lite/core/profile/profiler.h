@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #pragma once
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -21,6 +22,14 @@
 namespace paddle {
 namespace lite {
 namespace profile {
+
+enum class Type {
+  kUnk = 0,
+  kCreate,
+  kDispatch,
+};
+
+extern std::map<Type, std::string> TypeStr;
 
 struct TimeInfo {
   float avg;
@@ -39,8 +48,15 @@ struct OpCharacter {
   std::string* remark{nullptr};
 };
 
-struct StatisUnit {
-  std::unique_ptr<Timer> timer;
+class StatisUnit final {
+ public:
+  explicit StatisUnit(const OpCharacter& ch);
+  lite::profile::Timer* Timer(Type type);
+  const OpCharacter& Character() const { return character; }
+
+ protected:
+  std::unique_ptr<lite::profile::Timer> create_t;
+  std::unique_ptr<lite::profile::Timer> dispatch_t;
   OpCharacter character;
 };
 
@@ -49,9 +65,9 @@ class Profiler final {
   Profiler() = default;
   explicit Profiler(const std::string& name) : name_(name) {}
   int NewTimer(const OpCharacter& ch);
-  void StartTiming(const int index, KernelContext* ctx);
-  float StopTiming(const int index, KernelContext* ctx);
-  std::string Summary(bool concise = true, size_t warm_up = 10);
+  void StartTiming(Type type, const int index, KernelContext* ctx);
+  float StopTiming(Type type, const int index, KernelContext* ctx);
+  std::string Summary(Type type, bool concise = true, size_t warm_up = 10);
 
  private:
   std::string name_{std::string("N/A")};
