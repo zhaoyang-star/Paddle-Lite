@@ -14,6 +14,7 @@
 
 #include "lite/kernels/opencl/conv_compute.h"
 #include <sstream>
+#include "lite/backends/opencl/cl_image_converter.h"
 #include "lite/backends/opencl/cl_include.h"
 #include "lite/core/op_registry.h"
 #include "lite/kernels/opencl/image_helper.h"
@@ -387,48 +388,50 @@ void ConvComputeImage::Conv3x3Prepare() {
   VLOG(3) << "output_dims:" << output_dims[0] << " " << output_dims[1] << " "
           << output_dims[2] << " " << output_dims[3];
 
-  CLImageConverterFolder folder_convertor;
-  VLOG(4) << "1111";
-  lite::Tensor filter_img_cpu, filter_img_gpu;
-  VLOG(4) << "1111";
+  paddle::lite::CLImageConverterFolder folder_convertor;
+  lite::Tensor filter_img_cpu;
   auto filter_img_dims = folder_convertor.InitImageDimInfoWith(filter_dims);
-  VLOG(4) << "filter_img_dims:" << filter_img_dims[0] << ","
-          << filter_img_dims[1] << "," << filter_img_dims[2] << ","
-          << filter_img_dims[3];
-  filter_img_cpu.Resize(filter_img_dims);
-  VLOG(4) << "1111";
-  auto filter_img_cpu_data = filter_img_cpu.mutable_data<float>();
-  VLOG(4) << "1111";
-  folder_convertor.NCHWToImage(const_cast<float*>(filter_data),
-                               const_cast<float*>(filter_img_cpu_data),
-                               filter_img_dims);
+  auto* filter_img_cpu_data = static_cast<float*>(filter_img_cpu.mutable_data(
+      filter_img_dims.production() * 4 * sizeof(float)));  // 4 for RGBA
+
+  folder_convertor.NCHWToImage(
+      const_cast<float*>(filter_data), filter_img_cpu_data, filter_img_dims);
+  CHECK_LE(filter_dims.production(),
+           4 * filter_img_dims[0] * filter_img_dims[1]);
   VLOG(3) << "filter_img_dims:" << filter_img_dims[0] << ","
           << filter_img_dims[1];
   VLOG(3) << "filter_img_cpu_data:" << filter_img_cpu_data;
-  filter_img_gpu_ = &filter_img_gpu;
-  auto* filter_img_gpu_data = filter_img_gpu_->mutable_data<float, cl::Image2D>(
+  filter_img_gpu_t_.mutable_data<float, cl::Image2D>(
       filter_img_dims[0], filter_img_dims[1], filter_img_cpu_data);
-  VLOG(4) << "filter_img_gpu_data:" << filter_img_gpu_data;
-
   if (has_bias) {
     auto bias_dims = param.bias->dims();
     for (size_t i = 0; i < bias_dims.size(); ++i) {
       VLOG(3) << "bias_dims[" << i << "]:" << bias_dims[i];
     }
-    lite::Tensor bias_img_cpu, bias_img_gpu;
+    lite::Tensor bias_img_cpu;
     auto bias_img_dims = folder_convertor.InitImageDimInfoWith(bias_dims);
     bias_img_cpu.Resize(bias_img_dims);
-    auto bias_img_cpu_data = bias_img_cpu.mutable_data<float>();
+    auto* bias_img_cpu_data = static_cast<float*>(bias_img_cpu.mutable_data(
+        bias_img_dims.production() * 4 * sizeof(float)));  // 4 for RGBA
     auto bias_data = param.bias->data<float>();
-    folder_convertor.NCHWToImage(const_cast<float*>(bias_data),
-                                 const_cast<float*>(bias_img_cpu_data),
-                                 bias_img_dims);
-    VLOG(3) << "bias_img_dims:" << bias_img_dims[0] << "," << bias_img_dims[1];
+    folder_convertor.NCHWToImage(
+        const_cast<float*>(bias_data), bias_img_cpu_data, bias_img_dims);
+    VLOG(3) << "bias_img_dims:" << bias_img_dims;
     VLOG(3) << "bias_img_cpu_data:" << bias_img_cpu_data;
-    bias_img_gpu_ = &bias_img_gpu;
-    auto* bias_img_gpu_data = bias_img_gpu_->mutable_data<float, cl::Image2D>(
+    bias_img_gpu_t_.mutable_data<float, cl::Image2D>(
         bias_img_dims[0], bias_img_dims[1], bias_img_cpu_data);
-    VLOG(4) << "bias_img_gpu_data:" << bias_img_gpu_data;
+#if 1
+    LOG(INFO) << "filter_img_gpu_t_.data(gpu):"
+              << filter_img_gpu_t_.mutable_data<float, cl::Image2D>(
+                     filter_img_dims[0],
+                     filter_img_dims[1],
+                     filter_img_cpu_data);
+
+    LOG(INFO) << "bias_img_gpu_t_.data(gpu):"
+              << bias_img_gpu_t_.mutable_data<float, cl::Image2D>(
+                     bias_img_dims[0], bias_img_dims[1], bias_img_cpu_data);
+//  exit(0);
+#endif
   }
   VLOG(4) << "finished PrepareConv3x3";
 }
@@ -454,6 +457,12 @@ void ConvComputeImage::Conv3x3Run() {
   int input_c_block = input_image_shape["width"] / input_dims[3];
   int input_c = input_c_block;
   VLOG(4) << "1111";
+  VLOG(4) << "+============================================";
+  VLOG(4) << "+============================================";
+  VLOG(4) << "input_image_shape:" << input_image_shape["width"] << " "
+          << input_image_shape["height"];
+  VLOG(4) << "input_c_block:" << input_c_block << " input_c:" << input_c;
+  VLOG(4) << "input_dims:" << input_dims;
 
   // output
   auto output_dims = param.output->dims();
@@ -463,11 +472,9 @@ void ConvComputeImage::Conv3x3Run() {
   auto* output_image = param.output->mutable_data<float, cl::Image2D>(
       out_image_shape["width"], out_image_shape["height"]);
   int output_c = output_dims[1];
-  VLOG(4) << "1111";
 
   // filter_img
-  auto* filter_image = filter_img_gpu_->data<float, cl::Image2D>();
-  VLOG(4) << "filter_image:" << filter_image;
+  auto* filter_image = filter_img_gpu_t_.data<float, cl::Image2D>();
   VLOG(4) << "1111";
   auto filter_dims = param.filter->dims();
   VLOG(4) << "1111";
@@ -475,7 +482,7 @@ void ConvComputeImage::Conv3x3Run() {
   VLOG(4) << "1111";
 
   // bias_img
-  auto* bias_image = bias_img_gpu_->data<float, cl::Image2D>();
+  auto* bias_image = bias_img_gpu_t_.data<float, cl::Image2D>();
   VLOG(4) << "bias_image:" << bias_image;
   const bool has_bias = param.bias != nullptr;
   const bool is_element_wise_bias =
@@ -483,6 +490,12 @@ void ConvComputeImage::Conv3x3Run() {
   int offset = static_cast<int>(param.filter->dims()[2]) / 2 -
                static_cast<int>(paddings[0]);
   VLOG(4) << "1111";
+
+#if 1
+  LOG(INFO) << "--------------------------- filter_image:" << filter_image;
+  LOG(INFO) << "--------------------------- bias_image:" << bias_image;
+// exit(0);
+#endif
 
   // other misc
   const std::vector<size_t>& default_work_size =
@@ -503,10 +516,10 @@ void ConvComputeImage::Conv3x3Run() {
   VLOG(4) << "input_c: " << input_c;
   VLOG(4) << "input_image: " << input_image;
   VLOG(4) << "output_image: " << output_image;
-  VLOG(4) << "filter_dims: " << filter_dims[0] << "," << filter_dims[1] << ","
-          << filter_dims[2] << "," << filter_dims[3];
-  VLOG(4) << "filter_img_gpu_: " << filter_img_gpu_;
-  VLOG(4) << "bias_img_gpu_: " << bias_img_gpu_;
+  VLOG(4) << "filter_dims: " << filter_dims;
+  VLOG(4) << "&filter_img_gpu_t_: " << &filter_img_gpu_t_;
+  VLOG(4) << "filter_image:" << filter_image;
+  VLOG(4) << "&bias_img_gpu_t_: " << &bias_img_gpu_t_;
   VLOG(4) << "output_dims: " << output_dims;
   VLOG(4) << "out_image_shape: " << out_image_shape["width"] << ", "
           << out_image_shape["height"];
@@ -536,38 +549,23 @@ void ConvComputeImage::Conv3x3Run() {
 
   cl_int status;
   int arg_idx = 0;
-  VLOG(4) << "1111";
   status = kernel.setArg(arg_idx, static_cast<const int>(c_block));
-  VLOG(4) << "1111";
   CL_CHECK_FATAL(status);
-  VLOG(4) << "1111";
   status = kernel.setArg(++arg_idx, static_cast<const int>(w));
-  VLOG(4) << "1111";
-
   CL_CHECK_FATAL(status);
-  VLOG(4) << "1111";
   status = kernel.setArg(++arg_idx, static_cast<const int>(nh));
-  VLOG(4) << "1111";
   CL_CHECK_FATAL(status);
-  VLOG(4) << "1111";
   status = kernel.setArg(++arg_idx, *input_image);
-  VLOG(4) << "1111";
   CL_CHECK_FATAL(status);
-  VLOG(4) << "1111";
   status = kernel.setArg(++arg_idx, *filter_image);
-  VLOG(4) << "1111";
   CL_CHECK_FATAL(status);
-  VLOG(4) << "1111";
   if (has_bias) {
-    VLOG(4) << "1111";
     status = kernel.setArg(++arg_idx, *bias_image);
     CL_CHECK_FATAL(status);
   }
-  VLOG(4) << "1111";
   status = kernel.setArg(++arg_idx, *output_image);
   CL_CHECK_FATAL(status);
   status = kernel.setArg(++arg_idx, static_cast<const int>(strides[0]));
-  VLOG(4) << "1111";
   CL_CHECK_FATAL(status);
   status = kernel.setArg(++arg_idx, static_cast<const int>(offset));
   CL_CHECK_FATAL(status);
@@ -579,7 +577,6 @@ void ConvComputeImage::Conv3x3Run() {
   CL_CHECK_FATAL(status);
   status = kernel.setArg(++arg_idx, static_cast<const int>(input_height));
   CL_CHECK_FATAL(status);
-  VLOG(4) << "1111";
   status = kernel.setArg(++arg_idx, static_cast<const int>(output_width));
   CL_CHECK_FATAL(status);
   status = kernel.setArg(++arg_idx, static_cast<const int>(output_height));
@@ -588,7 +585,6 @@ void ConvComputeImage::Conv3x3Run() {
   CL_CHECK_FATAL(status);
   status = kernel.setArg(++arg_idx, static_cast<const int>(filter_channel));
   CL_CHECK_FATAL(status);
-  VLOG(4) << "1111";
 
   if (filter_dims[0] == output_dims[1] && filter_dims[1] == input_dims[1]) {
     group = 1;
@@ -599,7 +595,6 @@ void ConvComputeImage::Conv3x3Run() {
 
   status = kernel.setArg(++arg_idx, static_cast<const int>(group));
   CL_CHECK_FATAL(status);
-  VLOG(4) << "1111";
 
   status = context.cl_context()->GetCommandQueue().enqueueNDRangeKernel(
       kernel,
@@ -609,9 +604,25 @@ void ConvComputeImage::Conv3x3Run() {
       nullptr,
       event_.get());
   CL_CHECK_FATAL(status);
-  VLOG(4) << "1111";
   context.cl_wait_list()->emplace(output_image, event_);
-  VLOG(4) << "1111";
+  context.cl_context()->GetCommandQueue().finish();
+
+  LOG(INFO) << "c_block:" << c_block;
+  LOG(INFO) << "w:" << w;
+  LOG(INFO) << "nh:" << nh;
+  LOG(INFO) << "strides[0]:" << strides[0];
+  LOG(INFO) << "offset:" << offset;
+  LOG(INFO) << "input_c:" << input_c;
+  LOG(INFO) << "dilations[0]:" << dilations[0];
+  LOG(INFO) << "input_width:" << input_width;
+  LOG(INFO) << "input_height:" << input_height;
+  LOG(INFO) << "output_width:" << output_width;
+  LOG(INFO) << "output_height:" << output_height;
+  LOG(INFO) << "output_c:" << output_c;
+  LOG(INFO) << "filter_channel:" << filter_channel;
+  LOG(INFO) << "group:" << group;
+
+  // debug_image(param.output);
 }
 
 void ConvComputeImage::Run() { (this->*impl_)(); }

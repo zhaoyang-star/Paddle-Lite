@@ -82,8 +82,8 @@ class ConvComputeImage : public KernelLite<TARGET(kOpenCL),
   std::vector<std::string> kernel_func_names_{};
   std::vector<std::string> kernel_func_paths_{};
   std::vector<std::string> build_options_{};
-  lite::Tensor* filter_img_gpu_;  // assigned in Prepare, used in Run
-  lite::Tensor* bias_img_gpu_;    // assigned in Prepare, used in Run
+  lite::Tensor filter_img_gpu_t_;  // assigned in Prepare, used in Run
+  lite::Tensor bias_img_gpu_t_;    // assigned in Prepare, used in Run
   std::shared_ptr<cl::Event> event_{new cl::Event};
 };
 

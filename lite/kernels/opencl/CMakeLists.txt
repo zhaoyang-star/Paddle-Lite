@@ -2,7 +2,7 @@ if ((NOT LITE_ON_MODEL_OPTIMIZE_TOOL) AND (NOT LITE_WITH_OPENCL))
     return ()
 endif()
 
-set(cl_kernel_deps op_params cl_runtime cl_context cl_wrapper cl_target_wrapper)
+set(cl_kernel_deps op_params cl_runtime cl_context cl_wrapper cl_target_wrapper cl_image_converter)
 
 add_kernel(fc_opencl OPENCL basic SRCS fc_compute.cc DEPS ${cl_kernel_deps})
 add_kernel(mul_opencl OPENCL basic SRCS mul_compute.cc DEPS ${cl_kernel_deps})

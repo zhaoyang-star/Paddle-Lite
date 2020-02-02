@@ -108,34 +108,60 @@ static void conv_basic(const Dtype1* din,
 }
 
 TEST(conv2d_3x3_image2d, compute) {
-  // conv infos
+  // conv infos // // 32,3,3,3,  s2p1g1
   const int ksize = 3;
-  const int stride = 1;
-  const int pad = 0;
+  const int stride = 2;
+  const int pad = 1;
   const int group = 1;
-  const int dilation = 0;
-  //  int loop_cnt = 0;
+  const int dilation = 1;
+//  int loop_cnt = 0;
 
-  const bool bias_flag = true;
-  const bool relu_flag = true;
-  const int batch_size = 8;
-  const int oc = 64;
-  const int ih = 28;
-  const int iw = 28;
-  const int ic = 63;
+#if 1
 
-  const int oh = ih;
-  const int ow = iw;
+#if 1
+  const bool bias_flag = false;
+  const bool relu_flag = false;
+  const int batch_size = 1;
+  const int oc = 1;
+  const int ih = 3;
+  const int iw = 3;
+  const int ic = 1;
+#else
+  const bool bias_flag = false;
+  const bool relu_flag = false;
+  const int batch_size = 1;
+  const int oc = 2;
+  const int ih = 5;
+  const int iw = 5;
+  const int ic = 3;
+#endif
 
-  LOG(INFO) << "to get kernel ...";
-  auto kernels = KernelRegistry::Global().Create(
-      "conv2d", TARGET(kOpenCL), PRECISION(kFloat), DATALAYOUT(kImageDefault));
-  ASSERT_FALSE(kernels.empty());
+#else
+  const bool bias_flag = false;
+  const bool relu_flag = false;
+  const int batch_size = 1;
+  const int oc = 32;
+  const int ih = 224;  // / 8;
+  const int iw = 224;  // / 8;
+  const int ic = 3;
+#endif
 
-  auto kernel = std::move(kernels.front());
-  LOG(INFO) << "created conv2d_3x3 kernel, kernel->doc():" << kernel->doc();
-  LOG(INFO) << "prepare kernel ------";
+  const int oh = (ih - ksize + 2 * pad) / stride + 1;
+  const int ow = (iw - ksize + 2 * pad) / stride + 1;
 
+  const DDim& input_dim =
+      lite::DDim{std::vector<int64_t>({batch_size, ic, ih, iw})};
+  const DDim& filter_dim =
+      lite::DDim{std::vector<int64_t>({oc, ic, ksize, ksize})};
+  const DDim& out_dim =
+      lite::DDim{std::vector<int64_t>({batch_size, oc, oh, ow})};
+  // element wise bias
+  const DDim& bias_dim = lite::DDim{std::vector<int64_t>({oc})};
+
+  std::vector<int> paddings = {pad, pad, pad, pad};
+  std::vector<int> dilations = {dilation, dilation};
+
+  // set op param
   lite::Tensor input, filter, bias, output;
   operators::ConvParam param;
   param.x = &input;
@@ -145,31 +171,9 @@ TEST(conv2d_3x3_image2d, compute) {
     param.bias = &bias;
   }
   param.fuse_relu = relu_flag;
-
-  std::vector<int> paddings = {pad, pad, pad, pad};
-  std::vector<int> dilations = {dilation, dilation};
-
   param.paddings = std::make_shared<std::vector<int>>(paddings);
   param.dilations = std::make_shared<std::vector<int>>(dilations);
   param.strides = std::vector<int>{stride, stride};
-
-  std::unique_ptr<KernelContext> context(new KernelContext);
-  context->As<OpenCLContext>().InitOnce();
-
-  std::unique_ptr<KernelContext> conv_1x1_context(new KernelContext);
-  context->As<OpenCLContext>().CopySharedTo(
-      &(conv_1x1_context->As<OpenCLContext>()));
-  kernel->SetContext(std::move(conv_1x1_context));
-
-  const DDim& input_dim =
-      lite::DDim{std::vector<int64_t>({batch_size, ic, ih, iw})};
-
-  const DDim& filter_dim =
-      lite::DDim{std::vector<int64_t>({oc, ic, ksize, ksize})};
-  const DDim& out_dim =
-      lite::DDim{std::vector<int64_t>({batch_size, oc, ih, iw})};
-  // element wise bias
-  const DDim& bias_dim = lite::DDim{std::vector<int64_t>({oc})};
 
   param.x->Resize(input_dim);
   param.filter->Resize(filter_dim);
@@ -178,149 +182,108 @@ TEST(conv2d_3x3_image2d, compute) {
     param.bias->Resize(bias_dim);
   }
 
+  // create kernel
+  LOG(INFO) << "to get kernel ...";
+  auto kernels = KernelRegistry::Global().Create(
+      "conv2d", TARGET(kOpenCL), PRECISION(kFloat), DATALAYOUT(kImageDefault));
+  ASSERT_FALSE(kernels.empty());
+  auto kernel = std::move(kernels.front());
+  LOG(INFO) << "created kernel, kernel->doc():" << kernel->doc();
+
+  // create context, set param to kernel
+  std::unique_ptr<KernelContext> context(new KernelContext);
+  context->As<OpenCLContext>().InitOnce();
+
+  std::unique_ptr<KernelContext> conv_3x3_context(new KernelContext);
+  context->As<OpenCLContext>().CopySharedTo(
+      &(conv_3x3_context->As<OpenCLContext>()));
+
+  kernel->SetContext(std::move(conv_3x3_context));
   kernel->SetParam(param);
 
-  size_t input_image_width = iw * ((ic + 3) / 4);
-  size_t input_image_height = ih * batch_size;
-
-  size_t out_image_width = ow * ((oc + 3) / 4);
-  size_t out_image_height = oh * batch_size;
-
-  size_t bias_image_width = ow * ((oc + 3) / 4);
-  size_t bias_image_height = oh * batch_size;
-
-  size_t filter_image_width = ksize * ((oc + 3) / 4);
-  size_t filter_image_height = ic * ksize;
-
-  auto* input_data = input.mutable_data<float, cl::Image2D>(input_image_width,
-                                                            input_image_height);
-  auto* filter_data = filter.mutable_data<float, cl::Image2D>(
-      filter_image_width, filter_image_height);
-  bias.mutable_data<float, cl::Image2D>(bias_image_width, bias_image_height);
-  auto* bias_data = bias.mutable_data<float, cl::Image2D>(bias_image_width,
-                                                          bias_image_height);
-
-  const size_t cl_image2d_row_pitch{0};
-  const size_t cl_image2d_slice_pitch{0};
-
-  LOG(INFO) << "map input ...";
-  auto* mapped_input =
-      static_cast<float*>(TargetWrapperCL::MapImage(input_data,
-                                                    input_image_width,
-                                                    input_image_height,
-                                                    cl_image2d_row_pitch,
-                                                    cl_image2d_slice_pitch));
-
-  LOG(INFO) << "map filter ...";
-  auto* mapped_filter =
-      static_cast<float*>(TargetWrapperCL::MapImage(filter_data,
-                                                    filter_image_width,
-                                                    filter_image_height,
-                                                    cl_image2d_row_pitch,
-                                                    cl_image2d_slice_pitch));
-
+  // generate input, filter, bias, output
+  LOG(INFO) << "generate input, filter, bias ...";
   std::default_random_engine engine;
   std::uniform_real_distribution<float> gen(-5, 5);
-  std::vector<float> input_v(batch_size * ic * ih * iw);
-  std::vector<float> filter_v(oc * ic * ksize * ksize);
-  std::vector<float> output_v(batch_size * oc * ih * iw);
-  std::vector<float> bias_v(oc);
-
+  std::vector<float> input_v(input_dim.production());
+  std::vector<float> output_v(out_dim.production());
+  float* filter_data = filter.mutable_data<float>();  // mutable filter
+  float* bias_data = bias.mutable_data<float>();      // mutable bias
   float* input_v_data = &input_v[0];
-  float* filter_v_data = &filter_v[0];
   float* output_v_data = &output_v[0];
-  float* bias_v_data = &bias_v[0];
 
-  LOG(INFO) << "gen input and filter ...";
+  LOG(INFO) << "input_v.size():" << input_v.size();
+  LOG(INFO) << "filter.dims().production():" << filter.dims().production();
+  LOG(INFO) << "output_v.size():" << output_v.size();
 
-  for (auto& i : input_v) {
-    i = gen(engine);
+  for (size_t i = 0; i < input_v.size(); ++i) {
+    input_v[i] = i + 1;  // gen(engine);
   }
-  for (auto& f : filter_v) {
-    f = gen(engine);
+  for (auto& o : output_v) {
+    o = 0.;
+  }
+  for (size_t i = 0; i < filter_dim.production(); ++i) {
+    filter_data[i] = 1;  // gen(engine);
+  }
+  for (size_t i = 0; bias_flag && (i < bias_dim.production()); ++i) {
+    bias_data[i] = 3.;  // gen(engine);
   }
 
   LOG(INFO) << "after gen input and filter ...";
-  LOG(INFO) << "input_v.size(): " << input_v.size();
-  LOG(INFO) << "filter_v.size(): " << filter_v.size();
-  LOG(INFO) << "output_v.size(): " << output_v.size();
-  LOG(INFO) << "bias_v.size(): " << bias_v.size();
   LOG(INFO) << "input_dim.production(): " << input_dim.production();
   LOG(INFO) << "filter_dim.production(): " << filter_dim.production();
   LOG(INFO) << "out_dim.production(): " << out_dim.production();
   LOG(INFO) << "bias_dim.production(): " << bias_dim.production();
-  LOG(INFO) << "4 * input_image_height * input_image_width: "
-            << 4 * input_image_height * input_image_width;
-  LOG(INFO) << "4 * filter_image_width * filter_image_height: "
-            << 4 * filter_image_width * filter_image_height;
-
-  CHECK(input_dim.production() == input_v.size());
-  CHECK_LE(input_dim.production(), 4 * input_image_height * input_image_width);
-  CHECK(filter_dim.production() == filter_v.size());
-  CHECK_LE(filter_dim.production(),
-           4 * filter_image_width * filter_image_height);
 
   paddle::lite::CLImageConverterDefault default_convertor;
-  LOG(INFO) << "set mapped input  ...";
-  default_convertor.NCHWToImage(input_v_data, mapped_input, input_dim);
-  LOG(INFO) << "set mapped filter  ...";
-  CLImageConverterFolder folder_convertor;
-  folder_convertor.NCHWToImage(filter_v_data, mapped_filter, filter_dim);
+  // input: compute input dim shape, image shape, mutable
+  DDim input_image_shape = default_convertor.InitImageDimInfoWith(input_dim);
+  std::vector<float> input_image_data(input_image_shape.production() *
+                                      4);  // RGBA
+  default_convertor.NCHWToImage(
+      input_v.data(), input_image_data.data(), input_dim);
+  input.mutable_data<float, cl::Image2D>(
+      input_image_shape[0], input_image_shape[1], input_image_data.data());
+  // output: compute output dim shape, image shape, mutable
+  DDim output_image_shape = default_convertor.InitImageDimInfoWith(out_dim);
+  LOG(INFO) << "output_image_shape:" << output_image_shape[0] << " "
+            << output_image_shape[1];
+  auto* output_image = output.mutable_data<float, cl::Image2D>(
+      output_image_shape[0], output_image_shape[1]);
 
-  LOG(INFO) << "resize output  ...";
-  output.Resize(out_dim);
+  CHECK(input_dim.production() == input_v.size());
+  CHECK_LE(input_dim.production(),
+           4 * input_image_shape[0] * input_image_shape[1]);
+  CHECK_LE(out_dim.production(),
+           4 * output_image_shape[0] * output_image_shape[1]);
 
   // cpu conv basic calc
   lite::Tensor out_ref;
   out_ref.Resize(out_dim);
 
-  float* mapped_bias = nullptr;
-  if (bias_flag) {
-    mapped_bias =
-        static_cast<float*>(TargetWrapperCL::MapImage(bias_data,
-                                                      bias_image_width,
-                                                      bias_image_height,
-                                                      cl_image2d_row_pitch,
-                                                      cl_image2d_slice_pitch));
-
-    for (int i = 0; i < bias_dim.production(); ++i) {
-      bias_v[i] = static_cast<int>(gen(engine));
-    }
-    folder_convertor.NCHWToImage(bias_v_data, mapped_bias, bias_dim);
-  }
-  LOG(INFO) << "prepare kernel ready";
-
+  // kernel launch
   LOG(INFO) << "kernel launch ...";
   kernel->Launch();
-  LOG(INFO) << "mutable output ...";
-  auto* output_data = output.mutable_data<float, cl::Image2D>(out_image_width,
-                                                              out_image_height);
 
-  auto* wait_list = context->As<OpenCLContext>().cl_wait_list();
-  auto* out_ptr = param.output->data<float, cl::Image2D>();
-  auto it = wait_list->find(out_ptr);
+  // get output from gpu
+  const size_t cl_image2d_row_pitch{0};
+  const size_t cl_image2d_slice_pitch{0};
+  auto* output_image_data = new float[output_image_shape.production() * 4];
+  TargetWrapperCL::ImgcpySync(output_image_data,
+                              output_image,
+                              output_image_shape[0],
+                              output_image_shape[1],
+                              cl_image2d_row_pitch,
+                              cl_image2d_slice_pitch,
+                              IoDirection::DtoH);
+  auto* output_data_cpu = new float[output_image_shape.production() * 4];
 
-  if (it != wait_list->end()) {
-    VLOG(4) << "--- Find the sync event for the target cl tensor. ---";
-    auto& event = *(it->second);
-    event.wait();
-  } else {
-    LOG(FATAL) << "Could not find the sync event for the target cl tensor.";
-  }
-
-  auto* mapped_output =
-      static_cast<float*>(TargetWrapperCL::MapImage(output_data,
-                                                    out_image_width,
-                                                    out_image_height,
-                                                    cl_image2d_row_pitch,
-                                                    cl_image2d_slice_pitch));
-  LOG(INFO) << "mutable_data out_ref_data: ";
+  default_convertor.ImageToNCHW(
+      output_image_data, output_data_cpu, output_image_shape, output.dims());
 
   // run cpu ref
   auto* out_ref_data = out_ref.mutable_data<float>(TARGET(kARM));
-
   LOG(INFO) << " conv_basic beigin ..... ";
-
   conv_basic<float, float>(input_v_data,
                            out_ref_data,
                            batch_size,
@@ -330,8 +293,8 @@ TEST(conv2d_3x3_image2d, compute) {
                            ic,
                            ih,
                            iw,
-                           filter_v_data,
-                           bias_v_data,  // mapped_bias,
+                           filter_data,
+                           bias_data,
                            group,
                            ksize,
                            ksize,
@@ -345,25 +308,16 @@ TEST(conv2d_3x3_image2d, compute) {
                            relu_flag);
   LOG(INFO) << " conv_basic end ..... ";
 
-  LOG(INFO) << " out_dim: " << out_dim;
-  const DDim& out_image_dims = lite::DDim{
-      std::vector<int64_t>({static_cast<int64_t>(out_image_width),
-                            static_cast<int64_t>(out_image_height)})};
-  default_convertor.ImageToNCHW(
-      mapped_output, output_v_data, out_image_dims, out_dim);
   for (int i = 0; i < out_dim.production(); i++) {
-    EXPECT_NEAR(output_v_data[i], out_ref_data[i], 1e-3);
-    if (abs(output_v_data[i] - out_ref_data[i]) > 1e-3) {
-      LOG(FATAL) << "error idx:" << i;
-    }
+    LOG(ERROR) << "output_data_cpu[" << i << "]:" << output_data_cpu[i]
+               << " out_ref_data[" << i << "]:" << out_ref_data[i];
   }
 
-  TargetWrapperCL::Unmap(output_data, mapped_output);
-  TargetWrapperCL::Unmap(filter_data, mapped_filter);
-  TargetWrapperCL::Unmap(input_data, mapped_input);
-  if (bias_flag) {
-    if (mapped_bias) {
-      TargetWrapperCL::Unmap(bias_data, mapped_bias);
+  for (int i = 0; i < out_dim.production(); i++) {
+    // EXPECT_NEAR(output_data_cpu[i], out_ref_data[i], 1e-3);
+    if (abs(output_data_cpu[i] - out_ref_data[i]) > 1e-3) {
+      LOG(ERROR) << "---------------------------------------------- error idx:"
+                 << i;
     }
   }
 }
