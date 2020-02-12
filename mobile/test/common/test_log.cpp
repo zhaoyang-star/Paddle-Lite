@@ -15,21 +15,21 @@ limitations under the License. */
 #include "common/log.h"
 
 int main() {
-  LOG(paddle_mobile::kLOG_DEBUG3) << "test debug"
+  LOG(paddle_mobile_lens::kLOG_DEBUG3) << "test debug"
                                   << " next log";
-  LOG(paddle_mobile::kLOG_DEBUG) << "test debug"
+  LOG(paddle_mobile_lens::kLOG_DEBUG) << "test debug"
                                  << " next log";
 
-  LOG(paddle_mobile::kLOG_DEBUG1) << "test debug1"
+  LOG(paddle_mobile_lens::kLOG_DEBUG1) << "test debug1"
                                   << " next log";
-  LOG(paddle_mobile::kLOG_DEBUG2) << "test debug2"
+  LOG(paddle_mobile_lens::kLOG_DEBUG2) << "test debug2"
                                   << " next log";
-  LOG(paddle_mobile::kLOG_INFO) << "INFO!!!";
-  LOG(paddle_mobile::kLOG_WARNING) << "WARNING!!!";
-  LOG(paddle_mobile::kLOG_VERBOSE) << "VERBOSE!!!";
+  LOG(paddle_mobile_lens::kLOG_INFO) << "INFO!!!";
+  LOG(paddle_mobile_lens::kLOG_WARNING) << "WARNING!!!";
+  LOG(paddle_mobile_lens::kLOG_VERBOSE) << "VERBOSE!!!";
   DLOG << "test DLOG";
 
-  LOG(paddle_mobile::kLOG_ERROR) << "ERROR !";
+  LOG(paddle_mobile_lens::kLOG_ERROR) << "ERROR !";
 
   return 0;
 }

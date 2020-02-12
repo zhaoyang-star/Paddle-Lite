@@ -19,7 +19,7 @@ limitations under the License. */
 #include <iostream>
 #include "framework/cl/cl_image.h"
 
-namespace paddle_mobile {
+namespace paddle_mobile_lens {
 namespace operators {
 
 template <>
@@ -181,6 +181,6 @@ void ElementwiseMulKernel<GPU_CL, float>::Compute(
 template class ElementwiseMulKernel<GPU_CL, float>;
 
 }  // namespace operators
-}  // namespace paddle_mobile
+}  // namespace paddle_mobile_lens
 
 #endif

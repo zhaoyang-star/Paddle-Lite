@@ -38,7 +38,7 @@ limitations under the License. */
 #include <vector>
 #include "framework/tensor.h"
 
-namespace paddle_mobile {
+namespace paddle_mobile_lens {
 namespace framework {
 
 struct CPUContext {
@@ -76,4 +76,4 @@ struct CPUContext {
 };
 
 }  // namespace framework
-}  // namespace paddle_mobile
+}  // namespace paddle_mobile_lens

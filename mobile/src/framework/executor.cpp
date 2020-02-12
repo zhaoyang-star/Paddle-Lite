@@ -36,7 +36,7 @@ limitations under the License. */
 #include "pass/memory_optimize_cl.h"
 #endif
 
-namespace paddle_mobile {
+namespace paddle_mobile_lens {
 namespace framework {
 
 #pragma mark - executor
@@ -48,7 +48,7 @@ void Executor<Device, T>::SetThreadNum(int thread_num, PowerMode power_mode) {
 
 template <typename Device, typename T>
 Executor<Device, T>::Executor(const Program<Device> &program,
-                              paddle_mobile::PaddleMobileConfigInternal config,
+                              paddle_mobile_lens::PaddleMobileConfigInternal config,
                               int batch_size, const bool use_optimize,
                               const bool lod_mode)
     : program_(program),
@@ -558,7 +558,7 @@ PMStatus Executor<Device, T>::Predict() {
       clock_gettime(CLOCK_MONOTONIC, &ts);
       profile[op_index].runBegin = (uint64_t)ts.tv_sec * 1e9 + ts.tv_nsec;
 #endif
-      LOG(paddle_mobile::kLOG_INFO) << i << "th, "
+      LOG(paddle_mobile_lens::kLOG_INFO) << i << "th, "
                                     << "run op: " << op_handler->Type();
       if (lod_mode_ && input_dim_has_changed_) {
         op_handler->InferShape();
@@ -996,7 +996,7 @@ void Executor<GPU_CL, float>::InitMemory() {
         }
         DLOG << var_desc->Name();
         float *tensorInput = static_cast<float *>(
-            paddle_mobile::memory::Alloc(sizeof(float) * numel));
+            paddle_mobile_lens::memory::Alloc(sizeof(float) * numel));
         LoadMemory(*var_desc, tensorInput, &data);
 
         DDim ddim = make_ddim(desc.Dims());
@@ -1005,7 +1005,7 @@ void Executor<GPU_CL, float>::InitMemory() {
         cl_image->SetTensorData(tensorInput, ddim);
 
         delete origin_data;
-        paddle_mobile::memory::Free(tensorInput);
+        paddle_mobile_lens::memory::Free(tensorInput);
       } else {
         if (var_desc->Type() == VARTYPE_TYPE_LOD_TENSOR) {
           auto cl_image = var->template GetMutable<CLImage>();
@@ -1071,13 +1071,13 @@ void Executor<GPU_CL, float>::InitCombineMemory() {
           numel = numel * ddim[i];
         }
         float *tensorInput = static_cast<float *>(
-            paddle_mobile::memory::Alloc(sizeof(float) * numel));
+            paddle_mobile_lens::memory::Alloc(sizeof(float) * numel));
         LoadMemory(*var_desc, tensorInput, &origin_data);
 
         // has not init
         cl_image->SetTensorData(tensorInput, ddim);
 
-        paddle_mobile::memory::Free(tensorInput);
+        paddle_mobile_lens::memory::Free(tensorInput);
       } else {
         auto cl_image = var->template GetMutable<CLImage>();
         cl_context context = program_.scope->GetCLScpoe()->Context();
@@ -1122,4 +1122,4 @@ template class Executor<FPGA, float>;
 template class Executor<GPU_CL, float>;
 
 }  // namespace framework
-}  // namespace paddle_mobile
+}  // namespace paddle_mobile_lens

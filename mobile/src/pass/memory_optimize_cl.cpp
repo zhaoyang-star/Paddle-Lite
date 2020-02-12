@@ -17,7 +17,7 @@ limitations under the License. */
 #include <utility>
 #include "framework/cl/cl_image.h"
 #include "framework/lod_tensor.h"
-namespace paddle_mobile {
+namespace paddle_mobile_lens {
 namespace pass {
 
 void MemoryOptPassCl::AppendBlockVars(const framework::BlockDesc *block) {
@@ -266,5 +266,5 @@ void MemoryOptPassCl::ShareData(
 }
 
 }  // namespace pass
-}  // namespace paddle_mobile
+}  // namespace paddle_mobile_lens
 #endif

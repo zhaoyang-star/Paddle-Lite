@@ -17,7 +17,7 @@ limitations under the License. */
 #include "../test_helper.h"
 #include "../test_include.h"
 
-void feed(PaddleMobile<paddle_mobile::GPU_CL> *paddle_mobile, const DDim &dims,
+void feed(PaddleMobile<paddle_mobile_lens::GPU_CL> *paddle_mobile, const DDim &dims,
           std::string image_path, std::string feed_name) {
   float *input_data_array = new float[product(dims)];
   std::ifstream in(image_path, std::ios::in);
@@ -33,8 +33,8 @@ void feed(PaddleMobile<paddle_mobile::GPU_CL> *paddle_mobile, const DDim &dims,
 }
 
 int main() {
-  paddle_mobile::PaddleMobile<paddle_mobile::GPU_CL> paddle_mobile;
-  auto time1 = paddle_mobile::time();
+  paddle_mobile_lens::PaddleMobile<paddle_mobile_lens::GPU_CL> paddle_mobile;
+  auto time1 = paddle_mobile_lens::time();
 #ifdef PADDLE_MOBILE_CL
   paddle_mobile.SetCLPath("/data/local/tmp/bin");
 #endif
@@ -42,19 +42,19 @@ int main() {
   if (paddle_mobile.Load(std::string("../models/nanbiannv") + "/model",
                          std::string("../models/nanbiannv") + "/params",
                          true)) {
-    auto time2 = paddle_mobile::time();
-    std::cout << "load cost :" << paddle_mobile::time_diff(time1, time2) << "ms"
+    auto time2 = paddle_mobile_lens::time();
+    std::cout << "load cost :" << paddle_mobile_lens::time_diff(time1, time2) << "ms"
               << std::endl;
 
     std::vector<float> input;
     feed(&paddle_mobile, {1, 3, 256, 256}, "../images/input_1_3_256_256",
          "image");
 
-    auto time3 = paddle_mobile::time();
+    auto time3 = paddle_mobile_lens::time();
     paddle_mobile.Predict();
-    auto time4 = paddle_mobile::time();
+    auto time4 = paddle_mobile_lens::time();
 
-    std::cout << "predict cost :" << paddle_mobile::time_diff(time3, time4)
+    std::cout << "predict cost :" << paddle_mobile_lens::time_diff(time3, time4)
               << "ms" << std::endl;
   }
 

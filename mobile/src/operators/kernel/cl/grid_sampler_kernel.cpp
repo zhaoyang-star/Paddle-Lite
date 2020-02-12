@@ -15,7 +15,7 @@ limitations under the License. */
 
 #include "operators/kernel/grid_sampler_kernel.h"
 
-namespace paddle_mobile {
+namespace paddle_mobile_lens {
 namespace operators {
 
 template <>
@@ -62,5 +62,5 @@ void GridSamplerKernel<GPU_CL, float>::Compute(
 template class GridSamplerKernel<GPU_CL, float>;
 
 }  // namespace operators
-}  // namespace paddle_mobile
+}  // namespace paddle_mobile_lens
 #endif

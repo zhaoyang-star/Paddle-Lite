@@ -21,7 +21,7 @@ limitations under the License. */
 
 void test(int argc, char *argv[]);
 
-void feed(PaddleMobile<paddle_mobile::GPU_CL> *paddle_mobile, const DDim &dims,
+void feed(PaddleMobile<paddle_mobile_lens::GPU_CL> *paddle_mobile, const DDim &dims,
           std::string feed_name) {
   float *input_data_array = new float[product(dims)];
   std::ifstream in(feed_name, std::ios::in);
@@ -50,18 +50,18 @@ void test(int argc, char *argv[]) {
   arg_index++;
   int quantification_fold = std::stoi(argv[arg_index]);
   arg_index++;
-  paddle_mobile::PaddleMobileConfigInternal config;
+  paddle_mobile_lens::PaddleMobileConfigInternal config;
   config.memory_optimization_level = enable_memory_optimization
                                          ? MemoryOptimizationWithoutFeeds
                                          : NoMemoryOptimization;
 
 #ifdef PADDLE_MOBILE_CL
   //  config.load_when_predict = true;
-  paddle_mobile::PaddleMobile<paddle_mobile::GPU_CL> paddle_mobile(config);
+  paddle_mobile_lens::PaddleMobile<paddle_mobile_lens::GPU_CL> paddle_mobile(config);
   paddle_mobile.SetCLPath("/data/local/tmp/bin");
   std::cout << "testing opencl yyz " << std::endl;
 #else
-  paddle_mobile::PaddleMobile<paddle_mobile::CPU> paddle_mobile(config);
+  paddle_mobile_lens::PaddleMobile<paddle_mobile_lens::CPU> paddle_mobile(config);
   paddle_mobile.SetThreadNum(1);
   std::cout << "testing cpu yyz " << std::endl;
 #endif
@@ -74,7 +74,7 @@ void test(int argc, char *argv[]) {
 
   bool is_lod = std::stoi(argv[arg_index]) == 1;
   arg_index++;
-  paddle_mobile::framework::LoD lod{{}};
+  paddle_mobile_lens::framework::LoD lod{{}};
   if (is_lod) {
     int lod_count = std::stoi(argv[arg_index]);
     arg_index++;
@@ -129,8 +129,8 @@ void test(int argc, char *argv[]) {
       }
       size_t width = cl_image->ImageDims()[0];
       size_t height = cl_image->ImageDims()[1];
-      paddle_mobile::framework::half_t *image_data =
-          new paddle_mobile::framework::half_t[height * width * 4];
+      paddle_mobile_lens::framework::half_t *image_data =
+          new paddle_mobile_lens::framework::half_t[height * width * 4];
       cl_int err;
       cl_mem image = cl_image->GetCLImage();
       size_t origin[3] = {0, 0, 0};

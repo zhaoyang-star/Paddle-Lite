@@ -28,25 +28,25 @@ limitations under the License. */
 #include "operators/feed_op.h"
 #include "operators/fetch_op.h"
 
-using paddle_mobile::framework::AttributeMap;
-using paddle_mobile::framework::BlockDesc;
-using paddle_mobile::framework::DDim;
-using paddle_mobile::framework::Executor;
-using paddle_mobile::framework::LoDTensor;
-using paddle_mobile::framework::OpDesc;
-using paddle_mobile::framework::OperatorBase;
-using paddle_mobile::framework::Program;
-using paddle_mobile::framework::Tensor;
-using paddle_mobile::framework::Variable;
+using paddle_mobile_lens::framework::AttributeMap;
+using paddle_mobile_lens::framework::BlockDesc;
+using paddle_mobile_lens::framework::DDim;
+using paddle_mobile_lens::framework::Executor;
+using paddle_mobile_lens::framework::LoDTensor;
+using paddle_mobile_lens::framework::OpDesc;
+using paddle_mobile_lens::framework::OperatorBase;
+using paddle_mobile_lens::framework::Program;
+using paddle_mobile_lens::framework::Tensor;
+using paddle_mobile_lens::framework::Variable;
 using std::string;
 using std::vector;
-namespace paddle_mobile {
+namespace paddle_mobile_lens {
 template <typename OpType>
 class OpenClOpTester {
  public:
   OpenClOpTester() {
     framework::CLEngine::Instance()->setClPath("/data/local/tmp/bin");
-    scope_ = std::make_shared<paddle_mobile::framework::Scope>();
+    scope_ = std::make_shared<paddle_mobile_lens::framework::Scope>();
     feed_clhelper_ = framework::CLHelper(scope_->GetCLScpoe());
     fetch_clhelper_ = framework::CLHelper(scope_->GetCLScpoe());
     this->feed_clhelper_.AddKernel("feed", "feed_kernel.cl");
@@ -150,7 +150,7 @@ class OpenClOpTester {
   }
 
  private:
-  std::shared_ptr<paddle_mobile::framework::Scope> scope_;
+  std::shared_ptr<paddle_mobile_lens::framework::Scope> scope_;
   framework::CLHelper feed_clhelper_;
   framework::CLHelper fetch_clhelper_;
 
@@ -159,5 +159,5 @@ class OpenClOpTester {
   Variable *op_in_var;
   Variable *op_out_var;
 };
-}  // namespace paddle_mobile
+}  // namespace paddle_mobile_lens
 #endif

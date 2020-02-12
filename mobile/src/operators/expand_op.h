@@ -22,7 +22,7 @@ limitations under the License. */
 #include "operators/kernel/expand_kernel.h"
 #include "operators/op_param.h"
 
-namespace paddle_mobile {
+namespace paddle_mobile_lens {
 namespace operators {
 
 #ifdef EXPAND_OP
@@ -30,6 +30,6 @@ DECLARE_OPERATOR(Expand, ExpandParam, ExpandKernel);
 #endif
 
 }  // namespace operators
-}  // namespace paddle_mobile
+}  // namespace paddle_mobile_lens
 
 #endif

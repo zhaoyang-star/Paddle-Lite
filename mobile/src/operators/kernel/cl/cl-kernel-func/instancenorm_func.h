@@ -18,11 +18,11 @@ limitations under the License. */
 
 #include "framework/cl/cl_helper.h"
 #include "operators/op_param.h"
-namespace paddle_mobile {
+namespace paddle_mobile_lens {
 namespace operators {
 void InstanceNorm(framework::CLHelper *cl_helper,
                   const framework::CLImage *input, framework::CLImage *output,
                   float epsilon);
 }
-}  // namespace paddle_mobile
+}  // namespace paddle_mobile_lens
 #endif

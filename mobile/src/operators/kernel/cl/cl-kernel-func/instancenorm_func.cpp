@@ -14,7 +14,7 @@ limitations under the License. */
 #ifdef INSTANCENORM_OP
 #include "operators/kernel/cl/cl-kernel-func/instancenorm_func.h"
 #include <algorithm>
-namespace paddle_mobile {
+namespace paddle_mobile_lens {
 namespace operators {
 void InstanceNorm(framework::CLHelper *cl_helper,
                   const framework::CLImage *input, framework::CLImage *output,
@@ -74,5 +74,5 @@ void InstanceNorm(framework::CLHelper *cl_helper,
                          work_size, local_work_size, 0, NULL, NULL);
 }
 }  // namespace operators
-}  // namespace paddle_mobile
+}  // namespace paddle_mobile_lens
 #endif

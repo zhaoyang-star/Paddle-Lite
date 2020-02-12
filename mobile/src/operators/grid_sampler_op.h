@@ -22,7 +22,7 @@ limitations under the License. */
 #include "operators/kernel/grid_sampler_kernel.h"
 #include "operators/op_param.h"
 
-namespace paddle_mobile {
+namespace paddle_mobile_lens {
 namespace operators {
 
 #ifdef GRID_SAMPLER_OP
@@ -30,6 +30,6 @@ DECLARE_OPERATOR(GridSampler, GridSamplerParam, GridSamplerKernel);
 #endif
 
 }  // namespace operators
-}  // namespace paddle_mobile
+}  // namespace paddle_mobile_lens
 
 #endif

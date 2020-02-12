@@ -20,7 +20,7 @@ limitations under the License. */
 #include "io/paddle_inference_api.h"
 #include "io/paddle_mobile.h"
 
-namespace paddle_mobile {
+namespace paddle_mobile_lens {
 
 template <typename Device = CPU, typename T = float>
 class PaddleMobilePredictor : public PaddlePredictor {
@@ -54,4 +54,4 @@ class PaddleMobilePredictor : public PaddlePredictor {
   PaddleMobileConfig config_;
 };
 
-}  // namespace paddle_mobile
+}  // namespace paddle_mobile_lens

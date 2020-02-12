@@ -15,7 +15,7 @@ limitations under the License. */
 #include "common/types.h"
 #include <vector>
 
-namespace paddle_mobile {
+namespace paddle_mobile_lens {
 
 const char *G_OP_TYPE_CONV = "conv2d";
 const char *G_OP_TYPE_BATCHNORM = "batch_norm";
@@ -263,4 +263,4 @@ std::unordered_map<
         {G_OP_TYPE_PIXEL_SHUFFLE, {{"X"}, {"Out"}}},
         {G_OP_TYPE_EXPAND, {{"X"}, {"Out"}}},
         {G_OP_TYPE_GRID_SAMPLER, {{"X", "Grid"}, {"Output"}}}};
-}  // namespace paddle_mobile
+}  // namespace paddle_mobile_lens
