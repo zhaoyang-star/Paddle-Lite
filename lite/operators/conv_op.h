@@ -137,8 +137,8 @@ class ConvOpLite : public OpLite {
         param_.activation_param.hard_sigmoid_offset =
             op_desc.GetAttr<float>("offset");
       } else {
-        CHECK(false)
-            << "The fused conv only supports fuse with relu and leaky relu";
+        LOG(FATAL) << "The fused conv don't support the given activation type:"
+                   << act_type;
       }
     }
 
