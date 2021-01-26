@@ -9,6 +9,16 @@ Basic profiler 用于 CPU 上kernel 耗时的统计。
 参照 [编译环境准备](../source_compile/compile_env) 进行环境配置，在编译脚本的 cmake 选项中添加 `-DLITE_WITH_PROFILE=ON` ，就可以开启相应支持。
 
 ### 使用示例：
+编译示例如下：
+
+```
+# 编译 Android 预测库：
+./lite/tools/build_android.sh --with_opencl=ON --with_extra=ON --with_profile=ON full_publish
+# 编译 macOS x86 预测库：
+./lite/tools/build.sh --with_opencl=ON --with_extra=ON --with_profile=ON x86`
+# 编译 Windows x86 预测库：
+.\lite\tools\build_windows.bat with_extra with_profile
+```
 
 在模型执行完毕后，会自动打印类似如下 profiler 的日志
 

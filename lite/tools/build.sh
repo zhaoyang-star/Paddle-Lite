@@ -29,6 +29,7 @@ WITH_STATIC_MKL=OFF
 WITH_AVX=ON
 WITH_EXCEPTION=OFF
 WITH_PROFILE=OFF
+WITH_PRECISION_PROFILE=OFF
 WITH_LTO=OFF
 BUILD_NPU=OFF
 NPU_DDK_ROOT="$(pwd)/ai_ddk_lib/" # Download HiAI DDK from https://developer.huawei.com/consumer/cn/hiai/
@@ -278,6 +279,7 @@ function make_full_publish_so {
       -DLITE_WITH_LOG=$WITH_LOG \
       -DLITE_WITH_EXCEPTION=$WITH_EXCEPTION \
       -DLITE_WITH_PROFILE=${WITH_PROFILE} \
+      -DLITE_WITH_PRECISION_PROFILE=${WITH_PRECISION_PROFILE} \
       -DLITE_WITH_LTO=${WITH_LTO} \
       -DANDROID_STL_TYPE=$android_stl \
       -DLITE_BUILD_EXTRA=$BUILD_EXTRA \
@@ -460,7 +462,6 @@ function make_x86 {
             -DWITH_AVX=${WITH_AVX} \
             -DWITH_MKLDNN=OFF    \
             -DLITE_WITH_X86=ON  \
-            -DLITE_WITH_PROFILE=OFF \
             -DWITH_LITE=ON \
             -DLITE_WITH_LIGHT_WEIGHT_FRAMEWORK=OFF \
             -DLITE_WITH_ARM=OFF \
@@ -473,6 +474,7 @@ function make_x86 {
             -DLITE_WITH_LOG=${WITH_LOG} \
             -DLITE_WITH_EXCEPTION=$WITH_EXCEPTION \
             -DLITE_WITH_PROFILE=${WITH_PROFILE} \
+            -DLITE_WITH_PRECISION_PROFILE=${WITH_PRECISION_PROFILE} \
             -DLITE_WITH_LTO=${WITH_LTO} \
             -DLITE_WITH_XPU=$BUILD_XPU \
             -DLITE_WITH_XTCL=$BUILD_XTCL \
@@ -623,6 +625,10 @@ function main {
                 ;;
             --with_profile=*)
                 WITH_PROFILE="${i#*=}"
+                shift
+                ;;
+            --with_precision_profile=*)
+                WITH_PRECISION_PROFILE="${i#*=}"
                 shift
                 ;;
             --with_lto=*)

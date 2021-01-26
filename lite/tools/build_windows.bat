@@ -8,6 +8,7 @@ set WITH_PYTHON=ON
 set BUILD_DIR=%source_path%
 set WITH_LOG=ON
 set WITH_PROFILE=OFF
+set WITH_PRECISION_PROFILE=OFF
 set WITH_TESTING=OFF
 set BUILD_FOR_CI=OFF
 set BUILD_PLATFORM=x64
@@ -30,6 +31,8 @@ if /I "%1"=="with_extra" (
     set WITH_PYTHON=OFF
 ) else if /I  "%1"=="with_profile" (
     set WITH_PROFILE=ON
+) else if /I  "%1"=="with_precision_profile" (
+    set WITH_PRECISION_PROFILE=ON
 ) else if /I  "%1"=="without_log" (
     set WITH_LOG=OFF
 ) else if /I  "%1"=="with_strip" (
@@ -71,6 +74,7 @@ echo "|  WITH_LOG=%WITH_LOG%                                                    
 echo "|  BUILD_EXTRA=%BUILD_EXTRA%                                                                          |"
 echo "|  WITH_PYTHON=%WITH_PYTHON%                                                                          |"
 echo "|  LITE_WITH_PROFILE=%WITH_PROFILE%                                                                   |"
+echo "|  LITE_WITH_PRECISION_PROFILE=%WITH_PRECISION_PROFILE%                                               |"
 echo "|  WITH_TESTING=%WITH_TESTING%                                                                        |"
 echo "|  WITH_STRIP=%WITH_STRIP%                                                                            |"
 echo "|  OPTMODEL_DIR=%OPTMODEL_DIR%                                                                        |"
@@ -130,6 +134,7 @@ cd "%build_directory%"
             -DWITH_AVX=%WITH_AVX% ^
             -DLITE_WITH_X86=ON  ^
             -DLITE_WITH_PROFILE=%WITH_PROFILE% ^
+            -DLITE_WITH_PRECISION_PROFILE=%WITH_PRECISION_PROFILE% ^
             -DWITH_LITE=ON ^
             -DLITE_WITH_LIGHT_WEIGHT_FRAMEWORK=OFF ^
             -DLITE_WITH_ARM=OFF ^

@@ -39,6 +39,10 @@ MEDIATEK_APU_SDK_ROOT="$(pwd)/apu_ddk" # Download APU SDK from https://paddlelit
 WITH_OPENCL=OFF
 # options of adding training ops
 WITH_TRAIN=OFF
+# option of time profile, default is OFF
+WITH_PROFILE=OFF
+# option of precision profile, default is OFF
+WITH_PRECISION_PROFILE=OFF
 # num of threads used during compiling..
 readonly NUM_PROC=${LITE_BUILD_THREADS:-4}
 #####################################################################################################
@@ -254,6 +258,8 @@ function make_full_publish_so {
       -DARM_TARGET_ARCH_ABI=$ARCH \
       -DARM_TARGET_LANG=$TOOLCHAIN \
       -DLITE_WITH_TRAIN=$WITH_TRAIN \
+      -DLITE_WITH_PROFILE=$WITH_PROFILE \
+      -DLITE_WITH_PRECISION_PROFILE=$WITH_PRECISION_PROFILE \
       -DANDROID_STL_TYPE=$ANDROID_STL"
 
   cmake $workspace \
@@ -432,6 +438,16 @@ function main {
             # compiling lib with training ops.
             --with_train=*)
                 WITH_TRAIN="${i#*=}"
+                shift
+                ;;
+            # compiling lib with time profile, default OFF.
+            --with_profile=*)
+                WITH_PROFILE="${i#*=}"
+                shift
+                ;;
+            # compiling lib with precision profile, default OFF.
+            --with_precision_profile=*)
+                WITH_PRECISION_PROFILE="${i#*=}"
                 shift
                 ;;
             help)
